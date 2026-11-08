@@ -1,0 +1,29 @@
+# Dopamine
+
+Dopamine is a calisthenics workout tracker for Android. Log your sets, plan routines, follow your streak and share progress between phones. Everything is saved privately on your own phone.
+
+**[Download the APK](https://github.com/Abid109/Dopamine/releases/download/latest/Dopamine.apk)**
+
+## Start here
+
+| I want to... | Go to |
+| --- | --- |
+| Install the app | [Installation](Installation) |
+| Learn the basics in five minutes | [Getting Started](Getting-Started) |
+| Understand a screen | [Dashboard](Dashboard), [Logging Workouts](Logging-Workouts), [Calendar Planner](Calendar-Planner), [Notes and Journal](Notes-and-Journal), [Profile and Biometrics](Profile-and-Biometrics) |
+| Send my data to another phone | [Share and Receive](Share-and-Receive) |
+| Save a report or backup | [PDF Reports and Backup](PDF-Reports-and-Backup) |
+| Change colours and timers | [Settings and Themes](Settings-and-Themes) |
+| Fix a problem | [Troubleshooting](Troubleshooting) and [FAQ](FAQ) |
+| Work on the code | [Building from Source](Building-from-Source) and [Architecture](Architecture) |
+
+## At a glance
+
+- 18 built-in calisthenics movements plus custom exercises
+- Calorie estimates based on your bodyweight
+- Daily streak, goals and a weekly burn chart
+- Calendar with routine templates
+- Rest timer and session stopwatch
+- QR and file sharing with selective import
+- PDF fitness report and JSON backup
+- 7 themes and 6 accent colours

@@ -1,0 +1,52 @@
+name: Bug report
+description: Something is not working as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Tap ...
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Phone model and Android version
+      placeholder: Samsung A14, Android 14
+    validations:
+      required: true
+  - type: input
+    id: build
+    attributes:
+      label: Build date
+      description: The date shown on the Releases page for the APK you installed
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Dashboard
+        - Log Workout
+        - Calendar Planner
+        - Notes & Journal
+        - Profile & Bio
+        - Share & Receive (QR / file)
+        - Timers
+        - PDF report / backup
+        - Settings / themes
+        - Back button / navigation
+        - Other
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or extra details

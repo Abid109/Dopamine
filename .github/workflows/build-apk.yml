@@ -3,6 +3,14 @@ name: Build Dopamine APK
 on:
   push:
     branches: [main, master]
+    paths-ignore:
+      - '**.md'
+      - 'wiki/**'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/pull_request_template.md'
+      - '.github/workflows/sync-wiki.yml'
   workflow_dispatch:
 
 permissions:

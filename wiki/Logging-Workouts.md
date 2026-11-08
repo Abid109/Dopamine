@@ -1,0 +1,33 @@
+# Logging Workouts
+
+Open **Log Workout** from the menu.
+
+## Log from the library
+
+1. Choose a movement. Use the category filter (All, Push, Pull, Legs, Core, Full Body) to narrow the list.
+2. The card shows the difficulty, a description and a progression path.
+3. Set **Sets**, **Reps per Set** and **Duration (Minutes)**. For holds such as planks, enter the seconds as reps.
+4. Check the **Estimated Calorie Burn**.
+5. Tap **Log to Today**.
+
+## Log a custom exercise
+
+Tap **Custom Exercise**, then fill in:
+
+- **Exercise Name**
+- **Muscle Group:** Push, Pull, Legs, Core or Full Body
+- **Intensity:** Moderate (MET 6.0), Standard (MET 8.0), Vigorous (MET 9.5) or High Explosive (MET 11.0)
+
+Tap **Browse Library Instead** to go back to the list.
+
+## Choose the date
+
+Use the **Date** field to log a workout for another day, for example one you forgot to record.
+
+## Rest timer
+
+Tap **Start Set Rest Timer** to open the rest timer. See [Timers](Timers).
+
+## Edit or remove entries
+
+Logged entries for the selected date are listed under **Logged Workouts**. Delete an entry you added by mistake from that list.
