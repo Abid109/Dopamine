@@ -13,6 +13,78 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="vendor/qrcode.js"></script>
+  <script src="vendor/jsQR.js"></script>
+  <script>
+/* Dopamine share codec: compress -> base64 -> numbered QR frames, and reassembly */
+(function (g) {
+  var PREFIX = 'DPM1';
+  function reviver(k, v) { return (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v; }
+  function b64FromBytes(bytes) {
+    var s = '', CH = 0x8000;
+    for (var i = 0; i < bytes.length; i += CH) s += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+    return btoa(s);
+  }
+  function bytesFromB64(b) {
+    var s = atob(b), out = new Uint8Array(s.length);
+    for (var i = 0; i < s.length; i++) out[i] = s.charCodeAt(i);
+    return out;
+  }
+  async function pipeBytes(bytes, stream) {
+    var w = stream.writable.getWriter();
+    w.write(bytes); w.close();
+    var buf = await new Response(stream.readable).arrayBuffer();
+    return new Uint8Array(buf);
+  }
+  async function pack(obj) {
+    var raw = new TextEncoder().encode(JSON.stringify(obj));
+    var mode = 'r', bytes = raw;
+    if (typeof CompressionStream !== 'undefined') {
+      try { bytes = await pipeBytes(raw, new CompressionStream('deflate-raw')); mode = 'z'; }
+      catch (e) { bytes = raw; mode = 'r'; }
+    }
+    return { mode: mode, b64: b64FromBytes(bytes) };
+  }
+  async function unpack(mode, b64) {
+    var bytes = bytesFromB64(b64);
+    if (mode === 'z') {
+      if (typeof DecompressionStream === 'undefined') throw new Error('This phone cannot unpack compressed data.');
+      bytes = await pipeBytes(bytes, new DecompressionStream('deflate-raw'));
+    }
+    return JSON.parse(new TextDecoder().decode(bytes), reviver);
+  }
+  function makeFrames(mode, b64, size) {
+    size = size || 280;
+    var n = Math.max(1, Math.ceil(b64.length / size));
+    var id = Math.random().toString(36).slice(2, 8).padEnd(6, '0');
+    var frames = [];
+    for (var i = 0; i < n; i++) frames.push(PREFIX + '|' + mode + '|' + id + '|' + (i + 1) + '|' + n + '|' + b64.slice(i * size, (i + 1) * size));
+    return { id: id, frames: frames };
+  }
+  function parseFrame(text) {
+    if (typeof text !== 'string' || text.indexOf(PREFIX + '|') !== 0) return null;
+    var p = text.split('|');
+    if (p.length < 6) return null;
+    var mode = p[1], id = p[2], i = parseInt(p[3], 10), n = parseInt(p[4], 10);
+    if ((mode !== 'z' && mode !== 'r') || !id || !(i >= 1) || !(n >= 1) || n > 2000 || i > n) return null;
+    return { mode: mode, id: id, i: i, n: n, data: p.slice(5).join('|') };
+  }
+  function Collector(first) {
+    this.id = first.id; this.n = first.n; this.mode = first.mode; this.parts = {}; this.have = 0;
+  }
+  Collector.prototype.add = function (f) {
+    if (f.id !== this.id || f.n !== this.n) return false;
+    if (this.parts[f.i] === undefined) { this.parts[f.i] = f.data; this.have++; return true; }
+    return false;
+  };
+  Collector.prototype.complete = function () { return this.have === this.n; };
+  Collector.prototype.assemble = function () {
+    var s = ''; for (var i = 1; i <= this.n; i++) s += this.parts[i]; return s;
+  };
+  g.DopShare = { pack: pack, unpack: unpack, makeFrames: makeFrames, parseFrame: parseFrame, Collector: Collector, reviver: reviver };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+  </script>
   
   <!-- Embedded Offline-First Icon Engine (Zero Network Latency) -->
   <script>
@@ -333,6 +405,10 @@
         </button>
         <button onclick="navigate('profile')" id="nav-btn-profile" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
           <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Profile & Bio</span></div>
+        </button>
+        <button onclick="navigate('share')" id="nav-btn-share" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
+          <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg><span>Share &amp; Receive</span></div>
+          <span id="share-badge" class="hidden min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--accent)] text-black text-[10px] font-bold items-center justify-center">0</span>
         </button>
         <button onclick="navigate('settings')" id="nav-btn-settings" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
           <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg><span>Settings</span></div>
@@ -935,6 +1011,52 @@
     </div>
 
     <!-- SETTINGS TAB -->
+    <div id="tab-share" class="hidden space-y-6">
+      <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-[var(--accent)]"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg>
+          Share &amp; Receive
+        </h1>
+        <p class="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">Send your data to another phone with QR codes or a file. No internet needed for QR.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- SEND -->
+        <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
+          <div>
+            <h2 class="font-bold text-sm text-[var(--text-primary)]">Send</h2>
+            <p class="text-[11px] text-[var(--text-muted)]">Choose what to include</p>
+          </div>
+          <div id="share-send-list" class="space-y-2"></div>
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button onclick="shareShowQr()" class="p-3 rounded-xl bg-[var(--accent)] text-black font-bold text-xs hover:brightness-110 active:scale-[0.98] transition-all">Show QR code</button>
+            <button onclick="shareSendFile()" class="p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] font-bold text-xs hover:border-[var(--border-strong)] active:scale-[0.98] transition-all">Send as file</button>
+          </div>
+          <p class="text-[10px] text-[var(--text-dim)]">"Send as file" opens the Android share sheet: Bluetooth, Quick Share, WhatsApp and more.</p>
+        </div>
+
+        <!-- RECEIVE -->
+        <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
+          <div>
+            <h2 class="font-bold text-sm text-[var(--text-primary)]">Receive</h2>
+            <p class="text-[11px] text-[var(--text-muted)]">Scan the other phone or open a shared file</p>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="shareOpenScanner()" class="p-3 rounded-xl bg-[var(--accent)] text-black font-bold text-xs hover:brightness-110 active:scale-[0.98] transition-all">Scan QR code</button>
+            <button onclick="document.getElementById('share-file-input').click()" class="p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] font-bold text-xs hover:border-[var(--border-strong)] active:scale-[0.98] transition-all">Import from file</button>
+          </div>
+          <input type="file" id="share-file-input" accept=".json,application/json,text/plain" class="hidden" onchange="shareImportFileChange(event)">
+          <p class="text-[10px] text-[var(--text-dim)]">Received data is saved below. Nothing changes on this phone until you choose what to import.</p>
+        </div>
+      </div>
+
+      <!-- RECEIVED LIST -->
+      <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3">
+        <h2 class="font-bold text-sm text-[var(--text-primary)]">Received files</h2>
+        <div id="share-received-list" class="space-y-2"></div>
+      </div>
+    </div>
+
     <div id="tab-settings" class="hidden space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
         <div>
@@ -1217,6 +1339,72 @@
     </div>
   </div>
 
+  <!-- SHARE: QR SENDER -->
+  <div id="modal-qr-send" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
+    <div class="relative w-full max-w-sm rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] p-5 shadow-2xl space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-sm text-[var(--text-primary)]">Show this to the other phone</h3>
+          <p class="text-[10px] text-[var(--text-muted)]">On the other phone: Share &amp; Receive, then Scan QR code</p>
+        </div>
+        <button onclick="closeModalWithHistory('modal-qr-send')" class="px-2 py-1 rounded-lg text-xs text-[var(--text-muted)] hover:bg-[var(--bg-card-hover)]">Close</button>
+      </div>
+      <div class="bg-white rounded-xl p-2 flex items-center justify-center">
+        <canvas id="qr-send-canvas" style="width:100%;max-width:320px;aspect-ratio:1/1;image-rendering:pixelated;"></canvas>
+      </div>
+      <div class="text-center">
+        <div id="qr-send-label" class="text-xs font-bold text-[var(--text-primary)]">Code 1 of 1</div>
+        <div id="qr-send-hint" class="text-[10px] text-[var(--text-muted)]">Codes repeat in a loop. Hold both phones steady.</div>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <button onclick="shareSendStep(-1)" class="p-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs font-semibold">Previous</button>
+        <button id="qr-send-toggle" onclick="shareSendToggle()" class="p-2.5 rounded-xl bg-[var(--accent)] text-black text-xs font-bold">Pause</button>
+        <button onclick="shareSendStep(1)" class="p-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs font-semibold">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHARE: QR SCANNER -->
+  <div id="modal-qr-scan" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
+    <div class="relative w-full max-w-sm rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] p-5 shadow-2xl space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-sm text-[var(--text-primary)]">Scan the other phone</h3>
+          <p class="text-[10px] text-[var(--text-muted)]">Point the camera at the QR codes until all are collected</p>
+        </div>
+        <button onclick="closeModalWithHistory('modal-qr-scan')" class="px-2 py-1 rounded-lg text-xs text-[var(--text-muted)] hover:bg-[var(--bg-card-hover)]">Cancel</button>
+      </div>
+      <div class="relative rounded-xl overflow-hidden bg-black" style="aspect-ratio:1/1;">
+        <video id="qr-scan-video" playsinline muted autoplay style="width:100%;height:100%;object-fit:cover;"></video>
+        <div style="position:absolute;inset:14%;border:2px solid rgba(255,255,255,0.75);border-radius:14px;pointer-events:none;"></div>
+      </div>
+      <canvas id="qr-scan-canvas" class="hidden"></canvas>
+      <div>
+        <div id="qr-scan-msg" class="text-xs font-semibold text-[var(--text-primary)]">Starting camera...</div>
+        <div class="h-1.5 rounded-full bg-[var(--bg-input)] mt-2 overflow-hidden"><div id="qr-scan-bar" class="h-full bg-[var(--accent)]" style="width:0%;transition:width .2s;"></div></div>
+        <div id="qr-scan-grid" class="flex flex-wrap gap-1 mt-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHARE: REVIEW & IMPORT -->
+  <div id="modal-share-review" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
+    <div class="relative w-full max-w-md max-h-[88vh] flex flex-col rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-[var(--border-subtle)]">
+        <div>
+          <h3 class="font-bold text-sm text-[var(--text-primary)]">Choose what to import</h3>
+          <p id="share-review-sub" class="text-[10px] text-[var(--text-muted)]"></p>
+        </div>
+        <button onclick="closeModalWithHistory('modal-share-review')" class="px-2 py-1 rounded-lg text-xs text-[var(--text-muted)] hover:bg-[var(--bg-card-hover)]">Close</button>
+      </div>
+      <div id="share-review-body" class="p-4 space-y-4 overflow-y-auto"></div>
+      <div class="p-4 border-t border-[var(--border-subtle)] grid grid-cols-2 gap-2">
+        <button onclick="closeModalWithHistory('modal-share-review')" class="p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs font-semibold">Not now</button>
+        <button onclick="shareReviewApply()" class="p-3 rounded-xl bg-[var(--accent)] text-black text-xs font-bold">Import selected</button>
+      </div>
+    </div>
+  </div>
+
   <!-- DEDICATED MOBILE APK PDF EXPORT ACTION MODAL -->
   <div id="modal-export-options" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
     <div class="relative w-full max-w-sm rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] p-5 shadow-2xl space-y-4">
@@ -1290,7 +1478,8 @@
       logs: {},
       plans: {},
       notes: [],
-      sessionTimes: {}
+      sessionTimes: {},
+      received: []
     };
 
     let appState = loadState();
@@ -1303,6 +1492,7 @@
         const merged = Object.assign({}, DEFAULT_DATA, parsed);
         merged.profile = Object.assign({}, DEFAULT_DATA.profile, parsed.profile || {});
         merged.settings = Object.assign({}, DEFAULT_DATA.settings, parsed.settings || {});
+        merged.received = Array.isArray(parsed.received) ? parsed.received : [];
         return merged;
       } catch (e) {
         return JSON.parse(JSON.stringify(DEFAULT_DATA));
@@ -1356,7 +1546,10 @@
       'modal-session-timer',
       'modal-note-editor',
       'modal-report-preview',
-      'modal-export-options'
+      'modal-export-options',
+      'modal-qr-send',
+      'modal-qr-scan',
+      'modal-share-review'
     ];
 
     function saveState() {
@@ -1432,6 +1625,7 @@
     function closeModalWithHistory(modalId) {
       const el = document.getElementById(modalId);
       if (el) el.classList.add('hidden');
+      onModalClosed(modalId);
       if (window.history.state && window.history.state.modal === modalId) {
         window.history.back();
       }
@@ -1441,6 +1635,7 @@
       MODAL_IDS.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
+        onModalClosed(id);
       });
       toggleMobileSidebar(false);
     }
@@ -1457,7 +1652,7 @@
         window.history.pushState({ tab: tab, modal: null }, '', '#' + tab);
       }
 
-      const tabs = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'settings'];
+      const tabs = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'settings'];
       tabs.forEach(t => {
         const el = document.getElementById('tab-' + t);
         const btn = document.getElementById('nav-btn-' + t);
@@ -1485,7 +1680,604 @@
       if (tab === 'notes') renderNotesList();
       if (tab === 'profile') renderProfileForm();
       if (tab === 'settings') renderSettingsTab();
+      if (tab === 'share') renderShareTab();
       if (window.lucide) lucide.createIcons();
+    }
+
+    // =====================================================================
+    // SHARE & RECEIVE (QR codes + file) - phone to phone, no internet needed
+    // =====================================================================
+    const SHARE_CATS = [
+      { key: 'profile', label: 'Profile & goals' },
+      { key: 'settings', label: 'App settings' },
+      { key: 'logs', label: 'Workout logs' },
+      { key: 'plans', label: 'Calendar plans' },
+      { key: 'notes', label: 'Notes' },
+      { key: 'sessionTimes', label: 'Workout time totals' }
+    ];
+    let shareSel = { profile: true, settings: false, logs: true, plans: true, notes: true, sessionTimes: true };
+    let sendState = { frames: [], idx: 0, timer: null, playing: true };
+    let scanState = { stream: null, raf: null, collector: null, last: 0, busy: false, hintAt: 0 };
+    let reviewState = null;
+
+    function shEsc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+    function shCount(key, src) {
+      src = src || appState;
+      if (key === 'profile') return src.profile ? 1 : 0;
+      if (key === 'settings') return src.settings ? 1 : 0;
+      if (key === 'logs') return Object.values(src.logs || {}).reduce((s, a) => s + (a || []).length, 0);
+      if (key === 'plans') return Object.values(src.plans || {}).reduce((s, a) => s + (a || []).length, 0);
+      if (key === 'notes') return (src.notes || []).length;
+      if (key === 'sessionTimes') return Object.keys(src.sessionTimes || {}).length;
+      return 0;
+    }
+    function shCountLabel(key, n) {
+      if (key === 'profile' || key === 'settings') return '';
+      const unit = { logs: 'entries', plans: 'plans', notes: 'notes', sessionTimes: 'days' }[key];
+      return n + ' ' + unit;
+    }
+
+    // ---------- Share tab rendering ----------
+    function renderShareTab() {
+      const box = document.getElementById('share-send-list');
+      if (box) {
+        box.innerHTML = SHARE_CATS.map(c => {
+          const n = shCount(c.key);
+          const sub = shCountLabel(c.key, n);
+          return `<label class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] cursor-pointer">
+            <span class="flex items-center gap-2.5">
+              <input type="checkbox" class="w-4 h-4 accent-[var(--accent)]" ${shareSel[c.key] ? 'checked' : ''} onchange="shareToggleCat('${c.key}', this.checked)">
+              <span class="text-xs font-semibold text-[var(--text-primary)]">${c.label}</span>
+            </span>
+            <span class="text-[10px] text-[var(--text-muted)]">${sub}</span>
+          </label>`;
+        }).join('');
+      }
+      renderShareReceivedList();
+      updateShareBadge();
+    }
+    function shareToggleCat(key, on) { shareSel[key] = !!on; }
+
+    function shareSummary(data) {
+      const parts = [];
+      if (data.profile) parts.push('profile');
+      if (data.settings) parts.push('settings');
+      const l = shCount('logs', data); if (l) parts.push(l + ' workout entries');
+      const p = shCount('plans', data); if (p) parts.push(p + ' plans');
+      const n = shCount('notes', data); if (n) parts.push(n + ' notes');
+      const t = shCount('sessionTimes', data); if (t) parts.push(t + ' days of time');
+      return parts.join(' · ') || 'Empty';
+    }
+    function renderShareReceivedList() {
+      const box = document.getElementById('share-received-list');
+      if (!box) return;
+      const list = appState.received || [];
+      if (!list.length) {
+        box.innerHTML = '<p class="text-xs text-[var(--text-muted)] p-3 rounded-xl bg-[var(--bg-input)] border border-dashed border-[var(--border-subtle)]">Nothing received yet. Files you receive will be kept here.</p>';
+        return;
+      }
+      box.innerHTML = list.map(r => `
+        <div class="p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-[var(--text-primary)] truncate">From ${shEsc(r.from || 'Unknown')} <span class="font-normal text-[var(--text-muted)]">· ${r.via === 'file' ? 'file' : 'QR'}</span></div>
+              <div class="text-[10px] text-[var(--text-muted)]">${shEsc(new Date(r.receivedAt).toLocaleString())}</div>
+            </div>
+            ${r.importedAt ? '<span class="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400">Imported</span>' : '<span class="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400">New</span>'}
+          </div>
+          <div class="text-[11px] text-[var(--text-secondary,var(--text-muted))]">${shEsc(shareSummary(r.data || {}))}</div>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="shareOpenReview('${shEsc(r.id)}')" class="p-2 rounded-lg bg-[var(--accent)] text-black text-[11px] font-bold">Review &amp; import</button>
+            <button onclick="shareDeleteReceived('${shEsc(r.id)}')" class="p-2 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-red-400 text-[11px] font-bold">Delete</button>
+          </div>
+        </div>`).join('');
+    }
+    function updateShareBadge() {
+      const el = document.getElementById('share-badge');
+      if (!el) return;
+      const n = (appState.received || []).filter(r => !r.importedAt).length;
+      el.textContent = n;
+      el.classList.toggle('hidden', n === 0);
+      el.classList.toggle('flex', n > 0);
+    }
+    function shareDeleteReceived(id) {
+      if (!confirm('Delete this received file? Anything you already imported from it stays on this phone.')) return;
+      appState.received = (appState.received || []).filter(r => r.id !== id);
+      saveState();
+      renderShareTab();
+      showToast('Received file deleted');
+    }
+
+    // ---------- Building and cleaning payloads ----------
+    function buildSharePayload(forQr) {
+      if (!SHARE_CATS.some(c => shareSel[c.key])) { showToast('Pick at least one thing to send.'); return null; }
+      const d = {};
+      if (shareSel.profile) {
+        d.profile = Object.assign({}, appState.profile);
+        if (forQr && d.profile.avatarUrl && d.profile.avatarUrl.length > 1500) d.profile.avatarUrl = '';
+      }
+      if (shareSel.settings) d.settings = Object.assign({}, appState.settings);
+      if (shareSel.logs) d.logs = appState.logs;
+      if (shareSel.plans) d.plans = appState.plans;
+      if (shareSel.notes) d.notes = appState.notes;
+      if (shareSel.sessionTimes) d.sessionTimes = appState.sessionTimes;
+      return { app: 'dopamine', v: 1, from: (appState.profile.name || '').trim() || 'Unknown', sentAt: Date.now(), data: d };
+    }
+    function shClean(data) {
+      const out = {};
+      if (!data || typeof data !== 'object') return out;
+      const num = (v, d) => (Number.isFinite(+v) ? +v : (d || 0));
+      const str = (v, max) => (typeof v === 'string' ? v.slice(0, max || 200) : '');
+      const dateRe = /^\d{4}-\d{2}-\d{2}$/;
+      if (data.profile && typeof data.profile === 'object') {
+        const p = {};
+        Object.keys(DEFAULT_DATA.profile).forEach(k => {
+          if (!(k in data.profile)) return;
+          const dv = DEFAULT_DATA.profile[k];
+          p[k] = typeof dv === 'number' ? num(data.profile[k], dv) : str(data.profile[k], k === 'avatarUrl' ? 3000000 : 200);
+        });
+        out.profile = p;
+      }
+      if (data.settings && typeof data.settings === 'object') {
+        const s = {};
+        Object.keys(DEFAULT_DATA.settings).forEach(k => {
+          if (!(k in data.settings)) return;
+          const dv = DEFAULT_DATA.settings[k];
+          s[k] = typeof dv === 'boolean' ? !!data.settings[k] : typeof dv === 'number' ? num(data.settings[k], dv) : str(data.settings[k], 40);
+        });
+        out.settings = s;
+      }
+      if (data.logs && typeof data.logs === 'object') {
+        out.logs = {};
+        Object.keys(data.logs).forEach(date => {
+          if (!dateRe.test(date) || !Array.isArray(data.logs[date])) return;
+          const arr = data.logs[date].slice(0, 500).map(e => (e && typeof e === 'object' && e.id && e.name) ? {
+            id: str(e.id, 60), name: str(e.name, 80), category: str(e.category, 30),
+            sets: num(e.sets), reps: num(e.reps), mins: num(e.mins), cal: num(e.cal), date: date
+          } : null).filter(Boolean);
+          if (arr.length) out.logs[date] = arr;
+        });
+      }
+      if (data.plans && typeof data.plans === 'object') {
+        out.plans = {};
+        Object.keys(data.plans).forEach(date => {
+          if (!dateRe.test(date) || !Array.isArray(data.plans[date])) return;
+          const arr = data.plans[date].slice(0, 100).map(p => (p && typeof p === 'object' && p.id && p.name) ? {
+            id: str(p.id, 60), name: str(p.name, 100), items: str(p.items, 4000), completed: !!p.completed
+          } : null).filter(Boolean);
+          if (arr.length) out.plans[date] = arr;
+        });
+      }
+      if (Array.isArray(data.notes)) {
+        out.notes = data.notes.slice(0, 500).map(n => (n && typeof n === 'object' && n.id) ? {
+          id: str(n.id, 60), title: str(n.title, 150), body: str(n.body, 20000), tag: str(n.tag, 30),
+          created: num(n.created, Date.now()), updated: num(n.updated, Date.now())
+        } : null).filter(Boolean);
+      }
+      if (data.sessionTimes && typeof data.sessionTimes === 'object') {
+        out.sessionTimes = {};
+        Object.keys(data.sessionTimes).forEach(date => {
+          const v = num(data.sessionTimes[date]);
+          if (dateRe.test(date) && v > 0) out.sessionTimes[date] = v;
+        });
+      }
+      return out;
+    }
+    function shareStoreReceived(payload, via, tid) {
+      const data = shClean(payload && payload.data);
+      if (!Object.keys(data).length) { showToast('That file has no usable data.'); return null; }
+      appState.received = appState.received || [];
+      if (tid) {
+        const dup = appState.received.find(r => r.tid === tid);
+        if (dup) { showToast('Already received. Opening it.'); return dup; }
+      }
+      const item = {
+        id: 'rx-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+        tid: tid || null,
+        from: String((payload && payload.from) || 'Unknown').slice(0, 60),
+        sentAt: Number(payload && payload.sentAt) || 0,
+        receivedAt: Date.now(),
+        via: via,
+        importedAt: null,
+        data: data
+      };
+      appState.received.unshift(item);
+      try { saveState(); } catch (e) {
+        appState.received.shift();
+        showToast('Phone storage is full. Delete old received files and try again.');
+        return null;
+      }
+      renderShareTab();
+      return item;
+    }
+
+    // ---------- QR sender ----------
+    async function shareShowQr() {
+      const payload = buildSharePayload(true);
+      if (!payload) return;
+      showToast('Preparing QR codes...');
+      try {
+        const packed = await DopShare.pack(payload);
+        const made = DopShare.makeFrames(packed.mode, packed.b64, 280);
+        sendState = { frames: made.frames, idx: 0, timer: null, playing: true };
+        openModalWithHistory('modal-qr-send');
+        document.getElementById('qr-send-hint').textContent = made.frames.length > 40
+          ? 'That is a lot of codes. "Send as file" may be faster for this much data.'
+          : 'Codes repeat in a loop. Hold both phones steady.';
+        shareDrawFrame();
+        shareStartLoop();
+      } catch (e) {
+        console.error(e);
+        showToast('Could not create the QR codes.');
+      }
+    }
+    function shareDrawFrame() {
+      const s = sendState;
+      if (!s.frames.length) return;
+      const qr = qrcode(0, 'L');
+      qr.addData(s.frames[s.idx]);
+      qr.make();
+      const count = qr.getModuleCount(), quiet = 4;
+      const scale = Math.max(3, Math.floor(560 / (count + quiet * 2)));
+      const size = (count + quiet * 2) * scale;
+      const cv = document.getElementById('qr-send-canvas');
+      cv.width = size; cv.height = size;
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, size, size);
+      ctx.fillStyle = '#000000';
+      for (let r = 0; r < count; r++) for (let c = 0; c < count; c++) {
+        if (qr.isDark(r, c)) ctx.fillRect((c + quiet) * scale, (r + quiet) * scale, scale, scale);
+      }
+      document.getElementById('qr-send-label').textContent = `Code ${s.idx + 1} of ${s.frames.length}`;
+    }
+    function shareStartLoop() {
+      shareStopLoop();
+      sendState.playing = true;
+      document.getElementById('qr-send-toggle').textContent = 'Pause';
+      if (sendState.frames.length < 2) return;
+      sendState.timer = setInterval(() => {
+        sendState.idx = (sendState.idx + 1) % sendState.frames.length;
+        shareDrawFrame();
+      }, 700);
+    }
+    function shareStopLoop() {
+      if (sendState.timer) { clearInterval(sendState.timer); sendState.timer = null; }
+    }
+    function shareSendToggle() {
+      if (sendState.playing) {
+        shareStopLoop(); sendState.playing = false;
+        document.getElementById('qr-send-toggle').textContent = 'Play';
+      } else { shareStartLoop(); }
+    }
+    function shareSendStep(delta) {
+      const n = sendState.frames.length; if (!n) return;
+      shareStopLoop(); sendState.playing = false;
+      document.getElementById('qr-send-toggle').textContent = 'Play';
+      sendState.idx = (sendState.idx + delta + n) % n;
+      shareDrawFrame();
+    }
+
+    // ---------- QR scanner ----------
+    function shareSetScanMsg(t) { const el = document.getElementById('qr-scan-msg'); if (el) el.textContent = t; }
+    function shareRenderScanProgress() {
+      const c = scanState.collector;
+      const bar = document.getElementById('qr-scan-bar');
+      const grid = document.getElementById('qr-scan-grid');
+      if (!c) { bar.style.width = '0%'; grid.innerHTML = ''; return; }
+      bar.style.width = Math.round((c.have / c.n) * 100) + '%';
+      shareSetScanMsg(`Collected ${c.have} of ${c.n} codes`);
+      if (c.n <= 80) {
+        let h = '';
+        for (let i = 1; i <= c.n; i++) h += `<span style="width:12px;height:12px;border-radius:3px;background:${c.parts[i] !== undefined ? 'var(--accent)' : 'var(--bg-input)'};border:1px solid var(--border-subtle);"></span>`;
+        grid.innerHTML = h;
+      } else grid.innerHTML = '';
+    }
+    async function shareOpenScanner() {
+      scanState.collector = null;
+      openModalWithHistory('modal-qr-scan');
+      shareRenderScanProgress();
+      shareSetScanMsg('Starting camera...');
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        shareSetScanMsg('Camera is not available here. Use "Import from file" instead.');
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+        // The user may have closed the scanner while the permission prompt was open
+        const modal = document.getElementById('modal-qr-scan');
+        if (modal.classList.contains('hidden')) { stream.getTracks().forEach(t => t.stop()); return; }
+        scanState.stream = stream;
+        const video = document.getElementById('qr-scan-video');
+        video.srcObject = stream;
+        await video.play();
+        shareSetScanMsg('Point the camera at the QR code');
+        scanState.raf = requestAnimationFrame(shareScanTick);
+      } catch (e) {
+        console.warn('Camera error', e);
+        shareSetScanMsg('Camera blocked. Allow camera access for Dopamine in your phone settings, then try again.');
+      }
+    }
+    function shareStopScanner() {
+      if (scanState.raf) cancelAnimationFrame(scanState.raf);
+      scanState.raf = null;
+      if (scanState.stream) { scanState.stream.getTracks().forEach(t => t.stop()); scanState.stream = null; }
+      const v = document.getElementById('qr-scan-video');
+      if (v) v.srcObject = null;
+    }
+    function shareScanTick(ts) {
+      if (!scanState.stream) return;
+      scanState.raf = requestAnimationFrame(shareScanTick);
+      if (scanState.busy || ts - scanState.last < 90) return;
+      scanState.last = ts;
+      const v = document.getElementById('qr-scan-video');
+      if (!v || v.readyState < 2 || !v.videoWidth) return;
+      const sc = Math.min(1, 640 / v.videoWidth);
+      const w = Math.round(v.videoWidth * sc), h = Math.round(v.videoHeight * sc);
+      const cv = document.getElementById('qr-scan-canvas');
+      if (cv.width !== w) cv.width = w;
+      if (cv.height !== h) cv.height = h;
+      const ctx = cv.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(v, 0, 0, w, h);
+      const img = ctx.getImageData(0, 0, w, h);
+      const code = jsQR(img.data, w, h, { inversionAttempts: 'dontInvert' });
+      if (code && code.data) shareHandleScanned(code.data);
+    }
+    async function shareHandleScanned(text) {
+      const f = DopShare.parseFrame(text);
+      if (!f) {
+        const now = Date.now();
+        if (now - scanState.hintAt > 2500) { scanState.hintAt = now; shareSetScanMsg('That is not a Dopamine code'); }
+        return;
+      }
+      let c = scanState.collector;
+      if (!c || c.id !== f.id) { c = new DopShare.Collector(f); scanState.collector = c; }
+      if (c.add(f)) {
+        if (navigator.vibrate) navigator.vibrate(25);
+        shareRenderScanProgress();
+      }
+      if (c.complete() && !scanState.busy) {
+        scanState.busy = true;
+        shareStopScanner();
+        try {
+          shareSetScanMsg('Unpacking...');
+          const payload = await DopShare.unpack(c.mode, c.assemble());
+          if (!payload || payload.app !== 'dopamine') throw new Error('Not Dopamine data');
+          const item = shareStoreReceived(payload, 'qr', c.id);
+          scanState.collector = null; scanState.busy = false;
+          closeModalWithHistory('modal-qr-scan');
+          if (item) {
+            showToast('Received from ' + item.from);
+            setTimeout(() => shareOpenReview(item.id), 450);
+          }
+        } catch (e) {
+          console.error(e);
+          scanState.collector = null; scanState.busy = false;
+          closeModalWithHistory('modal-qr-scan');
+          showToast('Could not read that data. Please try again.');
+        }
+      }
+    }
+    function onModalClosed(id) {
+      if (id === 'modal-qr-send') shareStopLoop();
+      if (id === 'modal-qr-scan') { shareStopScanner(); scanState.collector = null; scanState.busy = false; }
+    }
+
+    // ---------- File send / import ----------
+    async function shareSendFile() {
+      const payload = buildSharePayload(false);
+      if (!payload) return;
+      const json = JSON.stringify(Object.assign({ dopamine_share: 1 }, payload));
+      const blob = new Blob([json], { type: 'application/json' });
+      const filename = `dopamine-share-${getTodayDateKey()}.json`;
+      if (isNativeApp()) {
+        const P = window.Capacitor.Plugins || {};
+        try {
+          const data = await blobToBase64(blob);
+          const written = await P.Filesystem.writeFile({ path: filename, data: data, directory: 'CACHE' });
+          await P.Share.share({ title: 'Dopamine data', text: 'Open Dopamine, then Share & Receive, then Import from file.', url: written.uri, dialogTitle: 'Send with...' });
+          return;
+        } catch (e) {
+          if (String(e && e.message || e).toLowerCase().indexOf('cancel') !== -1) return;
+          console.warn('Native file share failed', e);
+        }
+      }
+      try {
+        const file = new File([blob], filename, { type: 'application/json' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: 'Dopamine data' });
+          return;
+        }
+      } catch (e) { if (e && e.name === 'AbortError') return; }
+      if (triggerSafeBlobDownload(blob, filename)) showToast('File saved to downloads');
+      else showToast('Could not share the file.');
+    }
+    function shareImportFileChange(e) {
+      const f = e.target.files && e.target.files[0];
+      e.target.value = '';
+      if (!f) return;
+      if (f.size > 8 * 1024 * 1024) { showToast('That file is too large.'); return; }
+      const r = new FileReader();
+      r.onload = ev => {
+        try {
+          const obj = JSON.parse(ev.target.result, DopShare.reviver);
+          let payload = null;
+          if (obj && obj.dopamine_share && obj.data) payload = obj;
+          else if (obj && (obj.profile || obj.logs || obj.notes)) {
+            payload = { from: (obj.profile && obj.profile.name) || 'Backup file', sentAt: 0, data: obj };
+          }
+          if (!payload) { showToast('That is not a Dopamine file.'); return; }
+          const item = shareStoreReceived(payload, 'file', null);
+          if (item) { showToast('File received'); setTimeout(() => shareOpenReview(item.id), 300); }
+        } catch (err) { showToast('Could not read that file.'); }
+      };
+      r.readAsText(f);
+    }
+
+    // ---------- Review & import ----------
+    function shLogHas(list, e) {
+      return list.some(x => x.id === e.id || (x.name === e.name && x.sets === e.sets && x.reps === e.reps && x.mins === e.mins));
+    }
+    function shPlanHas(list, p) {
+      return list.some(x => x.id === p.id || (x.name === p.name && x.items === p.items));
+    }
+    function shDiffLogs(date, entries) {
+      const local = appState.logs[date] || [];
+      return entries.filter(e => !shLogHas(local, e));
+    }
+    function shDiffPlans(date, plans) {
+      const local = appState.plans[date] || [];
+      return plans.filter(p => !shPlanHas(local, p));
+    }
+    function shNoteState(n) {
+      const l = (appState.notes || []).find(x => x.id === n.id);
+      if (!l) return 'new';
+      if (l.title === n.title && l.body === n.body && l.tag === n.tag) return 'same';
+      return 'differs';
+    }
+    function shProfileDiffers(p) {
+      return Object.keys(p).some(k => k !== 'avatarUrl' ? appState.profile[k] !== p[k] : (p[k] && appState.profile[k] !== p[k]));
+    }
+    function shSettingsDiffer(s) { return Object.keys(s).some(k => appState.settings[k] !== s[k]); }
+    function shTimesDiffer(t) { return Object.keys(t).some(d => t[d] > (appState.sessionTimes[d] || 0)); }
+
+    function shareOpenReview(id) {
+      const item = (appState.received || []).find(r => r.id === id);
+      if (!item) return;
+      const d = item.data, sel = { profile: false, settings: false, logs: {}, plans: {}, notes: {}, sessionTimes: false };
+      if (d.profile) sel.profile = shProfileDiffers(d.profile);
+      if (d.settings) sel.settings = false;
+      Object.keys(d.logs || {}).forEach(date => { sel.logs[date] = shDiffLogs(date, d.logs[date]).length > 0; });
+      Object.keys(d.plans || {}).forEach(date => { sel.plans[date] = shDiffPlans(date, d.plans[date]).length > 0; });
+      (d.notes || []).forEach(n => { sel.notes[n.id] = shNoteState(n) === 'new'; });
+      if (d.sessionTimes) sel.sessionTimes = shTimesDiffer(d.sessionTimes);
+      reviewState = { id, sel };
+      document.getElementById('share-review-sub').textContent = `From ${item.from} · ${new Date(item.receivedAt).toLocaleDateString()}`;
+      shareRenderReview();
+      const modal = document.getElementById('modal-share-review');
+      if (modal.classList.contains('hidden')) openModalWithHistory('modal-share-review');
+    }
+    function shRow(checked, disabled, title, sub, onchange, badge) {
+      return `<label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] ${disabled ? 'opacity-50' : 'cursor-pointer'}">
+        <input type="checkbox" class="w-4 h-4 mt-0.5 accent-[var(--accent)]" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''} onchange="${onchange}">
+        <span class="min-w-0 flex-1">
+          <span class="flex items-center justify-between gap-2"><span class="text-xs font-semibold text-[var(--text-primary)] truncate">${title}</span>${badge ? `<span class="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--bg-card)] text-[var(--text-muted)]">${badge}</span>` : ''}</span>
+          <span class="block text-[10px] text-[var(--text-muted)]">${sub}</span>
+        </span>
+      </label>`;
+    }
+    function shSection(title, bulkKey, inner) {
+      const bulk = bulkKey ? `<span class="flex gap-2 text-[10px] font-bold text-[var(--accent)]"><button onclick="shareReviewBulk('${bulkKey}', true)">All</button><button onclick="shareReviewBulk('${bulkKey}', false)">None</button></span>` : '';
+      return `<div class="space-y-2"><div class="flex items-center justify-between"><h4 class="text-[11px] font-bold uppercase tracking-wider text-[var(--text-dim)]">${title}</h4>${bulk}</div>${inner}</div>`;
+    }
+    function shareRenderReview() {
+      const item = (appState.received || []).find(r => r.id === reviewState.id);
+      if (!item) return;
+      const d = item.data, sel = reviewState.sel;
+      let html = '';
+      if (d.profile) {
+        const p = d.profile, diff = shProfileDiffers(p);
+        const sub = `${shEsc(p.name || 'No name')}${p.weight ? ' · ' + p.weight + 'kg' : ''}${p.height ? ' · ' + p.height + 'cm' : ''} · replaces your profile details`;
+        html += shSection('Profile', null, shRow(sel.profile, !diff, 'Profile & goals', sub, "shareReviewSet('profile', null, this.checked)", diff ? '' : 'same as yours'));
+      }
+      if (d.settings) {
+        const diff = shSettingsDiffer(d.settings);
+        html += shSection('Settings', null, shRow(sel.settings, !diff, 'App settings', 'Theme, colors, timers', "shareReviewSet('settings', null, this.checked)", diff ? '' : 'same as yours'));
+      }
+      const logDates = Object.keys(d.logs || {}).sort().reverse();
+      if (logDates.length) {
+        html += shSection('Workout logs', 'logs', logDates.map(date => {
+          const entries = d.logs[date], fresh = shDiffLogs(date, entries).length;
+          const names = entries.slice(0, 3).map(e => shEsc(e.name)).join(', ') + (entries.length > 3 ? '...' : '');
+          return shRow(!!sel.logs[date], fresh === 0, shEsc(date), `${names}`, `shareReviewSet('logs', '${date}', this.checked)`, fresh === 0 ? 'already have' : fresh + ' new');
+        }).join(''));
+      }
+      const planDates = Object.keys(d.plans || {}).sort().reverse();
+      if (planDates.length) {
+        html += shSection('Calendar plans', 'plans', planDates.map(date => {
+          const plans = d.plans[date], fresh = shDiffPlans(date, plans).length;
+          return shRow(!!sel.plans[date], fresh === 0, shEsc(date), plans.map(p => shEsc(p.name)).join(', '), `shareReviewSet('plans', '${date}', this.checked)`, fresh === 0 ? 'already have' : fresh + ' new');
+        }).join(''));
+      }
+      if ((d.notes || []).length) {
+        html += shSection('Notes', 'notes', d.notes.map(n => {
+          const st = shNoteState(n);
+          const sub = st === 'differs' ? 'Replaces your version of this note' : shEsc((n.body || '').slice(0, 60));
+          return shRow(!!sel.notes[n.id], st === 'same', shEsc(n.title || 'Untitled'), sub, `shareReviewSet('notes', '${shEsc(n.id)}', this.checked)`, st === 'same' ? 'already have' : st === 'differs' ? 'changed' : 'new');
+        }).join(''));
+      }
+      if (d.sessionTimes) {
+        const diff = shTimesDiffer(d.sessionTimes);
+        html += shSection('Workout time', null, shRow(sel.sessionTimes, !diff, 'Workout time totals', `${Object.keys(d.sessionTimes).length} days. Keeps the larger time for each day`, "shareReviewSet('sessionTimes', null, this.checked)", diff ? '' : 'same as yours'));
+      }
+      document.getElementById('share-review-body').innerHTML = html || '<p class="text-xs text-[var(--text-muted)]">Nothing to import.</p>';
+    }
+    function shareReviewSet(cat, key, on) {
+      if (!reviewState) return;
+      if (key === null) reviewState.sel[cat] = !!on; else reviewState.sel[cat][key] = !!on;
+    }
+    function shareReviewBulk(cat, on) {
+      const item = (appState.received || []).find(r => r.id === reviewState.id);
+      if (!item) return;
+      const d = item.data;
+      if (cat === 'logs') Object.keys(d.logs || {}).forEach(k => { if (shDiffLogs(k, d.logs[k]).length) reviewState.sel.logs[k] = on; });
+      if (cat === 'plans') Object.keys(d.plans || {}).forEach(k => { if (shDiffPlans(k, d.plans[k]).length) reviewState.sel.plans[k] = on; });
+      if (cat === 'notes') (d.notes || []).forEach(n => { if (shNoteState(n) !== 'same') reviewState.sel.notes[n.id] = on; });
+      shareRenderReview();
+    }
+    function shareReviewApply() {
+      if (!reviewState) return;
+      const item = (appState.received || []).find(r => r.id === reviewState.id);
+      if (!item) return;
+      const d = item.data, sel = reviewState.sel;
+      const added = { logs: 0, plans: 0, notes: 0, other: 0 };
+      if (sel.profile && d.profile) {
+        const keepAvatar = !d.profile.avatarUrl ? appState.profile.avatarUrl : d.profile.avatarUrl;
+        appState.profile = Object.assign({}, appState.profile, d.profile, { avatarUrl: keepAvatar });
+        added.other++;
+      }
+      if (sel.settings && d.settings) { appState.settings = Object.assign({}, appState.settings, d.settings); added.other++; }
+      Object.keys(sel.logs).forEach(date => {
+        if (!sel.logs[date] || !(d.logs || {})[date]) return;
+        const fresh = shDiffLogs(date, d.logs[date]);
+        if (!fresh.length) return;
+        appState.logs[date] = (appState.logs[date] || []).concat(fresh);
+        added.logs += fresh.length;
+      });
+      Object.keys(sel.plans).forEach(date => {
+        if (!sel.plans[date] || !(d.plans || {})[date]) return;
+        const fresh = shDiffPlans(date, d.plans[date]);
+        if (!fresh.length) return;
+        appState.plans[date] = (appState.plans[date] || []).concat(fresh);
+        added.plans += fresh.length;
+      });
+      (d.notes || []).forEach(n => {
+        if (!sel.notes[n.id]) return;
+        const idx = appState.notes.findIndex(x => x.id === n.id);
+        if (idx >= 0) appState.notes[idx] = n; else appState.notes.unshift(n);
+        added.notes++;
+      });
+      if (sel.sessionTimes && d.sessionTimes) {
+        Object.keys(d.sessionTimes).forEach(date => {
+          appState.sessionTimes[date] = Math.max(appState.sessionTimes[date] || 0, d.sessionTimes[date]);
+        });
+        added.other++;
+      }
+      const total = added.logs + added.plans + added.notes + added.other;
+      if (!total) { showToast('Nothing selected to import.'); return; }
+      item.importedAt = Date.now();
+      try { saveState(); } catch (e) { showToast('Phone storage is full.'); return; }
+      closeModalWithHistory('modal-share-review');
+      reviewState = null;
+      const bits = [];
+      if (added.logs) bits.push(added.logs + ' workout entries');
+      if (added.plans) bits.push(added.plans + ' plans');
+      if (added.notes) bits.push(added.notes + ' notes');
+      if (added.other) bits.push('other items');
+      showToast('Imported ' + bits.join(', '), 3500);
+      renderShareTab();
+      updateSidebarBadges();
     }
 
     // Native Android back button (Capacitor): close sidebar/modal, go to previous page, then double-press to exit
@@ -1528,6 +2320,7 @@
       if (openModal) {
         const el = document.getElementById(openModal);
         if (el) el.classList.add('hidden');
+        onModalClosed(openModal);
         return;
       }
 
@@ -1539,7 +2332,7 @@
 
       // 4. Hash fallback
       const hash = window.location.hash.replace('#', '').split('-')[0];
-      if (hash && ['dashboard', 'log', 'calendar', 'notes', 'profile', 'settings'].includes(hash)) {
+      if (hash && ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'settings'].includes(hash)) {
         navigate(hash, false);
         return;
       }
@@ -1627,6 +2420,7 @@
     }
 
     function updateSidebarBadges() {
+      if (typeof updateShareBadge === 'function') updateShareBadge();
       const name = (appState.profile.name || '').trim();
       const initial = name ? name.charAt(0).toUpperCase() : '?';
       renderAvatarEl('sidebar-avatar', appState.profile.avatarUrl, initial);
@@ -3589,7 +4383,7 @@
 
       // Initialize root history state so back button knows initial entry
       const initialTab = window.location.hash.replace('#', '').split('-')[0] || 'dashboard';
-      const validTab = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'settings'].includes(initialTab) ? initialTab : 'dashboard';
+      const validTab = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'settings'].includes(initialTab) ? initialTab : 'dashboard';
       window.history.replaceState({ tab: validTab, modal: null }, '', '#' + validTab);
 
       navigate(validTab, false);

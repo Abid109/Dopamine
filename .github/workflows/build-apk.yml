@@ -37,6 +37,12 @@ jobs:
           cp -r android-res/* $RES/
           sed -i 's|<string name="app_name">.*</string>|<string name="app_name">Dopamine</string>|; s|<string name="title_activity_main">.*</string>|<string name="title_activity_main">Dopamine</string>|' $RES/values/strings.xml
 
+      - name: Add camera permission
+        run: |
+          MF=android/app/src/main/AndroidManifest.xml
+          sed -i 's|<application|<uses-permission android:name="android.permission.CAMERA" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n    <application|' $MF
+          grep -n "CAMERA" $MF
+
       - name: Sync web assets
         run: npx cap sync android
 
