@@ -47,10 +47,17 @@ jobs:
         run: npx cap sync android
 
       - name: Build APK
+        shell: bash
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug 2>&1 | tee ../gradle.log
+
+      - name: Report build errors
+        if: failure()
+        run: |
+          MSG=$(grep -n -i -E "error|wrong|failed|exception|not found|cannot" gradle.log | head -40 | cut -c1-300 | sed ':a;N;$!ba;s/\n/%0A/g')
+          echo "::error title=Gradle summary::${MSG}"
 
       - name: Rename APK
         run: cp android/app/build/outputs/apk/debug/app-debug.apk Dopamine.apk
