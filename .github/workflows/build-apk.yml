@@ -51,7 +51,13 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug 2>&1 | tee ../gradle.log
+          ok=0
+          for attempt in 1 2 3; do
+            echo "Build attempt $attempt"
+            if ./gradlew assembleDebug 2>&1 | tee ../gradle.log; then ok=1; break; fi
+            sleep 20
+          done
+          [ "$ok" = 1 ]
 
       - name: Report build errors
         if: failure()
