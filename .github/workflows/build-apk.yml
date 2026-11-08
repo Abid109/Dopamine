@@ -52,10 +52,17 @@ jobs:
         run: |
           chmod +x gradlew
           ok=0
-          for attempt in 1 2 3; do
+          WP=gradle/wrapper/gradle-wrapper.properties
+          cat $WP
+          for attempt in 1 2 3 4; do
             echo "Build attempt $attempt"
+            if [ "$attempt" = 2 ] || [ "$attempt" = 4 ]; then
+              echo "Switching Gradle download to a mirror"
+              sed -i 's|^distributionUrl=.*|distributionUrl=https\\://mirrors.cloud.tencent.com/gradle/gradle-8.2.1-bin.zip|' $WP
+              grep distributionUrl $WP
+            fi
             if ./gradlew assembleDebug 2>&1 | tee ../gradle.log; then ok=1; break; fi
-            sleep 20
+            sleep 30
           done
           [ "$ok" = 1 ]
 
