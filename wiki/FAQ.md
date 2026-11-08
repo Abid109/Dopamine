@@ -28,7 +28,7 @@ Yes. Tick only what you want before sending, and the receiving phone then picks 
 Only the items you tick. Logs and plans are added without duplicates. Notes and profile are replaced only if you choose.
 
 **How do I get updates?**
-Open **Settings** and tap **Check for updates**, or tap **Update** on the banner when one appears. The update installs inside the app and keeps your data. See [App Updates](App-Updates).
+Download the newest APK from the [Releases page](https://github.com/Abid109/Dopamine/releases/tag/latest) and install it over the old app. No uninstalling, and your data stays. See [Updating the App](App-Updates).
 
 **Can I contribute?**
 Yes. See [Contributing](Contributing).

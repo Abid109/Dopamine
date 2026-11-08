@@ -15,9 +15,7 @@
 
 ## Updating
 
-Most updates install inside the app: open **Settings** and tap **Check for updates**, or tap **Update** when the banner appears. Nothing to download, and your data stays. See [App Updates](App-Updates).
-
-Only rarely does a change need a new APK. In that case, download the newest **Dopamine.apk** and install it over the old one without uninstalling. Your data stays.
+Download the newest **Dopamine.apk** and install it over the old one without uninstalling. Your data stays. See [Updating the App](App-Updates).
 
 **Back up before the one-time switch.** Builds made before the fixed signing key was introduced cannot be installed over. If Android says the app conflicts with the existing one, sign in on the **Profile** page so your data syncs (or use **Export JSON**), uninstall, install the new APK, then sign in again. After that, updates never need an uninstall.
 

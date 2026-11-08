@@ -5,7 +5,7 @@
 - There is no tracking or advertising.
 - Data only leaves your phone when you share it ([Share and Receive](Share-and-Receive)), export a backup, create a PDF, or turn on cloud backup by logging in ([Sign In and Sync](Account-and-Sync)).
 - The camera is used only on the QR scanning screen and nothing is recorded.
-- The app contacts public content networks only to load styling, fonts and the PDF library, and asks GitHub for the latest version number to offer updates. No personal data is included.
+- The app contacts public content networks only to load styling, fonts and the PDF library. No personal data is included in those requests.
 
 Read the full [Privacy Policy](https://github.com/Abid109/Dopamine/blob/main/PRIVACY.md).
 

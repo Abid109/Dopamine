@@ -53,12 +53,10 @@ Data lives inside the app. It is lost if the app is uninstalled or if you used *
 - Tap **Sync now** in the sign in card on the **Profile** page.
 - If it keeps failing, sign out and sign in again.
 
-## The update failed or does nothing
+## "App not installed" when updating
 
-- You need an internet connection to download an update.
-- Open **Settings**, tap **Check for updates**, then **Update now**.
-- A failed update leaves your current version and data untouched, so you can simply try again.
-- If it keeps failing, install the newest APK from the [Releases page](https://github.com/Abid109/Dopamine/releases/tag/latest). See [App Updates](App-Updates).
+- Install the new APK **over** the old app. Do not uninstall first.
+- If Android says the app conflicts with the existing one, the old app was installed from a build made before the fixed signing key. Back up your data (sign in on the **Profile** page so it syncs, or use **Export JSON**), uninstall once, and install the new APK. Every update after that installs over the old app. See [Updating the App](App-Updates).
 
 ## Something else
 

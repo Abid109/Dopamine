@@ -1,32 +1,31 @@
-# App Updates
+# Updating the App
 
-New versions of Dopamine install **inside the app**. There is nothing to download or install by hand, and your data is never touched.
+Install a new version **over the old app**. You do not need to uninstall, and your data stays: workouts, notes, plans, profile and settings.
 
-## Updating
+## Steps
 
-1. A banner appears at the bottom of the screen when a new version is ready. Tap **Update**.
-2. Or open **Settings**, tap **Check for updates**, then **Update now**.
+1. Open the [Releases page](https://github.com/Abid109/Dopamine/releases/tag/latest) on your phone.
+2. Download the newest **Dopamine.apk**.
+3. Open the file and tap **Update** (or **Install**).
 
-The app downloads the new version, restarts, and carries on with all your workouts, notes and settings intact. You need an internet connection to update.
+That is all. Your data is kept because every build is signed with the same key, which tells Android it is the same app.
 
-## If something goes wrong
+## If Android says the app conflicts or was not installed
 
-- If the download fails, nothing changes. Try again later.
-- If a new version cannot start, the app switches back to the previous working version by itself.
+Builds made before the fixed signing key was introduced were each signed with a different key. Android refuses to install over those.
 
-## What updates inside the app
+1. Back up your data. Sign in on the **Profile** page so everything syncs, or open **Settings** and tap **Export JSON**.
+2. Uninstall the old app once.
+3. Install the new APK.
+4. Sign in again (or use **Import Backup**) to get your data back.
 
-The app is built from web files wrapped in an Android shell. Updates swap the web files, which covers almost every change: screens, features, fixes and design.
+After this one-time switch, every update installs over the old app.
 
-Changes to the Android shell itself, such as a new permission or a new built-in plugin, need a new APK. Download **Dopamine.apk** from the [Releases page](https://github.com/Abid109/Dopamine/releases/tag/latest) and install it over the old app. Your data stays, because every build is signed with the same key.
+## Which version do I have?
 
-## Version number
-
-The version is shown on the **Settings** page, for example 1.0.23. The number goes up with every build.
+Each build has a higher version number than the one before. Look at the date on the APK in the Releases page to see how new it is. See the [Changelog](https://github.com/Abid109/Dopamine/blob/main/CHANGELOG.md) for what changed.
 
 ## For developers
-
-Each build publishes two files to the **latest** release: `Dopamine.apk` and `Dopamine-bundle.zip` (the web files). The release notes contain a line such as `build:23`. The app compares that number with its own version.
 
 ### One-time setup: signing key
 
@@ -38,10 +37,10 @@ Android only installs an update over an existing app if both are signed with the
    ```
 2. Encode it: `base64 -w0 debug.keystore`
 3. In the repository, go to **Settings, Secrets and variables, Actions, New repository secret**. Name it `ANDROID_KEYSTORE_B64` and paste the encoded text.
-4. Keep a private copy of `debug.keystore`. If it is lost, builds can no longer be installed over existing installs.
+4. Keep a private copy of `debug.keystore`. If it is lost, new builds can no longer be installed over existing installs.
 
 The build stops with a clear message if the secret is missing, so an APK signed with a random key is never published.
 
-### How the in-app update works
+### Version numbers
 
-The updater is the `@capgo/capacitor-updater` plugin in manual mode, with its statistics reporting turned off. It downloads `Dopamine-bundle.zip` from the release, unpacks it, and switches the app to it. The app confirms a successful start on every launch. If a launch is not confirmed within 15 seconds, the plugin rolls back.
+The workflow sets the Android `versionCode` to the run number and `versionName` to `1.0.<run number>`, so every build is a valid upgrade.

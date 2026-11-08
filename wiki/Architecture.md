@@ -81,10 +81,6 @@ Merge rules:
 
 The sync metadata (last synced values and account id) is kept under the separate key `dopamine_sync_meta_v1`. Large profile photos are not uploaded.
 
-## App updates
+## Versions and updates
 
-The build stamps its run number into the app (`APP_BUILD`) and into the Android version code. On launch the app asks the GitHub API for the latest release, reads the `build:N` line from its notes, and compares N with its own number. If N is higher, it offers the update.
-
-Applying an update downloads `Dopamine-bundle.zip` with the updater plugin and switches to it. The app calls `notifyAppReady` as the first thing on every launch, so a version that fails to start is rolled back automatically. Saved data lives in the same browser storage before and after an update.
-
-Development builds (where the build number is not stamped) never offer updates.
+Each build sets the Android version code to the workflow run number, so every build counts as a newer version than the last. Builds are signed with one permanent key, so Android accepts a new APK as an update to the installed app and keeps its saved data.

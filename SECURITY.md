@@ -20,6 +20,6 @@ Dopamine stores data on the device. The optional account feature uses a hosted d
 - Anything that sends user data off the phone without the user's action.
 - Any way to read or change another user's cloud backup.
 
-## App updates
+## Signing key
 
-In-app updates download the app's web files from this repository's latest release over HTTPS. Anyone who can publish a release here can change what the app does after an update, so keep two-factor authentication on the GitHub account and never share tokens.
+Builds are signed with a permanent key kept in a repository secret. Anyone who has that key can publish an APK that installs over the app, so keep it private and keep two-factor authentication on the GitHub account.

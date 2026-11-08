@@ -7,9 +7,8 @@ All notable changes to Dopamine are listed here.
 ## [1.5.0] - 2026-11-08
 
 ### Added
-- **In-app updates.** New versions of the app install inside the app: a banner appears when one is ready, and Settings has a Check for updates button. Your data is never touched, and a broken update rolls back by itself.
-- A fixed signing key for all future builds, so a new APK can be installed over the old app without uninstalling.
-- Every build now has its own version number.
+- A fixed signing key for all builds, so a new APK installs straight over the old app without uninstalling. Your data stays.
+- Every build now has its own, higher version number so Android treats it as an update.
 
 ### Changed
 - Sign in and sign out moved into the **Profile** page. The separate Account & Sync menu item is gone. The Profile menu item shows a green dot while you are signed in.

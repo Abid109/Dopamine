@@ -25,7 +25,7 @@ Only when you decide:
 ## Permissions
 
 - **Camera:** used only on the QR scanning screen, only while it is open. Images are never saved or sent anywhere.
-- **Internet:** used to load page styling, fonts and the PDF library from public content networks (Tailwind CSS, Google Fonts, cdnjs), for the optional sign in and sync, and to check for app updates (a request to GitHub asking for the latest version number). No personal data is included in the styling or update requests.
+- **Internet:** used to load page styling, fonts and the PDF library from public content networks (Tailwind CSS, Google Fonts, cdnjs), and for the optional sign in and sync. No personal data is included in the styling requests.
 
 ## Deleting your data
 

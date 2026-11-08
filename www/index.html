@@ -1177,7 +1177,6 @@
     </div>
 
     <div id="tab-settings" class="hidden space-y-6">
-      <div id="update-card"></div>
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
         <div>
           <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
@@ -1802,7 +1801,7 @@
       if (tab === 'calendar') renderCalendarTab();
       if (tab === 'notes') renderNotesList();
       if (tab === 'profile') { renderProfileForm(); renderAccountTab(); }
-      if (tab === 'settings') { renderSettingsTab(); updRenderCard(); }
+      if (tab === 'settings') renderSettingsTab();
       if (tab === 'share') renderShareTab();
       if (window.lucide) lucide.createIcons();
     }
@@ -2405,105 +2404,6 @@
       renderShareTab();
       updateSidebarBadges();
     }
-
-    // =====================================================================
-    // APP UPDATES: new versions install inside the app, no reinstall needed
-    // =====================================================================
-    const APP_BUILD = '__BUILD__';
-    const APP_VERSION = /^\d+$/.test(APP_BUILD) ? '1.0.' + APP_BUILD : 'dev';
-    const UPDATE_API = 'https://api.github.com/repos/Abid109/Dopamine/releases/tags/latest';
-    const RELEASES_PAGE = 'https://github.com/Abid109/Dopamine/releases/tag/latest';
-    const upd = { checking: false, applying: false, available: null, status: '', dismissed: false };
-
-    function updPlugin() {
-      try { return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.CapacitorUpdater; } catch (e) { return null; }
-    }
-    // Tells the updater this version started fine. If a new version crashes before this, the app rolls back by itself.
-    async function updNotifyReady() {
-      const P = updPlugin();
-      if (P && isNativeApp()) { try { await P.notifyAppReady(); } catch (e) { console.warn('notifyAppReady failed', e); } }
-    }
-    function updSetStatus(t) { upd.status = t; updRenderCard(); }
-    function updRenderCard() {
-      const el = document.getElementById('update-card');
-      if (!el) return;
-      const busy = upd.checking || upd.applying;
-      const btn = 'p-3 rounded-xl font-bold text-xs active:scale-[0.98] transition-all';
-      el.innerHTML = `
-        <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3">
-          <div class="flex items-center justify-between gap-3">
-            <div><h2 class="font-bold text-sm text-[var(--text-primary)]">App updates</h2><p class="text-[11px] text-[var(--text-muted)]">Version ${shEsc(APP_VERSION)}</p></div>
-          </div>
-          <div class="text-xs font-semibold text-[var(--text-primary)] min-h-[1rem]">${shEsc(upd.status || 'Tap the button to look for a new version.')}</div>
-          <div class="grid grid-cols-2 gap-2">
-            <button ${busy ? 'disabled style="opacity:.6"' : ''} onclick="updCheck(true)" class="${btn} bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)]">Check for updates</button>
-            ${upd.available ? `<button ${busy ? 'disabled style="opacity:.6"' : ''} onclick="updApply()" class="${btn} bg-[var(--accent)] text-black">Update now</button>` : `<a href="${RELEASES_PAGE}" target="_blank" rel="noopener" class="${btn} bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-center">Downloads page</a>`}
-          </div>
-          <p class="text-[10px] text-[var(--text-dim)]">Updates install inside the app and keep all your data. Your workouts, notes and settings are never touched.</p>
-        </div>`;
-    }
-    function updShowBanner() {
-      if (upd.dismissed || !upd.available) return;
-      let b = document.getElementById('update-banner');
-      if (!b) { b = document.createElement('div'); b.id = 'update-banner'; document.body.appendChild(b); }
-      b.style.cssText = 'position:fixed;left:12px;right:12px;bottom:16px;z-index:60;';
-      b.innerHTML = `<div class="max-w-md mx-auto p-3 rounded-2xl bg-[var(--bg-card)] border border-[var(--accent)] shadow-2xl flex items-center gap-3">
-          <div class="flex-1 min-w-0"><div class="text-xs font-bold text-[var(--text-primary)]">A new version is ready</div><div class="text-[10px] text-[var(--text-muted)]">Version 1.0.${upd.available.build}. Your data stays.</div></div>
-          <button onclick="updDismiss()" class="px-2 py-1.5 rounded-lg text-[11px] font-semibold text-[var(--text-muted)]">Later</button>
-          <button onclick="updApply()" class="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-black text-[11px] font-bold">Update</button>
-        </div>`;
-    }
-    function updHideBanner() { const b = document.getElementById('update-banner'); if (b) b.remove(); }
-    function updDismiss() { upd.dismissed = true; updHideBanner(); }
-    async function updCheck(manual) {
-      if (upd.checking || upd.applying) return;
-      if (!isNativeApp()) { if (manual) updSetStatus('Updates install inside the Android app.'); return; }
-      if (!/^\d+$/.test(APP_BUILD)) { if (manual) updSetStatus('This is a development build.'); return; }
-      upd.checking = true;
-      if (manual) updSetStatus('Checking...');
-      try {
-        const ctrl = new AbortController();
-        const to = setTimeout(() => ctrl.abort(), 12000);
-        const r = await fetch(UPDATE_API, { headers: { 'Accept': 'application/vnd.github+json' }, signal: ctrl.signal, cache: 'no-store' });
-        clearTimeout(to);
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        const rel = await r.json();
-        const m = /build:(\d+)/.exec(rel.body || '');
-        const asset = (rel.assets || []).find(a => a.name === 'Dopamine-bundle.zip');
-        try { localStorage.setItem('dopamine_update_checked', String(Date.now())); } catch (e) { }
-        if (!m || !asset) { upd.available = null; if (manual) updSetStatus('Could not read the update information.'); return; }
-        const remote = parseInt(m[1], 10), local = parseInt(APP_BUILD, 10);
-        if (remote > local) {
-          upd.available = { build: remote, url: asset.browser_download_url };
-          upd.status = 'New version available: 1.0.' + remote;
-          updShowBanner();
-        } else {
-          upd.available = null; updHideBanner();
-          upd.status = "You're up to date (version " + APP_VERSION + ').';
-        }
-      } catch (e) {
-        if (manual) upd.status = 'Could not check for updates. Check your internet connection.';
-      } finally { upd.checking = false; updRenderCard(); }
-    }
-    async function updApply() {
-      if (!upd.available || upd.applying) return;
-      const P = updPlugin();
-      if (!P) { updSetStatus('The updater is not available. Open the downloads page to install the new APK.'); return; }
-      upd.applying = true; updHideBanner();
-      updSetStatus('Downloading update...');
-      showToast('Downloading update...', 4000);
-      try {
-        const bundle = await P.download({ url: upd.available.url, version: '1.0.' + upd.available.build });
-        updSetStatus('Installing update...');
-        await P.set({ id: bundle.id }); // restarts the app on the new version
-      } catch (e) {
-        console.warn('Update failed', e);
-        upd.applying = false;
-        updSetStatus('Update failed. Your current version is unchanged.');
-        showToast('Update failed. Nothing was changed.', 3500);
-      }
-    }
-    function updAutoCheck() { setTimeout(() => updCheck(false), 3000); }
 
     // =====================================================================
     // ACCOUNT & CLOUD SYNC (optional): email login + backup across devices
@@ -4989,7 +4889,6 @@
 
     // Initial Bootstrap
     window.addEventListener('DOMContentLoaded', () => {
-      updNotifyReady();
       document.documentElement.setAttribute('data-theme', appState.settings.theme || 'dark');
       document.documentElement.setAttribute('data-accent', appState.settings.accent || 'amber');
       document.documentElement.setAttribute('data-font-size', appState.settings.fontSize || 'comfortable');
@@ -5008,8 +4907,6 @@
       navigate(validTab, false);
       setupNativeBackButton();
       acctInit();
-      updAutoCheck();
-      updRenderCard();
     });
   </script>
 </body>

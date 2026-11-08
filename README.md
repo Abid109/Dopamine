@@ -29,7 +29,7 @@
 | **Notes & Journal** | Tagged training notes for cues, routines and reflections. |
 | **Profile & Bio** | Name, photo, age, weight, height, BMI rating, level, objective and daily targets. |
 | **Sign in & Sync** | Optional email sign in on the Profile page that backs up your data and keeps all your devices in sync. The app works fully without it. |
-| **App updates** | New versions install inside the app and keep all your data. No reinstalling. |
+| **Easy updates** | Install a new APK straight over the old app. No uninstalling, all your data stays. |
 | **Share & Receive** | Send data to another phone with QR codes or a file. The receiving phone chooses exactly which changes to import. |
 | **Timers** | Rest timer with presets and a session stopwatch that keeps accurate time when you switch tabs. |
 | **Reports & Backup** | PDF fitness report that opens in your PDF viewer, plus JSON export and import. |
@@ -53,9 +53,9 @@ Everything you enter is saved on your phone, and the app works fully without an 
 
 Open **Profile** and use the **Sign in** card to sign in with your email. Your profile, settings, workouts, plans and notes are then backed up privately and kept in sync across all your devices. Changes made on two phones are merged, so nothing is lost, and deletions sync too. Sign out any time to stop syncing. Your data stays on the phone.
 
-## Updates
+## Updating
 
-Open **Settings** and tap **Check for updates**, or tap **Update** on the banner that appears when a new version is ready. The update installs inside the app, so there is nothing to download and your data stays. See [App Updates](https://github.com/Abid109/Dopamine/wiki/App-Updates).
+Download the newest **Dopamine.apk** from the Releases page and install it over the old app. There is no need to uninstall, and your data stays. See [Updating the App](https://github.com/Abid109/Dopamine/wiki/App-Updates).
 
 ## Share between phones
 

@@ -43,12 +43,6 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Stamp build number into the app
-        run: |
-          N=${{ github.run_number }}
-          sed -i "s/__BUILD__/${N}/g" www/index.html
-          grep -c "APP_BUILD = '${N}'" www/index.html
-
       - name: Install dependencies
         run: npm install
 
@@ -108,17 +102,13 @@ jobs:
       - name: Package outputs
         run: |
           cp android/app/build/outputs/apk/debug/app-debug.apk Dopamine.apk
-          (cd www && zip -qr ../Dopamine-bundle.zip .)
-          unzip -l Dopamine-bundle.zip | grep -E " index.html$"
           apksigner_out=$(ls $ANDROID_HOME/build-tools/*/apksigner | tail -1)
           "$apksigner_out" verify --print-certs Dopamine.apk | head -3 || true
 
       - uses: actions/upload-artifact@v4
         with:
           name: Dopamine-apk
-          path: |
-            Dopamine.apk
-            Dopamine-bundle.zip
+          path: Dopamine.apk
 
       - name: Publish release
         env:
@@ -127,4 +117,4 @@ jobs:
           N=${{ github.run_number }}
           printf 'Latest build of the Dopamine fitness app.\n\nbuild:%s\n' "$N" > notes.txt
           gh release delete latest --yes --cleanup-tag || true
-          gh release create latest Dopamine.apk Dopamine-bundle.zip --title "Dopamine APK" --notes-file notes.txt --target ${{ github.sha }}
+          gh release create latest Dopamine.apk --title "Dopamine APK" --notes-file notes.txt --target ${{ github.sha }}

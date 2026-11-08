@@ -15,7 +15,7 @@
 - [Profile and Biometrics](Profile-and-Biometrics)
 - [Timers](Timers)
 - [Sign In and Sync](Account-and-Sync)
-- [App Updates](App-Updates)
+- [Updating the App](App-Updates)
 - [Share and Receive](Share-and-Receive)
 - [PDF Reports and Backup](PDF-Reports-and-Backup)
 - [Settings and Themes](Settings-and-Themes)
