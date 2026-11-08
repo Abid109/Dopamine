@@ -2581,6 +2581,44 @@
     // MOBILE-FIRST & ANDROID APK ROBUST EXPORT ENGINE
     // ========================================================
 
+    // ===== Native Android (Capacitor) file export: write to cache, then open in a viewer / share sheet =====
+    function isNativeApp() {
+      try { return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); } catch (e) { return false; }
+    }
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onloadend = () => resolve(String(r.result).split(',')[1] || '');
+        r.onerror = reject;
+        r.readAsDataURL(blob);
+      });
+    }
+    // Returns true when the native app handled the export (opened or shared), false if not available
+    async function nativeExportFile(blob, filename, mime) {
+      if (!isNativeApp()) return false;
+      const P = window.Capacitor.Plugins || {};
+      if (!P.Filesystem) return false;
+      try {
+        const data = await blobToBase64(blob);
+        const written = await P.Filesystem.writeFile({ path: filename, data: data, directory: 'CACHE' });
+        if (P.FileOpener) {
+          try {
+            await P.FileOpener.open({ filePath: written.uri, contentType: mime });
+            return true;
+          } catch (e) { console.warn('FileOpener failed, trying share sheet', e); }
+        }
+        if (P.Share) {
+          try {
+            await P.Share.share({ title: filename, url: written.uri, dialogTitle: 'Save or share' });
+          } catch (e) { /* user closed the share sheet */ }
+          return true;
+        }
+      } catch (err) {
+        console.error('Native export failed', err);
+      }
+      return false;
+    }
+
     // Safe File Download using Prolonged Blob Object URL
     function triggerSafeBlobDownload(blob, filename) {
       try {
@@ -2614,6 +2652,12 @@
       const jsonStr = JSON.stringify(appState, null, 2);
       const filename = `dopamine-backup-${getTodayDateKey()}.json`;
       const blob = new Blob([jsonStr], { type: 'application/json' });
+
+      // Native Android app: save and share/open the backup file
+      if (await nativeExportFile(blob, filename, 'application/json')) {
+        showToast('Backup file ready!');
+        return;
+      }
 
       // Try Native Web Share API first (Ideal for Android APK & Mobile Browsers)
       if (typeof navigator !== 'undefined' && navigator.canShare) {
@@ -3027,6 +3071,12 @@
       lastGeneratedPdfBlob = result.blob;
       lastGeneratedPdfFilename = result.filename;
 
+      // Native Android app: save the PDF and open it in the phone's PDF viewer
+      if (await nativeExportFile(result.blob, result.filename, 'application/pdf')) {
+        showToast('PDF report opened!');
+        return;
+      }
+
       // On Android APK & Mobile: Try Web Share Level 2 first
       if (typeof navigator !== 'undefined' && navigator.canShare) {
         try {
@@ -3068,6 +3118,12 @@
       }
       if (!lastGeneratedPdfBlob) return;
 
+      if (await nativeExportFile(lastGeneratedPdfBlob, lastGeneratedPdfFilename, 'application/pdf')) {
+        closeModalWithHistory('modal-export-options');
+        showToast('PDF report opened!');
+        return;
+      }
+
       const file = new File([lastGeneratedPdfBlob], lastGeneratedPdfFilename, { type: 'application/pdf' });
       if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
@@ -3088,7 +3144,7 @@
     }
 
     // Modal action: Direct Blob Object URL Download with prolonged lifetime
-    function triggerPdfDirectBlobDownload() {
+    async function triggerPdfDirectBlobDownload() {
       if (!lastGeneratedPdfBlob) {
         const res = buildPdfDocument();
         if (res) {
@@ -3097,6 +3153,12 @@
         }
       }
       if (!lastGeneratedPdfBlob) return;
+
+      if (await nativeExportFile(lastGeneratedPdfBlob, lastGeneratedPdfFilename, 'application/pdf')) {
+        closeModalWithHistory('modal-export-options');
+        showToast('PDF report opened!');
+        return;
+      }
 
       const success = triggerSafeBlobDownload(lastGeneratedPdfBlob, lastGeneratedPdfFilename);
       if (success) {
