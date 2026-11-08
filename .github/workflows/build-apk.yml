@@ -22,6 +22,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Use the permanent signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "::error title=Signing key missing::Add the repository secret ANDROID_KEYSTORE_B64 (see the wiki page App Updates). The build stops here so an APK signed with a random key is never published."
+            exit 1
+          fi
+          mkdir -p ~/.android
+          echo "$KEYSTORE_B64" | base64 -d > ~/.android/debug.keystore
+          keytool -list -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey | head -3
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -30,6 +42,12 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+
+      - name: Stamp build number into the app
+        run: |
+          N=${{ github.run_number }}
+          sed -i "s/__BUILD__/${N}/g" www/index.html
+          grep -c "APP_BUILD = '${N}'" www/index.html
 
       - name: Install dependencies
         run: npm install
@@ -44,6 +62,13 @@ jobs:
           rm -f $RES/mipmap-*/ic_launcher*.png $RES/mipmap-*/ic_launcher*.webp
           cp -r android-res/* $RES/
           sed -i 's|<string name="app_name">.*</string>|<string name="app_name">Dopamine</string>|; s|<string name="title_activity_main">.*</string>|<string name="title_activity_main">Dopamine</string>|' $RES/values/strings.xml
+
+      - name: Set app version
+        run: |
+          N=${{ github.run_number }}
+          G=android/app/build.gradle
+          sed -i "s/versionCode 1/versionCode ${N}/; s/versionName \"1.0\"/versionName \"1.0.${N}\"/" $G
+          grep -n "versionCode\|versionName" $G
 
       - name: Add camera permission
         run: |
@@ -80,17 +105,26 @@ jobs:
           MSG=$(grep -n -i -E "error|wrong|failed|exception|not found|cannot" gradle.log | head -40 | cut -c1-300 | sed ':a;N;$!ba;s/\n/%0A/g')
           echo "::error title=Gradle summary::${MSG}"
 
-      - name: Rename APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk Dopamine.apk
+      - name: Package outputs
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk Dopamine.apk
+          (cd www && zip -qr ../Dopamine-bundle.zip .)
+          unzip -l Dopamine-bundle.zip | grep -E " index.html$"
+          apksigner_out=$(ls $ANDROID_HOME/build-tools/*/apksigner | tail -1)
+          "$apksigner_out" verify --print-certs Dopamine.apk | head -3 || true
 
       - uses: actions/upload-artifact@v4
         with:
           name: Dopamine-apk
-          path: Dopamine.apk
+          path: |
+            Dopamine.apk
+            Dopamine-bundle.zip
 
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          N=${{ github.run_number }}
+          printf 'Latest build of the Dopamine fitness app.\n\nbuild:%s\n' "$N" > notes.txt
           gh release delete latest --yes --cleanup-tag || true
-          gh release create latest Dopamine.apk --title "Dopamine APK" --notes "Latest build of the Dopamine fitness app." --target ${{ github.sha }}
+          gh release create latest Dopamine.apk Dopamine-bundle.zip --title "Dopamine APK" --notes-file notes.txt --target ${{ github.sha }}

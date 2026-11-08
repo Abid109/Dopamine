@@ -19,3 +19,7 @@ Dopamine stores data on the device. The optional account feature uses a hosted d
 - Importing a crafted file or QR code that crashes the app or changes data that was not selected.
 - Anything that sends user data off the phone without the user's action.
 - Any way to read or change another user's cloud backup.
+
+## App updates
+
+In-app updates download the app's web files from this repository's latest release over HTTPS. Anyone who can publish a release here can change what the app does after an update, so keep two-factor authentication on the GitHub account and never share tokens.

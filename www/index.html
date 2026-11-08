@@ -521,14 +521,11 @@
         </button>
         <button onclick="navigate('profile')" id="nav-btn-profile" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
           <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Profile & Bio</span></div>
+          <span id="acct-dot" class="hidden w-2 h-2 rounded-full bg-emerald-400 shrink-0" title="Signed in, cloud sync on"></span>
         </button>
         <button onclick="navigate('share')" id="nav-btn-share" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
           <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg><span>Share &amp; Receive</span></div>
           <span id="share-badge" class="hidden min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--accent)] text-black text-[10px] font-bold items-center justify-center">0</span>
-        </button>
-        <button onclick="navigate('account')" id="nav-btn-account" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
-          <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg><span>Account &amp; Sync</span></div>
-          <span id="acct-dot" class="hidden w-2 h-2 rounded-full bg-emerald-400 shrink-0" title="Cloud sync on"></span>
         </button>
         <button onclick="navigate('settings')" id="nav-btn-settings" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
           <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg><span>Settings</span></div>
@@ -990,6 +987,8 @@
         </div>
       </div>
 
+      <div id="account-root"></div>
+
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Left: Athlete Card & BMI (4 cols) -->
         <div class="lg:col-span-4 space-y-4">
@@ -1177,18 +1176,8 @@
       </div>
     </div>
 
-    <div id="tab-account" class="hidden space-y-6">
-      <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
-        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-[var(--accent)]"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
-          Account &amp; Sync
-        </h1>
-        <p class="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">Optional. Log in to back up your data and keep all your devices in sync. The app works fully without an account.</p>
-      </div>
-      <div id="account-root" class="max-w-xl"></div>
-    </div>
-
     <div id="tab-settings" class="hidden space-y-6">
+      <div id="update-card"></div>
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
         <div>
           <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
@@ -1786,7 +1775,7 @@
         window.history.pushState({ tab: tab, modal: null }, '', '#' + tab);
       }
 
-      const tabs = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'account', 'settings'];
+      const tabs = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'settings'];
       tabs.forEach(t => {
         const el = document.getElementById('tab-' + t);
         const btn = document.getElementById('nav-btn-' + t);
@@ -1812,10 +1801,9 @@
       if (tab === 'log') renderLogWorkoutTab();
       if (tab === 'calendar') renderCalendarTab();
       if (tab === 'notes') renderNotesList();
-      if (tab === 'profile') renderProfileForm();
-      if (tab === 'settings') renderSettingsTab();
+      if (tab === 'profile') { renderProfileForm(); renderAccountTab(); }
+      if (tab === 'settings') { renderSettingsTab(); updRenderCard(); }
       if (tab === 'share') renderShareTab();
-      if (tab === 'account') renderAccountTab();
       if (window.lucide) lucide.createIcons();
     }
 
@@ -2419,6 +2407,105 @@
     }
 
     // =====================================================================
+    // APP UPDATES: new versions install inside the app, no reinstall needed
+    // =====================================================================
+    const APP_BUILD = '__BUILD__';
+    const APP_VERSION = /^\d+$/.test(APP_BUILD) ? '1.0.' + APP_BUILD : 'dev';
+    const UPDATE_API = 'https://api.github.com/repos/Abid109/Dopamine/releases/tags/latest';
+    const RELEASES_PAGE = 'https://github.com/Abid109/Dopamine/releases/tag/latest';
+    const upd = { checking: false, applying: false, available: null, status: '', dismissed: false };
+
+    function updPlugin() {
+      try { return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.CapacitorUpdater; } catch (e) { return null; }
+    }
+    // Tells the updater this version started fine. If a new version crashes before this, the app rolls back by itself.
+    async function updNotifyReady() {
+      const P = updPlugin();
+      if (P && isNativeApp()) { try { await P.notifyAppReady(); } catch (e) { console.warn('notifyAppReady failed', e); } }
+    }
+    function updSetStatus(t) { upd.status = t; updRenderCard(); }
+    function updRenderCard() {
+      const el = document.getElementById('update-card');
+      if (!el) return;
+      const busy = upd.checking || upd.applying;
+      const btn = 'p-3 rounded-xl font-bold text-xs active:scale-[0.98] transition-all';
+      el.innerHTML = `
+        <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3">
+          <div class="flex items-center justify-between gap-3">
+            <div><h2 class="font-bold text-sm text-[var(--text-primary)]">App updates</h2><p class="text-[11px] text-[var(--text-muted)]">Version ${shEsc(APP_VERSION)}</p></div>
+          </div>
+          <div class="text-xs font-semibold text-[var(--text-primary)] min-h-[1rem]">${shEsc(upd.status || 'Tap the button to look for a new version.')}</div>
+          <div class="grid grid-cols-2 gap-2">
+            <button ${busy ? 'disabled style="opacity:.6"' : ''} onclick="updCheck(true)" class="${btn} bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)]">Check for updates</button>
+            ${upd.available ? `<button ${busy ? 'disabled style="opacity:.6"' : ''} onclick="updApply()" class="${btn} bg-[var(--accent)] text-black">Update now</button>` : `<a href="${RELEASES_PAGE}" target="_blank" rel="noopener" class="${btn} bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-center">Downloads page</a>`}
+          </div>
+          <p class="text-[10px] text-[var(--text-dim)]">Updates install inside the app and keep all your data. Your workouts, notes and settings are never touched.</p>
+        </div>`;
+    }
+    function updShowBanner() {
+      if (upd.dismissed || !upd.available) return;
+      let b = document.getElementById('update-banner');
+      if (!b) { b = document.createElement('div'); b.id = 'update-banner'; document.body.appendChild(b); }
+      b.style.cssText = 'position:fixed;left:12px;right:12px;bottom:16px;z-index:60;';
+      b.innerHTML = `<div class="max-w-md mx-auto p-3 rounded-2xl bg-[var(--bg-card)] border border-[var(--accent)] shadow-2xl flex items-center gap-3">
+          <div class="flex-1 min-w-0"><div class="text-xs font-bold text-[var(--text-primary)]">A new version is ready</div><div class="text-[10px] text-[var(--text-muted)]">Version 1.0.${upd.available.build}. Your data stays.</div></div>
+          <button onclick="updDismiss()" class="px-2 py-1.5 rounded-lg text-[11px] font-semibold text-[var(--text-muted)]">Later</button>
+          <button onclick="updApply()" class="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-black text-[11px] font-bold">Update</button>
+        </div>`;
+    }
+    function updHideBanner() { const b = document.getElementById('update-banner'); if (b) b.remove(); }
+    function updDismiss() { upd.dismissed = true; updHideBanner(); }
+    async function updCheck(manual) {
+      if (upd.checking || upd.applying) return;
+      if (!isNativeApp()) { if (manual) updSetStatus('Updates install inside the Android app.'); return; }
+      if (!/^\d+$/.test(APP_BUILD)) { if (manual) updSetStatus('This is a development build.'); return; }
+      upd.checking = true;
+      if (manual) updSetStatus('Checking...');
+      try {
+        const ctrl = new AbortController();
+        const to = setTimeout(() => ctrl.abort(), 12000);
+        const r = await fetch(UPDATE_API, { headers: { 'Accept': 'application/vnd.github+json' }, signal: ctrl.signal, cache: 'no-store' });
+        clearTimeout(to);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const rel = await r.json();
+        const m = /build:(\d+)/.exec(rel.body || '');
+        const asset = (rel.assets || []).find(a => a.name === 'Dopamine-bundle.zip');
+        try { localStorage.setItem('dopamine_update_checked', String(Date.now())); } catch (e) { }
+        if (!m || !asset) { upd.available = null; if (manual) updSetStatus('Could not read the update information.'); return; }
+        const remote = parseInt(m[1], 10), local = parseInt(APP_BUILD, 10);
+        if (remote > local) {
+          upd.available = { build: remote, url: asset.browser_download_url };
+          upd.status = 'New version available: 1.0.' + remote;
+          updShowBanner();
+        } else {
+          upd.available = null; updHideBanner();
+          upd.status = "You're up to date (version " + APP_VERSION + ').';
+        }
+      } catch (e) {
+        if (manual) upd.status = 'Could not check for updates. Check your internet connection.';
+      } finally { upd.checking = false; updRenderCard(); }
+    }
+    async function updApply() {
+      if (!upd.available || upd.applying) return;
+      const P = updPlugin();
+      if (!P) { updSetStatus('The updater is not available. Open the downloads page to install the new APK.'); return; }
+      upd.applying = true; updHideBanner();
+      updSetStatus('Downloading update...');
+      showToast('Downloading update...', 4000);
+      try {
+        const bundle = await P.download({ url: upd.available.url, version: '1.0.' + upd.available.build });
+        updSetStatus('Installing update...');
+        await P.set({ id: bundle.id }); // restarts the app on the new version
+      } catch (e) {
+        console.warn('Update failed', e);
+        upd.applying = false;
+        updSetStatus('Update failed. Your current version is unchanged.');
+        showToast('Update failed. Nothing was changed.', 3500);
+      }
+    }
+    function updAutoCheck() { setTimeout(() => updCheck(false), 3000); }
+
+    // =====================================================================
     // ACCOUNT & CLOUD SYNC (optional): email login + backup across devices
     // =====================================================================
     const SUPABASE_URL = 'https://ohbsudgdwebituirxvjj.supabase.co';
@@ -2526,15 +2613,15 @@
       let html = '';
       if (m === 'login') {
         html = acctCard(`
-          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Log in</h2><p class="text-[11px] text-[var(--text-muted)]">Your data on this phone is kept and merged with your cloud backup.</p></div>
+          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Sign in</h2><p class="text-[11px] text-[var(--text-muted)]">Optional. Sign in to back up your data and keep your devices in sync.</p></div>
           ${acctField('Email', 'acct-email', 'email', 'email', 'inputmode="email"')}
           ${acctField('Password', 'acct-pass', 'password', 'current-password')}
           <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
-          <button data-act onclick="acctLogin()" class="${ACCT_PRIMARY}">Log in</button>
-          <div class="flex items-center justify-between"><button onclick="acctGo('signup')" class="${ACCT_LINK}">Create an account</button><button onclick="acctGo('forgot')" class="${ACCT_LINK}">Forgot password?</button></div>`);
+          <button data-act onclick="acctLogin()" class="${ACCT_PRIMARY}">Sign in</button>
+          <div class="flex items-center justify-between"><button onclick="acctGo('signup')" class="${ACCT_LINK}">Create account</button><button onclick="acctGo('forgot')" class="${ACCT_LINK}">Forgot password?</button></div>`);
       } else if (m === 'signup') {
         html = acctCard(`
-          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Create an account</h2><p class="text-[11px] text-[var(--text-muted)]">Use any email. Password must be at least 8 characters.</p></div>
+          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Create account</h2><p class="text-[11px] text-[var(--text-muted)]">Use any email. Password must be at least 8 characters.</p></div>
           ${acctField('Email', 'acct-email', 'email', 'email', 'inputmode="email"')}
           ${acctField('Password', 'acct-pass', 'password', 'new-password')}
           ${acctField('Repeat password', 'acct-pass2', 'password', 'new-password')}
@@ -2543,18 +2630,18 @@
           <button onclick="acctGo('login')" class="${ACCT_LINK}">I already have an account</button>`);
       } else if (m === 'verify') {
         html = acctCard(`
-          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Check your email</h2><p class="text-[11px] text-[var(--text-muted)]">We sent a code to ${shEsc(acct.email)}. Type it here. If your email has a link instead of a code, tap the link, then come back and log in.</p></div>
+          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Check your email</h2><p class="text-[11px] text-[var(--text-muted)]">We sent a code to ${shEsc(acct.email)}. Type it here. If your email has a link instead of a code, tap the link, then come back and sign in.</p></div>
           ${acctField('Code', 'acct-code', 'text', 'one-time-code', 'inputmode="numeric" maxlength="10"')}
           <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
           <button data-act onclick="acctVerify()" class="${ACCT_PRIMARY}">Confirm</button>
-          <div class="flex items-center justify-between"><button data-act onclick="acctResend()" class="${ACCT_LINK}">Send a new code</button><button onclick="acctGo('login')" class="${ACCT_LINK}">Back to log in</button></div>`);
+          <div class="flex items-center justify-between"><button data-act onclick="acctResend()" class="${ACCT_LINK}">Send a new code</button><button onclick="acctGo('login')" class="${ACCT_LINK}">Back to sign in</button></div>`);
       } else if (m === 'forgot') {
         html = acctCard(`
           <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Reset password</h2><p class="text-[11px] text-[var(--text-muted)]">Enter your email and we will send you a code.</p></div>
           ${acctField('Email', 'acct-email', 'email', 'email', 'inputmode="email"')}
           <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
           <button data-act onclick="acctForgot()" class="${ACCT_PRIMARY}">Send code</button>
-          <button onclick="acctGo('login')" class="${ACCT_LINK}">Back to log in</button>`);
+          <button onclick="acctGo('login')" class="${ACCT_LINK}">Back to sign in</button>`);
       } else if (m === 'reset') {
         html = acctCard(`
           <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Choose a new password</h2><p class="text-[11px] text-[var(--text-muted)]">Type the code we emailed to ${shEsc(acct.email)} and a new password.</p></div>
@@ -2562,9 +2649,9 @@
           ${acctField('New password', 'acct-pass', 'password', 'new-password')}
           <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
           <button data-act onclick="acctResetSubmit()" class="${ACCT_PRIMARY}">Set new password</button>
-          <button onclick="acctGo('login')" class="${ACCT_LINK}">Back to log in</button>`);
+          <button onclick="acctGo('login')" class="${ACCT_LINK}">Back to sign in</button>`);
       }
-      html += '<p class="text-[10px] text-[var(--text-dim)] mt-3">Logging in is optional. Without an account, everything stays on this phone.</p>';
+      html += '<p class="text-[10px] text-[var(--text-dim)] mt-3">Signing in is optional. Without an account, everything stays on this phone.</p>';
       root.innerHTML = html;
     }
     function acctSignedInHtml() {
@@ -2583,9 +2670,9 @@
         <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
         <div class="grid grid-cols-2 gap-2">
           <button data-act onclick="syncNow(true)" class="p-3 rounded-xl bg-[var(--accent)] text-black font-bold text-xs hover:brightness-110 active:scale-[0.98] transition-all">Sync now</button>
-          <button data-act onclick="acctLogout()" class="p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] font-bold text-xs">Log out</button>
+          <button data-act onclick="acctLogout()" class="p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] font-bold text-xs">Sign out</button>
         </div>
-        <p class="text-[10px] text-[var(--text-dim)]">Synced: profile, settings, workout logs, plans, notes and workout time. Received files from Share &amp; Receive stay on each phone. Syncing merges both devices, so nothing is lost. Log out any time to stop syncing. Your data stays on this phone.</p>
+        <p class="text-[10px] text-[var(--text-dim)]">Synced: profile, settings, workout logs, plans, notes and workout time. Received files from Share &amp; Receive stay on each phone. Syncing merges both devices, so nothing is lost. Sign out any time to stop syncing. Your data stays on this phone.</p>
         <button data-act onclick="acctDeleteCloud()" class="w-full p-2.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-red-400 text-[11px] font-bold">Delete my cloud backup</button>`);
     }
     function acctGo(mode) { acct.mode = mode; renderAccountTab(); }
@@ -2613,14 +2700,14 @@
       acct.mode = 'login';
       acctUpdateDot();
       renderAccountTab();
-      showToast('Logged in. Syncing...');
+      showToast('Signed in. Syncing...');
       syncNow(true);
     }
     async function acctLogin() {
       if (acct.busy) return;
       const email = acctVal('acct-email').trim(), pass = acctVal('acct-pass');
       if (!acctIsEmail(email) || !pass) { acctMsg('Enter your email and password.'); return; }
-      acctSetBusy(true); acctMsg('Logging in...', 'ok');
+      acctSetBusy(true); acctMsg('Signing in...', 'ok');
       try {
         const { data, error } = await sb.auth.signInWithPassword({ email: email, password: pass });
         if (error) throw error;
@@ -2659,7 +2746,7 @@
         const { data, error } = await sb.auth.verifyOtp({ email: acct.email, token: code, type: 'signup' });
         if (error) throw error;
         if (data.session) await acctAfterLogin(data.session);
-        else { acct.mode = 'login'; renderAccountTab(); acctMsg('Email confirmed. You can log in now.', 'ok'); }
+        else { acct.mode = 'login'; renderAccountTab(); acctMsg('Email confirmed. You can sign in now.', 'ok'); }
       } catch (e) { acctMsg(acctErr(e)); }
       finally { acctSetBusy(false); }
     }
@@ -2703,16 +2790,16 @@
       finally { acctSetBusy(false); }
     }
     async function acctLogout() {
-      if (!confirm('Log out? Your data stays on this phone but will stop syncing.')) return;
+      if (!confirm('Sign out? Your data stays on this phone but will stop syncing.')) return;
       try { await sb.auth.signOut(); } catch (e) { }
       acct.session = null; acct.mode = 'login';
       if (acct.timer) { clearTimeout(acct.timer); acct.timer = null; }
       acctUpdateDot(); renderAccountTab();
-      showToast('Logged out');
+      showToast('Signed out');
     }
     async function acctDeleteCloud() {
       if (!acctSignedIn()) return;
-      if (!confirm('Delete your cloud backup? Data on your phones is not touched. If you stay logged in, the next sync uploads a fresh copy.')) return;
+      if (!confirm('Delete your cloud backup? Data on your phones is not touched. If you stay signed in, the next sync uploads a fresh copy.')) return;
       acctSetBusy(true);
       try {
         const { error } = await sb.from('user_backups').delete().eq('user_id', acct.session.user.id);
@@ -2856,7 +2943,7 @@
 
       // 4. Hash fallback
       const hash = window.location.hash.replace('#', '').split('-')[0];
-      if (hash && ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'account', 'settings'].includes(hash)) {
+      if (hash && ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'settings'].includes(hash)) {
         navigate(hash, false);
         return;
       }
@@ -4902,6 +4989,7 @@
 
     // Initial Bootstrap
     window.addEventListener('DOMContentLoaded', () => {
+      updNotifyReady();
       document.documentElement.setAttribute('data-theme', appState.settings.theme || 'dark');
       document.documentElement.setAttribute('data-accent', appState.settings.accent || 'amber');
       document.documentElement.setAttribute('data-font-size', appState.settings.fontSize || 'comfortable');
@@ -4914,12 +5002,14 @@
 
       // Initialize root history state so back button knows initial entry
       const initialTab = window.location.hash.replace('#', '').split('-')[0] || 'dashboard';
-      const validTab = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'account', 'settings'].includes(initialTab) ? initialTab : 'dashboard';
+      const validTab = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'settings'].includes(initialTab) ? initialTab : 'dashboard';
       window.history.replaceState({ tab: validTab, modal: null }, '', '#' + validTab);
 
       navigate(validTab, false);
       setupNativeBackButton();
       acctInit();
+      updAutoCheck();
+      updRenderCard();
     });
   </script>
 </body>

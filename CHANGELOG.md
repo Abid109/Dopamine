@@ -4,10 +4,21 @@ All notable changes to Dopamine are listed here.
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-11-08
+
+### Added
+- **In-app updates.** New versions of the app install inside the app: a banner appears when one is ready, and Settings has a Check for updates button. Your data is never touched, and a broken update rolls back by itself.
+- A fixed signing key for all future builds, so a new APK can be installed over the old app without uninstalling.
+- Every build now has its own version number.
+
+### Changed
+- Sign in and sign out moved into the **Profile** page. The separate Account & Sync menu item is gone. The Profile menu item shows a green dot while you are signed in.
+- "Log in" and "Log out" are now "Sign in" and "Sign out".
+
 ## [1.4.0] - 2026-11-08
 
 ### Added
-- **Account & Sync** section in the sidebar: optional email login with sign up, email code confirmation, password reset and log out.
+- Optional email sign in with sign up, email code confirmation, password reset and sign out.
 - Cloud backup and sync across devices. Profile, settings, workout logs, plans, notes and workout time stay in sync.
 - Syncing merges two devices instead of overwriting, including deletions, so nothing is lost.
 - Sync runs on opening the app, after changes and when the phone comes back online, with a Sync now button.
