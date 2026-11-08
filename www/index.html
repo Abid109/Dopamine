@@ -1,0 +1,3083 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-accent="amber" data-font-size="comfortable">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dopamine Fit — Calisthenics Workout Tracker</title>
+  <meta name="description" content="Offline-first calisthenics workout tracker, routine calendar planner, calorie tracker, and timers." />
+  <meta property="og:title" content="Dopamine Fit — Calisthenics Workout Tracker" />
+  <meta property="og:description" content="Offline-first calisthenics workout tracker, routine calendar planner, calorie tracker, and timers." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    :root {
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --bg-base: #0a0a0d;
+      --bg-surface: #121217;
+      --bg-card: #16161c;
+      --bg-card-hover: #1e1e26;
+      --bg-input: #1a1a22;
+      --border-subtle: #252530;
+      --border-strong: #363644;
+      --text-primary: #f5f5f8;
+      --text-muted: #9191a2;
+      --text-dim: #5c5c6f;
+
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --accent-glow: rgba(245, 158, 11, 0.16);
+      --accent-border: rgba(245, 158, 11, 0.35);
+      --accent-text: #fbbf24;
+      --root-font-size: 14.5px;
+    }
+    [data-theme="charcoal"] {
+      --bg-base: #131417;
+      --bg-surface: #1a1b20;
+      --bg-card: #1f2127;
+      --bg-card-hover: #272a32;
+      --bg-input: #23252d;
+      --border-subtle: #2c303a;
+      --border-strong: #3d4250;
+      --text-primary: #f2f4f8;
+      --text-muted: #959aa8;
+      --text-dim: #606677;
+    }
+    [data-theme="midnight"] {
+      --bg-base: #090d16;
+      --bg-surface: #0f172a;
+      --bg-card: #131d35;
+      --bg-card-hover: #1a2747;
+      --bg-input: #15223e;
+      --border-subtle: #203154;
+      --border-strong: #314878;
+      --text-primary: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+    [data-theme="cyberpunk"] {
+      --bg-base: #0c0a17;
+      --bg-surface: #131024;
+      --bg-card: #191530;
+      --bg-card-hover: #221d42;
+      --bg-input: #1c1837;
+      --border-subtle: #2c2552;
+      --border-strong: #3f3675;
+      --text-primary: #f5f3ff;
+      --text-muted: #a78bfa;
+      --text-dim: #6d5b97;
+    }
+    [data-theme="forest"] {
+      --bg-base: #08110b;
+      --bg-surface: #0e1c13;
+      --bg-card: #13261a;
+      --bg-card-hover: #1a3323;
+      --bg-input: #152b1d;
+      --border-subtle: #23422e;
+      --border-strong: #335e42;
+      --text-primary: #f0fdf4;
+      --text-muted: #86efac;
+      --text-dim: #4ade80;
+    }
+    [data-theme="light"] {
+      --bg-base: #f4f5f7;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8f9fb;
+      --bg-input: #f0f1f4;
+      --border-subtle: #e2e4ea;
+      --border-strong: #cbd0dc;
+      --text-primary: #111317;
+      --text-muted: #616574;
+      --text-dim: #9094a4;
+    }
+    [data-theme="nordic"] {
+      --bg-base: #ebf0f5;
+      --bg-surface: #f7fafc;
+      --bg-card: #ffffff;
+      --bg-card-hover: #edf2f7;
+      --bg-input: #e2e8f0;
+      --border-subtle: #cbd5e1;
+      --border-strong: #94a3b8;
+      --text-primary: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+    }
+    [data-accent="sage"] {
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --accent-glow: rgba(16, 185, 129, 0.16);
+      --accent-border: rgba(16, 185, 129, 0.35);
+      --accent-text: #34d399;
+    }
+    [data-accent="slate"] {
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --accent-glow: rgba(56, 189, 248, 0.16);
+      --accent-border: rgba(56, 189, 248, 0.35);
+      --accent-text: #7dd3fc;
+    }
+    [data-accent="crimson"] {
+      --accent: #ef4444;
+      --accent-hover: #dc2626;
+      --accent-glow: rgba(239, 68, 68, 0.16);
+      --accent-border: rgba(239, 68, 68, 0.35);
+      --accent-text: #f87171;
+    }
+    [data-accent="violet"] {
+      --accent: #a855f7;
+      --accent-hover: #9333ea;
+      --accent-glow: rgba(168, 85, 247, 0.16);
+      --accent-border: rgba(168, 85, 247, 0.35);
+      --accent-text: #c084fc;
+    }
+    [data-accent="coral"] {
+      --accent: #f97316;
+      --accent-hover: #ea580c;
+      --accent-glow: rgba(249, 115, 22, 0.16);
+      --accent-border: rgba(249, 115, 22, 0.35);
+      --accent-text: #fb923c;
+    }
+    [data-font-size="compact"] { --root-font-size: 13.5px; }
+    [data-font-size="comfortable"] { --root-font-size: 15px; }
+
+    @media print {
+      body { background-color: #ffffff !important; color: #0f172a !important; }
+      body > :not(#modal-report-preview) { display: none !important; }
+      #modal-report-preview {
+        display: block !important;
+        position: static !important;
+        background: transparent !important;
+        padding: 0 !important;
+      }
+      #modal-report-preview > div {
+        max-width: 100% !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+      .no-print { display: none !important; }
+    }
+
+    html {
+      font-size: var(--root-font-size);
+      font-family: var(--font-sans);
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    button, input, select, textarea { transition: all 0.15s ease-in-out; }
+  </style>
+</head>
+<body class="bg-[var(--bg-base)] text-[var(--text-primary)] antialiased min-h-screen flex flex-col md:flex-row selection:bg-[var(--accent)] selection:text-black">
+  <!-- Mobile Backdrop Overlay -->
+  <div id="mobile-backdrop" onclick="toggleMobileSidebar(false)" class="hidden fixed inset-0 z-40 bg-black/75 backdrop-blur-xs"></div>
+
+  <!-- Mobile Top Header -->
+  <header class="md:hidden sticky top-0 z-30 w-full border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/95 backdrop-blur-md px-4 py-2.5 flex items-center justify-between gap-2">
+    <div class="flex items-center gap-2.5">
+      <button onclick="toggleMobileSidebar(true)" class="p-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-[var(--accent)]">
+        <i data-lucide="menu" class="w-4 h-4"></i>
+      </button>
+      <div class="flex items-center">
+        <span class="font-extrabold text-base tracking-tight text-[var(--text-primary)]">DOPAMINE</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="openSessionModal()" class="px-2 py-1 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[11px] font-mono font-medium text-[var(--text-primary)] flex items-center gap-1">
+        <i data-lucide="clock" class="w-3 h-3 text-[var(--accent)]"></i>
+        <span id="mobile-session-time">0m</span>
+      </button>
+      <button onclick="openRestModal()" class="px-2 py-1 rounded-lg bg-[var(--accent-glow)] border border-[var(--accent-border)] text-[var(--accent-text)] text-[11px] font-mono font-bold flex items-center gap-1">
+        <i data-lucide="timer" class="w-3 h-3"></i>
+        <span id="mobile-rest-default">60s</span>
+      </button>
+      <button onclick="navigate('profile')" id="mobile-avatar" class="w-7 h-7 rounded-full bg-[var(--bg-input)] border border-[var(--border-strong)] flex items-center justify-center text-xs font-bold text-[var(--text-primary)] overflow-hidden shrink-0">
+        ?
+      </button>
+    </div>
+  </header>
+
+  <!-- Left Sidebar Navigation (Desktop fixed, Mobile Drawer) -->
+  <aside id="sidebar-panel" class="fixed md:sticky top-0 left-[-320px] md:left-0 z-50 md:z-20 w-64 lg:w-68 shrink-0 h-screen border-r border-[var(--border-subtle)] bg-[var(--bg-surface)] py-4 px-3 flex flex-col justify-between overflow-y-auto no-scrollbar transition-all duration-200">
+    <div class="space-y-4">
+      <!-- Brand & Close -->
+      <div class="flex items-center justify-between px-2 pt-1">
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-extrabold tracking-tight text-lg text-[var(--text-primary)]">DOPAMINE</span>
+            <span class="text-[10px] font-mono tracking-widest px-1.5 py-0.5 rounded bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--accent-text)] uppercase font-semibold">FIT</span>
+          </div>
+          <p class="text-[10px] font-medium tracking-wider uppercase text-[var(--text-muted)] mt-0.5">Calisthenics Tracker</p>
+        </div>
+        <button onclick="toggleMobileSidebar(false)" class="md:hidden p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Athlete Mini Profile Badge -->
+      <div onclick="navigate('profile')" class="p-2.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--accent)] cursor-pointer transition-all flex items-center gap-2.5 group">
+        <div id="sidebar-avatar" class="w-9 h-9 rounded-full bg-[var(--bg-input)] border border-[var(--border-strong)] flex items-center justify-center text-xs font-bold text-[var(--text-primary)] group-hover:border-[var(--accent)] shrink-0 overflow-hidden">
+          ?
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-1">
+            <span id="sidebar-name" class="font-semibold text-xs text-[var(--text-primary)] truncate block group-hover:text-[var(--accent-text)]">Athlete</span>
+            <i data-lucide="shield" class="w-3 h-3 text-[var(--accent)] shrink-0"></i>
+          </div>
+          <div id="sidebar-sub" class="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">Set details</div>
+        </div>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[var(--text-dim)] group-hover:text-[var(--text-primary)] shrink-0"></i>
+      </div>
+
+      <!-- Day Streak Banner -->
+      <div id="sidebar-streak-banner" class="hidden px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center gap-2 text-xs font-semibold text-amber-400">
+        <i data-lucide="flame" class="w-4 h-4 fill-amber-400 text-amber-500 animate-bounce shrink-0"></i>
+        <span id="sidebar-streak-text">0 Day Streak 🔥</span>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="space-y-1 pt-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)] px-2.5 block mb-1">Navigation</span>
+        <button onclick="navigate('dashboard')" id="nav-btn-dashboard" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all bg-[var(--accent)] text-black font-bold shadow-xs">
+          <div class="flex items-center gap-2.5"><i data-lucide="layout-dashboard" class="w-4 h-4"></i><span>Dashboard</span></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-black shrink-0"></div>
+        </button>
+        <button onclick="navigate('log')" id="nav-btn-log" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
+          <div class="flex items-center gap-2.5"><i data-lucide="dumbbell" class="w-4 h-4"></i><span>Log Workout</span></div>
+        </button>
+        <button onclick="navigate('calendar')" id="nav-btn-calendar" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
+          <div class="flex items-center gap-2.5"><i data-lucide="calendar" class="w-4 h-4"></i><span>Calendar Planner</span></div>
+        </button>
+        <button onclick="navigate('notes')" id="nav-btn-notes" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
+          <div class="flex items-center gap-2.5"><i data-lucide="file-text" class="w-4 h-4"></i><span>Notes & Journal</span></div>
+        </button>
+        <button onclick="navigate('profile')" id="nav-btn-profile" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
+          <div class="flex items-center gap-2.5"><i data-lucide="user" class="w-4 h-4"></i><span>Profile & Bio</span></div>
+        </button>
+        <button onclick="navigate('settings')" id="nav-btn-settings" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
+          <div class="flex items-center gap-2.5"><i data-lucide="settings" class="w-4 h-4"></i><span>Settings</span></div>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Bottom Sidebar: Quick Timers & Live Clock -->
+    <div class="pt-3 border-t border-[var(--border-subtle)] space-y-3">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)] px-2 block mb-1.5">Timers & Tools</span>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="openSessionModal()" class="p-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] text-left hover:bg-[var(--bg-card-hover)] transition-all">
+            <div class="flex items-center justify-between text-[11px] text-[var(--text-muted)] mb-0.5">
+              <i data-lucide="clock" class="w-3 h-3 text-[var(--accent)]"></i>
+              <span class="text-[9px] uppercase font-mono text-[var(--text-dim)]">Session</span>
+            </div>
+            <span id="sidebar-session-val" class="font-mono text-xs font-bold text-[var(--text-primary)]">0m</span>
+          </button>
+          <button onclick="openRestModal()" class="p-2 rounded-xl bg-[var(--accent-glow)] border border-[var(--accent-border)] hover:brightness-110 text-left transition-all">
+            <div class="flex items-center justify-between text-[11px] text-[var(--accent-text)] mb-0.5">
+              <i data-lucide="timer" class="w-3 h-3"></i>
+              <span class="text-[9px] uppercase font-mono opacity-80">Rest</span>
+            </div>
+            <span id="sidebar-rest-val" class="font-mono text-xs font-bold text-[var(--accent-text)]">60s</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="p-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-center">
+        <div id="sidebar-live-clock" class="font-mono text-xs font-bold text-[var(--text-primary)] tracking-wide">--:--:--</div>
+        <div id="sidebar-live-date" class="text-[10px] text-[var(--text-muted)] mt-0.5">---</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Viewport Content -->
+  <main class="flex-1 w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-12 overflow-y-auto">
+    <!-- DASHBOARD TAB -->
+    <div id="tab-dashboard" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-xs">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span id="dash-date-indicator" class="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Today</span>
+          </div>
+          <h1 id="dash-greeting" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">Welcome, Athlete</h1>
+          <p id="dash-streak-sub" class="text-xs sm:text-sm text-[var(--text-muted)] mt-1 max-w-xl">Start today's training by logging an exercise or tracking a session.</p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <button onclick="navigate('log')" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[var(--accent)] text-black font-semibold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-xs">
+            <i data-lucide="plus" class="w-4 h-4" stroke-width="2.5"></i> Log Workout
+          </button>
+          <button onclick="openSessionModal()" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-[var(--border-strong)] font-medium text-xs sm:text-sm hover:bg-[var(--bg-card-hover)] active:scale-95">
+            <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i> Session
+          </button>
+          <button onclick="openRestModal()" class="flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-[var(--border-strong)] font-medium text-xs sm:text-sm hover:bg-[var(--bg-card-hover)] active:scale-95">
+            <i data-lucide="timer" class="w-3.5 h-3.5"></i> Rest
+          </button>
+        </div>
+      </div>
+
+      <!-- 6 Core Stats Cards Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <div class="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition-all">
+          <div class="flex items-center justify-between text-[var(--text-muted)]"><span class="text-xs font-medium">Today's Sets</span><i data-lucide="dumbbell" class="w-4 h-4 text-[var(--accent)]"></i></div>
+          <div class="mt-2 flex items-baseline gap-1.5"><span id="stat-sets-today" class="font-mono text-2xl font-bold text-[var(--text-primary)]">0</span><span id="stat-sets-goal" class="text-xs text-[var(--text-muted)] font-mono">/ 4</span></div>
+          <span class="text-[11px] text-[var(--text-muted)] mt-1 block">logged movements</span>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition-all">
+          <div class="flex items-center justify-between text-[var(--text-muted)]"><span class="text-xs font-medium">Burn Today</span><i data-lucide="flame" class="w-4 h-4 text-amber-500 fill-amber-500/20"></i></div>
+          <div class="mt-2 flex items-baseline gap-1.5"><span id="stat-cal-today" class="font-mono text-2xl font-bold text-[var(--text-primary)]">0</span><span class="text-xs text-[var(--text-muted)] font-mono">kcal</span></div>
+          <span id="stat-cal-goal-sub" class="text-[11px] text-[var(--text-muted)] mt-1 block">0% of 500 kcal goal</span>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition-all">
+          <div class="flex items-center justify-between text-[var(--text-muted)]"><span class="text-xs font-medium">Streak</span><i data-lucide="zap" class="w-4 h-4 text-amber-400 fill-amber-400/20"></i></div>
+          <div class="mt-2 flex items-baseline gap-1.5"><span id="stat-streak-val" class="font-mono text-2xl font-bold text-[var(--text-primary)]">0</span><span class="text-xs text-[var(--text-muted)]">days 🔥</span></div>
+          <span class="text-[11px] text-[var(--text-muted)] mt-1 block">consecutive activity</span>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition-all">
+          <div class="flex items-center justify-between text-[var(--text-muted)]"><span class="text-xs font-medium">Active Time</span><i data-lucide="clock" class="w-4 h-4 text-[var(--accent)]"></i></div>
+          <div class="mt-2 flex items-baseline gap-1.5"><span id="stat-time-today" class="font-mono text-2xl font-bold text-[var(--text-primary)]">00:00</span></div>
+          <span class="text-[11px] text-[var(--text-muted)] mt-1 block">stopwatch logged</span>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition-all">
+          <div class="flex items-center justify-between text-[var(--text-muted)]"><span class="text-xs font-medium">Workouts</span><i data-lucide="trophy" class="w-4 h-4 text-emerald-400"></i></div>
+          <div class="mt-2 flex items-baseline gap-1.5"><span id="stat-total-workouts" class="font-mono text-2xl font-bold text-[var(--text-primary)]">0</span><span class="text-xs text-[var(--text-muted)]">days</span></div>
+          <span class="text-[11px] text-[var(--text-muted)] mt-1 block">total active days</span>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition-all">
+          <div class="flex items-center justify-between text-[var(--text-muted)]"><span class="text-xs font-medium">Lifetime Burn</span><i data-lucide="trending-up" class="w-4 h-4 text-sky-400"></i></div>
+          <div class="mt-2 flex items-baseline gap-1.5"><span id="stat-lifetime-cal" class="font-mono text-2xl font-bold text-[var(--text-primary)]">0</span><span class="text-xs text-[var(--text-muted)] font-mono">kcal</span></div>
+          <span class="text-[11px] text-[var(--text-muted)] mt-1 block">all-time logged</span>
+        </div>
+      </div>
+
+      <!-- Goal Progress Bars -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg bg-amber-500/10 text-amber-500"><i data-lucide="target" class="w-4 h-4"></i></div>
+              <span class="font-semibold text-sm text-[var(--text-primary)]">Daily Calorie Target</span>
+            </div>
+            <span id="goal-cal-readout" class="font-mono text-xs text-[var(--text-muted)]"><strong class="text-[var(--text-primary)]">0</strong> / 500 kcal</span>
+          </div>
+          <div class="h-3 w-full bg-[var(--bg-input)] rounded-full overflow-hidden p-0.5 border border-[var(--border-subtle)]">
+            <div id="goal-cal-bar" class="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-amber-500 to-amber-400" style="width: 0%"></div>
+          </div>
+          <div class="flex items-center justify-between mt-2 text-xs text-[var(--text-muted)]">
+            <span id="goal-cal-percent">0% completed</span>
+            <span id="goal-cal-remain">500 kcal remaining</span>
+          </div>
+        </div>
+        <div class="p-5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg bg-[var(--accent-glow)] text-[var(--accent-text)]"><i data-lucide="dumbbell" class="w-4 h-4"></i></div>
+              <span class="font-semibold text-sm text-[var(--text-primary)]">Daily Exercises Target</span>
+            </div>
+            <span id="goal-ex-readout" class="font-mono text-xs text-[var(--text-muted)]"><strong class="text-[var(--text-primary)]">0</strong> / 4 logged</span>
+          </div>
+          <div class="h-3 w-full bg-[var(--bg-input)] rounded-full overflow-hidden p-0.5 border border-[var(--border-subtle)]">
+            <div id="goal-ex-bar" class="h-full rounded-full transition-all duration-500 bg-[var(--accent)]" style="width: 0%"></div>
+          </div>
+          <div class="flex items-center justify-between mt-2 text-xs text-[var(--text-muted)]">
+            <span id="goal-ex-percent">0% completed</span>
+            <span id="goal-ex-remain">4 exercises to hit goal</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Calories Graphical Line & Dots Chart -->
+      <div id="dash-weekly-chart-card" class="p-5 sm:p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+          <div>
+            <h2 class="font-bold text-base text-[var(--text-primary)] flex items-center gap-2">
+              <i data-lucide="trending-up" class="w-4 h-4 text-[var(--accent)]"></i> Weekly Caloric Burn (Mon – Sun)
+            </h2>
+            <p class="text-xs text-[var(--text-muted)] mt-0.5">Hover or tap on dots to inspect daily energy expenditure and movement count</p>
+          </div>
+          <div id="chart-hover-pill" class="hidden items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-strong)] text-xs"></div>
+        </div>
+        <div id="chart-svg-container" class="relative w-full pt-2 pb-1 border-b border-[var(--border-subtle)]"></div>
+        <div id="chart-labels-container" class="flex items-center justify-between gap-2 sm:gap-4 mt-2"></div>
+      </div>
+
+      <!-- Today's Logged Exercises Section -->
+      <div class="p-5 sm:p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+        <div class="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
+          <div>
+            <h2 class="font-bold text-base text-[var(--text-primary)] flex items-center gap-2">
+              <i data-lucide="dumbbell" class="w-4 h-4 text-[var(--accent)]"></i> Today's Logged Exercises
+            </h2>
+            <p id="dash-today-subtitle" class="text-xs text-[var(--text-muted)] mt-0.5">0 movements recorded today (0 kcal)</p>
+          </div>
+          <button onclick="navigate('log')" class="flex items-center gap-1 text-xs font-semibold text-[var(--accent-text)] hover:underline">
+            Add More <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+        <div id="dash-today-list" class="divide-y divide-[var(--border-subtle)] mt-1"></div>
+      </div>
+    </div>
+
+    <!-- LOG WORKOUT TAB -->
+    <div id="tab-log" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
+            <i data-lucide="dumbbell" class="w-5 h-5 text-[var(--accent)]"></i> Calisthenics Movement Logger
+          </h1>
+          <p class="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">Select a movement or enter your own custom exercise name</p>
+        </div>
+        <div class="flex items-center gap-2 bg-[var(--bg-input)] px-3 py-1.5 rounded-xl border border-[var(--border-subtle)]">
+          <i data-lucide="calendar" class="w-4 h-4 text-[var(--accent)]"></i>
+          <span class="text-xs font-medium text-[var(--text-muted)]">Date:</span>
+          <input type="date" id="log-date-picker" onchange="handleLogDateChange()" class="bg-transparent text-xs font-medium text-[var(--text-primary)] focus:outline-none cursor-pointer" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left: Exercise Picker & Custom Exercise Action (7 cols) -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3">
+            <div class="flex items-center gap-2">
+              <div class="relative flex-1">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"></i>
+                <input type="text" id="exercise-search-input" oninput="renderExercisePicker()" placeholder="Search exercises by name, body part..." class="w-full pl-9 pr-4 py-2 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:border-[var(--accent)] text-xs text-[var(--text-primary)] placeholder-[var(--text-dim)] focus:outline-none" />
+              </div>
+              <button onclick="enableCustomExerciseMode()" id="custom-ex-trigger-btn" class="px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition-all border bg-[var(--accent-glow)] border-[var(--accent-border)] text-[var(--accent-text)] hover:brightness-110">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Custom Exercise
+              </button>
+            </div>
+            <div id="exercise-cat-pills" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1"></div>
+          </div>
+
+          <div id="exercise-cards-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[580px] overflow-y-auto pr-1"></div>
+        </div>
+
+        <!-- Right: Active Exercise Logger Form (5 cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-xs">
+            <!-- Header for Pre-built vs Custom -->
+            <div id="form-prebuilt-header" class="pb-4 border-b border-[var(--border-subtle)]">
+              <div class="flex items-center justify-between">
+                <span id="selected-ex-badge" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[var(--accent-glow)] text-[var(--accent-text)]">Push • Beginner</span>
+                <button onclick="enableCustomExerciseMode()" class="text-[11px] text-[var(--accent-text)] hover:underline font-medium">+ Enter Custom Name</button>
+              </div>
+              <h2 id="selected-ex-title" class="text-lg font-bold text-[var(--text-primary)] mt-1.5">Push-ups</h2>
+              <p id="selected-ex-desc" class="text-xs text-[var(--text-muted)] mt-1">Classic horizontal push targeting chest and triceps.</p>
+              <div id="selected-ex-prog" class="mt-2.5 p-2 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[11px] text-[var(--text-muted)]">
+                <span class="font-semibold text-[var(--text-primary)]">Progression: </span>Incline -> Standard -> Diamond -> Archer
+              </div>
+            </div>
+
+            <!-- Custom Exercise Form Header -->
+            <div id="form-custom-header" class="hidden pb-4 border-b border-[var(--border-subtle)] space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">Custom Workout</span>
+                <button onclick="disableCustomExerciseMode()" class="text-xs text-[var(--accent-text)] hover:underline font-semibold">Browse Library Instead</button>
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-[var(--text-primary)] block mb-1">Exercise Name <span class="text-amber-400">*</span></label>
+                <input type="text" id="custom-name-field" placeholder="e.g. Ring Dips, Archer Pull-ups, Dragon Flag..." class="w-full px-3 py-2 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:border-[var(--accent)] text-sm font-semibold text-[var(--text-primary)] focus:outline-none" />
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1">Muscle Group</label>
+                  <select id="custom-cat-field" class="w-full px-2.5 py-1.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] text-xs text-[var(--text-primary)] focus:outline-none">
+                    <option value="Push">Push</option>
+                    <option value="Pull">Pull</option>
+                    <option value="Legs">Legs</option>
+                    <option value="Core">Core</option>
+                    <option value="Full Body">Full Body</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1">Intensity</label>
+                  <select id="custom-met-field" onchange="updateLiveCalorieMath()" class="w-full px-2.5 py-1.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] text-xs text-[var(--text-primary)] focus:outline-none">
+                    <option value="6.0">Moderate (MET 6.0)</option>
+                    <option value="8.0" selected>Standard (MET 8.0)</option>
+                    <option value="9.5">Vigorous (MET 9.5)</option>
+                    <option value="11.0">High Explosive (MET 11.0)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sets, Reps, Duration Steppers -->
+            <div class="py-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <div><label class="text-xs font-semibold text-[var(--text-primary)] block">Sets</label><span class="text-[11px] text-[var(--text-muted)]">Total working sets</span></div>
+                <div class="flex items-center gap-2">
+                  <button onclick="stepperChange('sets', -1)" class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] flex items-center justify-center text-[var(--text-primary)] active:scale-95"><i data-lucide="minus" class="w-3.5 h-3.5"></i></button>
+                  <input type="number" id="stepper-sets" min="1" max="50" value="3" onchange="updateLiveCalorieMath()" class="w-14 text-center font-mono font-bold text-sm bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-lg py-1 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+                  <button onclick="stepperChange('sets', 1)" class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] flex items-center justify-center text-[var(--text-primary)] active:scale-95"><i data-lucide="plus" class="w-3.5 h-3.5"></i></button>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div><label class="text-xs font-semibold text-[var(--text-primary)] block">Reps per Set</label><span class="text-[11px] text-[var(--text-muted)]">Repetitions (or hold secs)</span></div>
+                <div class="flex items-center gap-2">
+                  <button onclick="stepperChange('reps', -1)" class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] flex items-center justify-center text-[var(--text-primary)] active:scale-95"><i data-lucide="minus" class="w-3.5 h-3.5"></i></button>
+                  <input type="number" id="stepper-reps" min="1" max="500" value="15" onchange="updateLiveCalorieMath()" class="w-14 text-center font-mono font-bold text-sm bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-lg py-1 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+                  <button onclick="stepperChange('reps', 1)" class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] flex items-center justify-center text-[var(--text-primary)] active:scale-95"><i data-lucide="plus" class="w-3.5 h-3.5"></i></button>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div><label class="text-xs font-semibold text-[var(--text-primary)] block">Duration (Minutes)</label><span class="text-[11px] text-[var(--text-muted)]">Total time on exercise</span></div>
+                <div class="flex items-center gap-2">
+                  <button onclick="stepperChange('mins', -1)" class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] flex items-center justify-center text-[var(--text-primary)] active:scale-95"><i data-lucide="minus" class="w-3.5 h-3.5"></i></button>
+                  <input type="number" id="stepper-mins" min="1" max="180" value="5" onchange="updateLiveCalorieMath()" class="w-14 text-center font-mono font-bold text-sm bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-lg py-1 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+                  <button onclick="stepperChange('mins', 1)" class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] flex items-center justify-center text-[var(--text-primary)] active:scale-95"><i data-lucide="plus" class="w-3.5 h-3.5"></i></button>
+                </div>
+              </div>
+
+              <!-- Estimated Calories Card -->
+              <div class="p-3.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-center justify-between">
+                <div>
+                  <span class="text-[11px] text-[var(--text-muted)] flex items-center gap-1"><i data-lucide="flame" class="w-3.5 h-3.5 text-amber-400"></i> Estimated Calorie Burn</span>
+                  <div class="mt-1 flex items-baseline gap-1.5">
+                    <span id="log-calc-cals" class="font-mono text-2xl font-extrabold text-amber-400">55</span>
+                    <span class="text-xs text-[var(--text-muted)] font-mono">kcal</span>
+                  </div>
+                  <span id="log-calc-sub" class="text-[10px] text-[var(--text-dim)]">Based on MET formula × bodyweight</span>
+                </div>
+                <button onclick="openRestModal()" class="text-[11px] font-semibold text-[var(--accent-text)] hover:underline">Rest Timer</button>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-2 pt-2">
+              <button onclick="submitWorkoutLog()" class="w-full py-3 rounded-xl bg-[var(--accent)] text-black font-bold text-sm hover:brightness-110 active:scale-[0.98] transition-all shadow-xs flex items-center justify-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4" stroke-width="2.5"></i> <span id="log-submit-label">Log to Today</span>
+              </button>
+              <button onclick="openRestModal()" class="w-full py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] text-[var(--text-primary)] font-medium text-xs hover:bg-[var(--bg-card-hover)] flex items-center justify-center gap-1.5 transition-colors">
+                <i data-lucide="timer" class="w-4 h-4 text-[var(--accent)]"></i> Start Set Rest Timer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date's Existing Logged Exercises Summary -->
+      <div class="p-5 sm:p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[var(--border-subtle)]">
+          <div>
+            <h3 id="log-history-title" class="font-bold text-base text-[var(--text-primary)]">Logged Workouts for Today</h3>
+            <p id="log-history-sub" class="text-xs text-[var(--text-muted)] mt-0.5">0 exercises logged • 0 kcal burned</p>
+          </div>
+          <span id="log-history-badge" class="hidden text-xs font-mono font-semibold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">Total: 0 kcal</span>
+        </div>
+        <div id="log-history-list" class="divide-y divide-[var(--border-subtle)] mt-1"></div>
+      </div>
+    </div>
+
+    <!-- CALENDAR PLANNER TAB -->
+    <div id="tab-calendar" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
+            <i data-lucide="calendar" class="w-5 h-5 text-[var(--accent)]"></i> Routine Calendar Planner
+          </h1>
+          <p class="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">Plan routines ahead, review workout history, and inspect days</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="jumpCalToday()" class="px-3 py-1.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">Today</button>
+          <div class="flex items-center gap-1 bg-[var(--bg-input)] rounded-xl border border-[var(--border-subtle)] p-1">
+            <button onclick="changeCalMonth(-1)" class="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+            <span id="cal-month-readout" class="font-semibold text-xs px-2 min-w-[120px] text-center text-[var(--text-primary)]">Month Year</span>
+            <button onclick="changeCalMonth(1)" class="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Month Grid (7 cols) -->
+        <div class="lg:col-span-7 space-y-3">
+          <div class="flex items-center gap-4 text-xs text-[var(--text-muted)] px-2 py-1">
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span><span>Workout Logged</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span><span>Routine Planned</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-amber-500 inline-block"></span><span>Both Active</span></div>
+          </div>
+          <div class="p-4 sm:p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+            <div class="grid grid-cols-7 gap-1 text-center font-semibold text-xs text-[var(--text-muted)] pb-2 mb-2 border-b border-[var(--border-subtle)]">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+            <div id="cal-cells-container" class="grid grid-cols-7 gap-1.5"></div>
+          </div>
+        </div>
+
+        <!-- Day Detail Panel & Planner Form (5 cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-xs">
+            <div class="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
+              <div>
+                <span id="cal-detail-dayname" class="text-[10px] uppercase font-bold tracking-widest text-[var(--accent-text)]">Today</span>
+                <h3 id="cal-detail-fulldate" class="text-base font-bold text-[var(--text-primary)] mt-0.5">---</h3>
+              </div>
+              <button onclick="jumpToLogFromCalendar()" class="px-2.5 py-1.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] flex items-center gap-1">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Log Set
+              </button>
+            </div>
+
+            <!-- Planned Routines -->
+            <div class="py-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i> Planned Routines
+                </span>
+                <button onclick="togglePlanForm()" id="cal-plan-toggle-btn" class="text-xs font-semibold text-[var(--accent-text)] hover:underline flex items-center gap-1">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i> Plan Routine
+                </button>
+              </div>
+
+              <!-- Inline Routine Form -->
+              <div id="cal-plan-form-box" class="hidden p-4 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] space-y-3">
+                <h4 class="text-xs font-bold text-[var(--text-primary)]">Add Routine for Selected Date</h4>
+                <div class="space-y-1.5">
+                  <span class="text-[11px] text-[var(--text-muted)] block">Choose a template or write custom:</span>
+                  <div class="grid grid-cols-2 gap-1.5">
+                    <button type="button" onclick="applyRoutineTemplate('Full Body Blast')" class="p-2 rounded-lg text-left text-xs border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)]">
+                      <div class="font-semibold truncate">Full Body Blast</div><div class="text-[10px] text-[var(--text-muted)]">Circuit</div>
+                    </button>
+                    <button type="button" onclick="applyRoutineTemplate('Push Day Mastery')" class="p-2 rounded-lg text-left text-xs border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)]">
+                      <div class="font-semibold truncate">Push Day Mastery</div><div class="text-[10px] text-[var(--text-muted)]">Chest/Triceps</div>
+                    </button>
+                    <button type="button" onclick="applyRoutineTemplate('Pull Day Power')" class="p-2 rounded-lg text-left text-xs border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)]">
+                      <div class="font-semibold truncate">Pull Day Power</div><div class="text-[10px] text-[var(--text-muted)]">Back/Biceps</div>
+                    </button>
+                    <button type="button" onclick="applyRoutineTemplate('Legs & Core Engine')" class="p-2 rounded-lg text-left text-xs border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)]">
+                      <div class="font-semibold truncate">Legs & Core</div><div class="text-[10px] text-[var(--text-muted)]">Lower Body</div>
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1">Routine Name</label>
+                  <input type="text" id="plan-input-name" placeholder="e.g. Explosive Upper Body" class="w-full px-3 py-1.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+                </div>
+                <div>
+                  <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1">Exercises (one per line)</label>
+                  <textarea id="plan-input-items" rows="3" placeholder="Pull-ups (3x8)&#10;Dips (3x10)&#10;Plank (3x60s)" class="w-full px-3 py-1.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] resize-none"></textarea>
+                </div>
+                <button onclick="saveRoutinePlan()" class="w-full py-2 rounded-lg bg-[var(--accent)] text-black font-semibold text-xs hover:brightness-110">Save Routine Plan</button>
+              </div>
+
+              <div id="cal-day-plans-list" class="space-y-2"></div>
+            </div>
+
+            <!-- Day's Logged Workouts -->
+            <div class="pt-4 border-t border-[var(--border-subtle)] space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
+                  <i data-lucide="dumbbell" class="w-3.5 h-3.5 text-emerald-400"></i> Logged Exercises
+                </span>
+                <span id="cal-day-cals-badge" class="hidden text-xs font-mono font-semibold text-emerald-400">0 kcal</span>
+              </div>
+              <div id="cal-day-logs-list" class="space-y-1.5"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTES & JOURNAL TAB -->
+    <div id="tab-notes" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
+            <i data-lucide="file-text" class="w-5 h-5 text-[var(--accent)]"></i> Training Notes & Journal
+          </h1>
+          <p class="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">Log training cues, progression reflections, routine structures, and diet ideas</p>
+        </div>
+        <button onclick="openNoteModal()" class="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[var(--accent)] text-black font-semibold text-xs sm:text-sm hover:brightness-110 active:scale-95 shadow-xs">
+          <i data-lucide="plus" class="w-4 h-4" stroke-width="2.5"></i> New Note
+        </button>
+      </div>
+
+      <div class="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"></i>
+          <input type="text" id="notes-search-input" oninput="renderNotesList()" placeholder="Search notes by keywords, tags..." class="w-full pl-9 pr-4 py-2 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:border-[var(--accent)] text-xs text-[var(--text-primary)] placeholder-[var(--text-dim)] focus:outline-none" />
+        </div>
+        <div id="notes-tag-pills" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar"></div>
+      </div>
+
+      <div id="notes-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- PROFILE & BIOMETRICS TAB -->
+    <div id="tab-profile" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
+            <i data-lucide="user" class="w-5 h-5 text-[var(--accent)]"></i> Athlete Profile & Biometrics
+          </h1>
+          <p class="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">Your bodyweight directly influences the MET-based calorie combustion algorithm</p>
+        </div>
+        <div id="profile-saved-toast" class="hidden items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-xs font-semibold">
+          <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Changes saved to device!
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left: Athlete Card & BMI (4 cols) -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] flex flex-col items-center text-center">
+            <!-- Profile Picture Circle with Hover / Tap Camera Trigger -->
+            <div class="relative mb-3 group cursor-pointer" onclick="triggerAvatarUpload()" title="Click to change profile picture">
+              <div id="prof-avatar-circle" class="w-24 h-24 rounded-full bg-gradient-to-tr from-[var(--bg-card)] via-[var(--bg-card-hover)] to-[var(--bg-input)] border-2 border-[var(--accent)] flex items-center justify-center text-3xl font-extrabold text-[var(--text-primary)] shadow-md overflow-hidden transition-transform duration-200 group-hover:scale-[1.02]">
+                ?
+              </div>
+              <div class="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[10px] font-semibold gap-1 backdrop-blur-xs">
+                <i data-lucide="camera" class="w-5 h-5"></i>
+                <span>Change</span>
+              </div>
+              <span class="absolute bottom-0 right-0 p-1.5 rounded-full bg-[var(--accent)] text-black shadow-xs z-10 pointer-events-none">
+                <i data-lucide="shield" class="w-3.5 h-3.5" stroke-width="2.5"></i>
+              </span>
+            </div>
+
+            <input type="file" id="input-avatar-file" accept="image/png,image/jpeg,image/webp,image/gif,image/heic" class="hidden" onchange="handleAvatarFileUpload(event)" />
+
+            <!-- Profile Picture Actions -->
+            <div class="flex items-center gap-2 mb-3">
+              <button type="button" onclick="triggerAvatarUpload()" class="px-3 py-1.5 rounded-xl bg-[var(--accent)] text-black font-semibold text-xs flex items-center gap-1.5 hover:brightness-110 active:scale-95 shadow-xs transition-all">
+                <i data-lucide="upload" class="w-3.5 h-3.5"></i> Upload Photo
+              </button>
+              <button type="button" id="btn-remove-avatar" onclick="removeAvatarPhoto()" class="hidden px-2.5 py-1.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-red-500/50 text-[var(--text-muted)] hover:text-red-400 text-xs flex items-center gap-1 active:scale-95 transition-all" title="Remove custom photo and reset to initial">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Remove
+              </button>
+            </div>
+
+            <h2 id="prof-display-name" class="text-lg font-bold text-[var(--text-primary)]">Set Your Athlete Name</h2>
+            <div class="flex items-center gap-2 mt-1">
+              <span id="prof-display-level" class="text-xs px-2.5 py-0.5 rounded-full bg-[var(--accent-glow)] border border-[var(--accent-border)] text-[var(--accent-text)] font-semibold">Beginner</span>
+              <span id="prof-display-age" class="text-xs text-[var(--text-muted)]">Age not set</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 w-full mt-5 pt-4 border-t border-[var(--border-subtle)] text-left">
+              <div class="p-2.5 rounded-xl bg-[var(--bg-input)]">
+                <span class="text-[10px] text-[var(--text-muted)] block">Bodyweight</span>
+                <span id="prof-display-weight" class="font-mono text-sm font-bold text-[var(--text-primary)]">-- kg</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-[var(--bg-input)]">
+                <span class="text-[10px] text-[var(--text-muted)] block">Height</span>
+                <span id="prof-display-height" class="font-mono text-sm font-bold text-[var(--text-primary)]">-- cm</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BMI Gauge Card -->
+          <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+            <div class="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+              <span class="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1.5">
+                <i data-lucide="activity" class="w-4 h-4 text-[var(--accent)]"></i> Body Mass Index (BMI)
+              </span>
+              <span id="prof-bmi-cat-badge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-[var(--bg-input)] text-[var(--text-muted)]">Unset</span>
+            </div>
+            <div class="my-4 text-center">
+              <div id="prof-bmi-value" class="font-mono text-4xl font-extrabold text-[var(--text-primary)]">--</div>
+              <p id="prof-bmi-guide" class="text-xs text-[var(--text-muted)] mt-1">Enter height and weight to calculate your BMI rating</p>
+            </div>
+            <div class="space-y-1.5">
+              <div class="h-2 w-full rounded-full bg-gradient-to-r from-sky-400 via-emerald-400 via-amber-400 to-red-500 opacity-80"></div>
+              <div class="flex justify-between text-[10px] text-[var(--text-dim)] font-mono">
+                <span>Under (&lt;18.5)</span><span>Normal (18.5-24.9)</span><span>Over (25-29.9)</span><span>Obese (30+)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Edit Profile Details (8 cols) -->
+        <div class="lg:col-span-8">
+          <form onsubmit="handleProfileSubmit(event)" class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-5">
+            <h3 class="text-base font-bold text-[var(--text-primary)] pb-3 border-b border-[var(--border-subtle)]">Edit Athlete Details & Targets</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="text-xs font-semibold text-[var(--text-primary)] block mb-1.5">Display Name</label>
+                <input type="text" id="input-prof-name" placeholder="e.g. Alex" class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:border-[var(--accent)] text-xs text-[var(--text-primary)] focus:outline-none" />
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-[var(--text-primary)] block mb-1.5">Age (Years)</label>
+                <input type="number" id="input-prof-age" placeholder="e.g. 25" min="0" max="110" class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:border-[var(--accent)] text-xs text-[var(--text-primary)] focus:outline-none" />
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="text-xs font-semibold text-[var(--text-primary)] flex items-center justify-between mb-1.5">
+                  <span class="flex items-center gap-1.5"><i data-lucide="scale" class="w-3.5 h-3.5 text-[var(--accent)]"></i> Weight (kg)</span>
+                  <span class="text-[10px] text-[var(--text-dim)]">Feeds calorie burn</span>
+                </label>
+                <input type="number" step="0.5" id="input-prof-weight" placeholder="e.g. 72" min="0" max="250" class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:border-[var(--accent)] text-xs font-mono font-bold text-[var(--text-primary)] focus:outline-none" />
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-[var(--text-primary)] flex items-center justify-between mb-1.5">
+                  <span class="flex items-center gap-1.5"><i data-lucide="ruler" class="w-3.5 h-3.5 text-[var(--accent)]"></i> Height (cm)</span>
+                  <span class="text-[10px] text-[var(--text-dim)]">Feeds BMI rating</span>
+                </label>
+                <input type="number" id="input-prof-height" placeholder="e.g. 178" min="0" max="240" class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:border-[var(--accent)] text-xs font-mono font-bold text-[var(--text-primary)] focus:outline-none" />
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="text-xs font-semibold text-[var(--text-primary)] block mb-1.5">Proficiency Level</label>
+                <select id="input-prof-level" class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:border-[var(--accent)] text-xs text-[var(--text-primary)] focus:outline-none cursor-pointer">
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                  <option value="Elite">Elite</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-[var(--text-primary)] block mb-1.5">Primary Fitness Objective</label>
+                <select id="input-prof-goal" class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:border-[var(--accent)] text-xs text-[var(--text-primary)] focus:outline-none cursor-pointer">
+                  <option value="Muscle & Strength">Muscle & Strength</option>
+                  <option value="Endurance">Endurance</option>
+                  <option value="Weight Loss">Weight Loss</option>
+                  <option value="Skill Mastery">Skill Mastery</option>
+                  <option value="General Fitness">General Fitness</option>
+                </select>
+              </div>
+            </div>
+            <div class="pt-2 border-t border-[var(--border-subtle)]">
+              <h4 class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-3">Daily Discipline Targets</h4>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5 mb-1.5"><i data-lucide="flame" class="w-3.5 h-3.5 text-amber-400"></i> Daily Calorie Burn Goal (kcal)</label>
+                  <input type="number" id="input-prof-calgoal" value="500" step="50" min="100" max="3000" class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:border-[var(--accent)] text-xs font-mono font-bold text-[var(--text-primary)] focus:outline-none" />
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5 mb-1.5"><i data-lucide="dumbbell" class="w-3.5 h-3.5 text-[var(--accent)]"></i> Daily Movements Goal (Exercises)</label>
+                  <input type="number" id="input-prof-exgoal" value="4" min="1" max="20" class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:border-[var(--accent)] text-xs font-mono font-bold text-[var(--text-primary)] focus:outline-none" />
+                </div>
+              </div>
+            </div>
+            <div class="pt-3">
+              <button type="submit" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[var(--accent)] text-black font-semibold text-xs hover:brightness-110 active:scale-95 shadow-xs transition-all">Save Profile & Calorie Parameters</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="tab-settings" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
+            <i data-lucide="settings" class="w-5 h-5 text-[var(--accent)]"></i> Preferences & System Storage
+          </h1>
+          <p class="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">Configure appearance, timers, and manage JSON exports/imports locally</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Visual Styling -->
+        <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-6">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
+            <i data-lucide="palette" class="w-4 h-4 text-[var(--accent)]"></i> Visual Styling
+          </h2>
+          <div>
+            <label class="text-xs font-semibold text-[var(--text-primary)] block mb-2">Color Theme</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2" id="settings-theme-grid">
+              <button onclick="setAppTheme('dark')" id="theme-btn-dark" class="p-3 rounded-xl border text-left transition-all bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--text-primary)] shadow-xs">
+                <div class="flex items-center gap-1.5 font-semibold text-xs text-[var(--text-primary)]"><i data-lucide="moon" class="w-3.5 h-3.5"></i> Dark</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Deep Obsidian</span>
+              </button>
+              <button onclick="setAppTheme('charcoal')" id="theme-btn-charcoal" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                <div class="flex items-center gap-1.5 font-semibold text-xs text-[var(--text-primary)]"><i data-lucide="moon" class="w-3.5 h-3.5"></i> Charcoal</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Warm Graphite</span>
+              </button>
+              <button onclick="setAppTheme('midnight')" id="theme-btn-midnight" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                <div class="flex items-center gap-1.5 font-semibold text-xs text-[var(--text-primary)]"><i data-lucide="compass" class="w-3.5 h-3.5 text-sky-400"></i> Midnight</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Oceanic Navy</span>
+              </button>
+              <button onclick="setAppTheme('cyberpunk')" id="theme-btn-cyberpunk" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                <div class="flex items-center gap-1.5 font-semibold text-xs text-[var(--text-primary)]"><i data-lucide="zap" class="w-3.5 h-3.5 text-purple-400"></i> Cyberpunk</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Neon Night</span>
+              </button>
+              <button onclick="setAppTheme('forest')" id="theme-btn-forest" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                <div class="flex items-center gap-1.5 font-semibold text-xs text-[var(--text-primary)]"><i data-lucide="trees" class="w-3.5 h-3.5 text-emerald-400"></i> Forest</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Deep Evergreen</span>
+              </button>
+              <button onclick="setAppTheme('light')" id="theme-btn-light" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                <div class="flex items-center gap-1.5 font-semibold text-xs text-[var(--text-primary)]"><i data-lucide="sun" class="w-3.5 h-3.5 text-amber-500"></i> Light</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Crisp Minimal</span>
+              </button>
+              <button onclick="setAppTheme('nordic')" id="theme-btn-nordic" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                <div class="flex items-center gap-1.5 font-semibold text-xs text-[var(--text-primary)]"><i data-lucide="wind" class="w-3.5 h-3.5 text-cyan-400"></i> Nordic</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Frost Slate</span>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-[var(--text-primary)] block mb-2">Accent Shade</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="settings-accent-grid">
+              <button onclick="setAppAccent('amber')" id="accent-btn-amber" class="p-2.5 rounded-xl border flex items-center gap-2 transition-all bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--text-primary)] font-semibold">
+                <span class="w-3.5 h-3.5 rounded-full bg-amber-500 shrink-0"></span><span class="text-xs">Amber Gold</span>
+              </button>
+              <button onclick="setAppAccent('sage')" id="accent-btn-sage" class="p-2.5 rounded-xl border flex items-center gap-2 transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 shrink-0"></span><span class="text-xs">Sage Emerald</span>
+              </button>
+              <button onclick="setAppAccent('slate')" id="accent-btn-slate" class="p-2.5 rounded-xl border flex items-center gap-2 transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <span class="w-3.5 h-3.5 rounded-full bg-sky-400 shrink-0"></span><span class="text-xs">Electric Slate</span>
+              </button>
+              <button onclick="setAppAccent('crimson')" id="accent-btn-crimson" class="p-2.5 rounded-xl border flex items-center gap-2 transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <span class="w-3.5 h-3.5 rounded-full bg-red-500 shrink-0"></span><span class="text-xs">Power Crimson</span>
+              </button>
+              <button onclick="setAppAccent('violet')" id="accent-btn-violet" class="p-2.5 rounded-xl border flex items-center gap-2 transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <span class="w-3.5 h-3.5 rounded-full bg-purple-500 shrink-0"></span><span class="text-xs">Royal Violet</span>
+              </button>
+              <button onclick="setAppAccent('coral')" id="accent-btn-coral" class="p-2.5 rounded-xl border flex items-center gap-2 transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <span class="w-3.5 h-3.5 rounded-full bg-orange-500 shrink-0"></span><span class="text-xs">Flame Coral</span>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-[var(--text-primary)] block mb-2">Font Scale</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="setAppFontSize('compact')" id="fontsize-btn-compact" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <div class="text-xs font-semibold flex items-center gap-1.5 text-[var(--text-primary)]"><i data-lucide="type" class="w-3.5 h-3.5"></i> Compact</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-0.5 block">Dense data density</span>
+              </button>
+              <button onclick="setAppFontSize('comfortable')" id="fontsize-btn-comfortable" class="p-3 rounded-xl border text-left transition-all bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--text-primary)] font-semibold">
+                <div class="text-xs font-semibold flex items-center gap-1.5 text-[var(--text-primary)]"><i data-lucide="type" class="w-3.5 h-3.5"></i> Comfortable</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-0.5 block">Standard readability</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timers, Backup & System Storage -->
+        <div class="space-y-6">
+          <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-6">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
+              <i data-lucide="clock" class="w-4 h-4 text-[var(--accent)]"></i> Timer & Clock Behaviors
+            </h2>
+            <div class="flex items-center justify-between p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)]">
+              <div>
+                <span class="text-xs font-semibold text-[var(--text-primary)]">Clock Display Format</span>
+                <p id="clock-format-sub" class="text-[11px] text-[var(--text-muted)] mt-0.5">Currently: 12-Hour AM/PM</p>
+              </div>
+              <button onclick="toggleClockMode()" id="clock-toggle-btn" class="px-3 py-1.5 rounded-lg border border-[var(--border-strong)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">Switch to 24h</button>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-[var(--text-primary)] flex items-center justify-between mb-2">
+                <span>Default Rest Timer Duration</span>
+                <span id="settings-rest-readout" class="text-xs font-mono font-bold text-[var(--accent-text)]">60s</span>
+              </label>
+              <div class="grid grid-cols-5 gap-2" id="settings-rest-presets"></div>
+            </div>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
+              <i data-lucide="hard-drive" class="w-4 h-4 text-[var(--accent)]"></i> Local Data & Backup
+            </h2>
+            <div class="space-y-2">
+              <button onclick="downloadPdfReport()" id="btn-download-pdf" class="w-full p-3 rounded-xl bg-[var(--accent)] text-black font-bold text-xs hover:brightness-110 flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.98]">
+                <i data-lucide="file-down" class="w-4 h-4" stroke-width="2.5"></i> Download Fitness Report (PDF)
+              </button>
+              <button onclick="openReportModal()" class="w-full p-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] flex items-center justify-center gap-2 transition-colors">
+                <i data-lucide="printer" class="w-3.5 h-3.5 text-[var(--accent)]"></i> Preview & Print Report
+              </button>
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <button onclick="exportJsonFile()" class="p-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] flex items-center justify-center gap-2 transition-colors">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i> Export JSON
+                </button>
+                <label class="p-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] flex items-center justify-center gap-2 transition-colors cursor-pointer">
+                  <i data-lucide="upload" class="w-3.5 h-3.5"></i> Import Backup
+                  <input type="file" accept=".json" onchange="importJsonFile(event)" class="hidden" />
+                </label>
+              </div>
+            </div>
+            <div class="flex items-center justify-end pt-2">
+              <button onclick="resetAllAppData()" class="text-xs text-red-400 hover:text-red-300 flex items-center gap-1 font-medium hover:underline">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Reset All Data
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- REST TIMER MODAL -->
+  <div id="modal-rest-timer" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+    <div class="relative w-full max-w-sm rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+        <div class="flex items-center gap-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-[var(--accent)] animate-pulse"></div>
+          <h3 class="font-semibold text-base text-[var(--text-primary)]">Rest Timer</h3>
+        </div>
+        <button onclick="closeRestModal()" class="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+
+      <div class="my-6 flex flex-col items-center justify-center">
+        <div class="relative flex items-center justify-center">
+          <svg class="w-48 h-48 -rotate-90 transform" viewBox="0 0 160 160">
+            <circle cx="80" cy="80" r="68" class="stroke-[var(--border-subtle)] fill-none" stroke-width="8"></circle>
+            <circle id="rest-svg-progress" cx="80" cy="80" r="68" class="fill-none transition-all duration-300 stroke-[var(--accent)]" stroke-width="8" stroke-linecap="round" stroke-dasharray="427.25" stroke-dashoffset="0"></circle>
+          </svg>
+          <div class="absolute flex flex-col items-center justify-center text-center">
+            <span id="rest-countdown-text" class="font-mono text-4xl font-bold tracking-tight text-[var(--text-primary)]">01:00</span>
+            <span id="rest-countdown-sub" class="text-xs uppercase tracking-wider text-[var(--text-muted)] mt-1 font-medium">Ready</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 mt-3">
+          <button onclick="stepRestSec(-15)" class="px-2.5 py-1 text-xs rounded-md bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)] flex items-center gap-1"><i data-lucide="minus" class="w-3 h-3"></i> 15s</button>
+          <button onclick="stepRestSec(15)" class="px-2.5 py-1 text-xs rounded-md bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)] flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> 15s</button>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center gap-3 mb-5">
+        <button onclick="resetRestCountdown()" class="p-3 rounded-xl bg-[var(--bg-input)] text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border-subtle)] active:scale-95"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
+        <button onclick="toggleRestCountdown()" id="rest-play-btn" class="px-7 py-3 rounded-xl bg-[var(--accent)] text-black font-semibold flex items-center gap-2 shadow-sm hover:brightness-110 active:scale-95">
+          <i data-lucide="play" class="w-4 h-4 fill-current"></i> <span>Start</span>
+        </button>
+      </div>
+
+      <div class="pt-3 border-t border-[var(--border-subtle)]">
+        <p class="text-xs text-[var(--text-muted)] mb-2 font-medium">Quick Presets</p>
+        <div class="grid grid-cols-4 gap-2">
+          <button onclick="setRestDuration(30)" class="py-1.5 px-2 text-xs rounded-lg font-mono bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]">30s</button>
+          <button onclick="setRestDuration(60)" class="py-1.5 px-2 text-xs rounded-lg font-mono bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]">60s</button>
+          <button onclick="setRestDuration(90)" class="py-1.5 px-2 text-xs rounded-lg font-mono bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]">90s</button>
+          <button onclick="setRestDuration(120)" class="py-1.5 px-2 text-xs rounded-lg font-mono bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]">120s</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SESSION STOPWATCH MODAL -->
+  <div id="modal-session-timer" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+    <div class="relative w-full max-w-md rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+        <div class="flex items-center gap-2">
+          <i data-lucide="clock" class="w-4 h-4 text-[var(--accent)]"></i>
+          <h3 class="font-semibold text-base text-[var(--text-primary)]">Session Workout Timer</h3>
+        </div>
+        <button onclick="closeSessionModal()" class="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+
+      <div class="my-8 flex flex-col items-center justify-center text-center">
+        <div id="session-status-badge" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--bg-input)] text-xs text-[var(--text-muted)] mb-3 border border-[var(--border-subtle)]">
+          <span id="session-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span id="session-status-text">Ready</span>
+        </div>
+        <div id="session-time-display" class="font-mono text-5xl md:text-6xl font-extrabold tracking-tight text-[var(--text-primary)]">00:00</div>
+        <div class="grid grid-cols-2 gap-3 w-full mt-6 pt-5 border-t border-[var(--border-subtle)]">
+          <div class="flex flex-col items-center p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)]">
+            <span class="text-xs text-[var(--text-muted)] flex items-center gap-1"><i data-lucide="flame" class="w-3.5 h-3.5 text-amber-400"></i> Est. Burn</span>
+            <span id="session-burn-estimate" class="font-mono text-lg font-bold text-[var(--text-primary)] mt-0.5">~0 <span class="text-xs font-normal text-[var(--text-muted)]">kcal</span></span>
+          </div>
+          <div class="flex flex-col items-center p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)]">
+            <span class="text-xs text-[var(--text-muted)]">Today's Total Time</span>
+            <span id="session-today-total" class="font-mono text-lg font-bold text-[var(--text-primary)] mt-0.5">00:00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center gap-3">
+        <button onclick="resetSessionTimer()" class="p-3 rounded-xl bg-[var(--bg-input)] text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border-subtle)] active:scale-95"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
+        <button onclick="toggleSessionTimer()" id="session-action-btn" class="px-8 py-3 rounded-xl bg-[var(--accent)] text-black font-semibold flex items-center gap-2 shadow-sm hover:brightness-110 active:scale-95">
+          <i data-lucide="play" class="w-4 h-4 fill-current"></i> <span>Start Session</span>
+        </button>
+        <button onclick="saveSessionToTodayRecord()" class="px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium flex items-center gap-1.5 shadow-sm active:scale-95 text-sm">
+          <i data-lucide="check" class="w-4 h-4"></i> Save to Today
+        </button>
+      </div>
+      <p class="text-[11px] text-center text-[var(--text-dim)] mt-4">Time tracking runs via high-precision timestamps and won't freeze when switching tabs.</p>
+    </div>
+  </div>
+
+  <!-- NOTE MODAL EDITOR -->
+  <div id="modal-note-editor" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+    <div class="w-full max-w-lg rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+        <h3 id="note-modal-header" class="font-bold text-base text-[var(--text-primary)]">Create New Note</h3>
+        <button onclick="closeNoteModal()" class="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)]"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-[var(--text-primary)] block mb-1.5">Category Tag</label>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="note-tag-selector"></div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-[var(--text-primary)] block mb-1.5">Title</label>
+        <input type="text" id="note-edit-title" placeholder="Note title..." class="w-full px-3 py-2 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-[var(--text-primary)] block mb-1.5">Content</label>
+        <textarea id="note-edit-body" rows="6" placeholder="Write your observations, cues, or recovery thoughts..." class="w-full px-3 py-2 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-xs leading-relaxed text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] resize-none"></textarea>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button onclick="closeNoteModal()" class="px-4 py-2 rounded-xl bg-[var(--bg-input)] text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-[var(--border-subtle)]">Cancel</button>
+        <button onclick="saveNoteFromModal()" class="px-5 py-2 rounded-xl bg-[var(--accent)] text-black font-semibold text-xs hover:brightness-110">Save Note</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FITNESS REPORT PREVIEW & PRINT MODAL -->
+  <div id="modal-report-preview" class="hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-xs overflow-y-auto">
+    <div class="relative w-full max-w-4xl max-h-[92vh] flex flex-col rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-2xl overflow-hidden my-auto">
+      <div class="flex items-center justify-between px-5 py-3.5 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] shrink-0 no-print">
+        <div class="flex items-center gap-2">
+          <i data-lucide="file-text" class="w-4 h-4 text-[var(--accent)]"></i>
+          <h3 class="font-bold text-sm text-[var(--text-primary)]">Fitness Performance Report</h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="downloadPdfReport()" class="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-black font-semibold text-xs hover:brightness-110 flex items-center gap-1.5 shadow-xs transition-all active:scale-95">
+            <i data-lucide="file-down" class="w-3.5 h-3.5" stroke-width="2.5"></i> Download PDF
+          </button>
+          <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-[var(--border-strong)] text-xs font-semibold hover:bg-[var(--bg-card-hover)] flex items-center gap-1.5 transition-colors">
+            <i data-lucide="printer" class="w-3.5 h-3.5 text-[var(--accent)]"></i> Print
+          </button>
+          <button onclick="closeReportModal()" class="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+      <div id="report-modal-body" class="p-4 sm:p-6 overflow-y-auto flex-1 bg-white text-slate-900 select-text font-sans text-xs">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'aegis_calisthenics_state_v2';
+
+    // Blank default state: completely blank initial profile & data
+    const DEFAULT_DATA = {
+      profile: { name: '', age: 0, weight: 0, height: 0, calGoal: 500, exGoal: 4, level: 'Beginner', goal: 'Muscle & Strength', weeklyWorkoutGoal: 4, dailyMinutesGoal: 30, targetWeight: 0, avatarUrl: '' },
+      settings: { theme: 'dark', accent: 'amber', fontSize: 'comfortable', showChart: true, restDefault: 60, soundOn: true, clock24h: false },
+      logs: {},
+      plans: {},
+      notes: [],
+      sessionTimes: {}
+    };
+
+    let appState = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return JSON.parse(JSON.stringify(DEFAULT_DATA));
+        const parsed = JSON.parse(raw);
+        const merged = Object.assign({}, DEFAULT_DATA, parsed);
+        merged.profile = Object.assign({}, DEFAULT_DATA.profile, parsed.profile || {});
+        merged.settings = Object.assign({}, DEFAULT_DATA.settings, parsed.settings || {});
+        return merged;
+      } catch (e) {
+        return JSON.parse(JSON.stringify(DEFAULT_DATA));
+      }
+    }
+
+    const EXERCISE_LIB = [
+      { id: 'push-ups', name: 'Push-ups', category: 'Push', met: 8.0, defaultSets: 3, defaultReps: 15, defaultMins: 5, description: 'Classic horizontal push targeting chest, anterior delts, and triceps.', difficulty: 'Beginner', progression: 'Incline -> Standard -> Diamond -> Archer -> One-Arm' },
+      { id: 'diamond-push-ups', name: 'Diamond Push-ups', category: 'Push', met: 9.0, defaultSets: 3, defaultReps: 12, defaultMins: 5, description: 'Hands together under chest; heavy emphasis on the triceps and inner chest.', difficulty: 'Intermediate', progression: 'Standard -> Diamond -> Archer' },
+      { id: 'dips', name: 'Parallel Bar Dips', category: 'Push', met: 8.0, defaultSets: 3, defaultReps: 10, defaultMins: 6, description: 'Vertical bodyweight push for lower pectoral development and triceps horsepower.', difficulty: 'Intermediate', progression: 'Bench Dips -> Banded Dips -> Bodyweight Dips -> Weighted' },
+      { id: 'pike-push-ups', name: 'Pike Push-ups', category: 'Push', met: 8.0, defaultSets: 3, defaultReps: 10, defaultMins: 5, description: 'Elevated hip push targeting the anterior deltoids and overhead pushing strength.', difficulty: 'Intermediate', progression: 'Pike -> Feet Elevated Pike -> Wall Handstand Push-up' },
+      { id: 'handstand-push-ups', name: 'Handstand Push-ups', category: 'Push', met: 10.0, defaultSets: 3, defaultReps: 5, defaultMins: 6, description: 'Elite vertical pressing movement demanding overhead balance and shoulder power.', difficulty: 'Advanced', progression: 'Wall Supported -> Freestanding Handstand Push-up' },
+      { id: 'pull-ups', name: 'Pull-ups', category: 'Pull', met: 9.0, defaultSets: 3, defaultReps: 8, defaultMins: 6, description: 'Pronated grip vertical pull building wide lats, rhomboids, and biceps.', difficulty: 'Intermediate', progression: 'Dead Hang -> Scapular Pulls -> Australian Rows -> Pull-up' },
+      { id: 'chin-ups', name: 'Chin-ups', category: 'Pull', met: 9.0, defaultSets: 3, defaultReps: 8, defaultMins: 6, description: 'Supinated grip vertical pull engaging the biceps brachii and lower lats deeply.', difficulty: 'Intermediate', progression: 'Negative Chin-ups -> Full Chin-up -> Weighted Chin-up' },
+      { id: 'inverted-rows', name: 'Inverted Rows (Australian)', category: 'Pull', met: 7.0, defaultSets: 3, defaultReps: 12, defaultMins: 6, description: 'Horizontal bodyweight pull focusing on middle back thickness and rear deltoids.', difficulty: 'Beginner', progression: 'High Angle -> Low Angle -> Feet Elevated Rows' },
+      { id: 'muscle-ups', name: 'Bar Muscle-ups', category: 'Pull', met: 11.0, defaultSets: 3, defaultReps: 4, defaultMins: 8, description: 'High explosive pull transitioning dynamically into an above-the-bar dip.', difficulty: 'Advanced', progression: 'Explosive Pull-up + Straight Bar Dip -> Kipping -> Strict Muscle-up' },
+      { id: 'squats', name: 'Bodyweight Squats', category: 'Legs', met: 6.0, defaultSets: 4, defaultReps: 20, defaultMins: 6, description: 'Fundamental lower body compound exercise for quadriceps, hamstrings, and glutes.', difficulty: 'Beginner', progression: 'Assisted Squat -> Air Squat -> Deep Tempo Squat' },
+      { id: 'lunges', name: 'Walking Lunges', category: 'Legs', met: 7.0, defaultSets: 3, defaultReps: 16, defaultMins: 6, description: 'Unilateral leg drive strengthening knees, hip stabilizers, and single-leg balance.', difficulty: 'Beginner', progression: 'Static Split Squat -> Walking Lunge -> Jumping Lunge' },
+      { id: 'pistol-squats', name: 'Pistol Squats', category: 'Legs', met: 9.0, defaultSets: 3, defaultReps: 6, defaultMins: 6, description: 'True single-leg squat testing balance, ankle dorsiflexion, and unilateral power.', difficulty: 'Advanced', progression: 'Box Step-down -> Counterbalance Pistol -> Full Freestanding Pistol' },
+      { id: 'calf-raises', name: 'Calf Raises', category: 'Legs', met: 4.0, defaultSets: 4, defaultReps: 25, defaultMins: 4, description: 'Controlled plantar flexion for gastrocnemius and soleus ankle stiffness.', difficulty: 'Beginner', progression: 'Two-leg Flat -> Single-leg Ledge Raised' },
+      { id: 'plank', name: 'Forearm Plank', category: 'Core', met: 4.0, defaultSets: 3, defaultReps: 1, defaultMins: 4, description: 'Isometric anti-extension core hold building foundational abdominal wall stability.', difficulty: 'Beginner', progression: 'Knees -> Standard -> Long-Lever Plank' },
+      { id: 'hollow-hold', name: 'Hollow Body Hold', category: 'Core', met: 5.0, defaultSets: 3, defaultReps: 1, defaultMins: 4, description: 'Gymnastic staple locking posterior pelvic tilt and total core tension.', difficulty: 'Intermediate', progression: 'Tuck Hold -> Single-Leg -> Full Hollow Body Hold' },
+      { id: 'leg-raises', name: 'Hanging Leg Raises', category: 'Core', met: 6.0, defaultSets: 3, defaultReps: 10, defaultMins: 5, description: 'Anti-extension and hip flexor/rectus abdominis flexion from a dead hang.', difficulty: 'Intermediate', progression: 'Hanging Knee Raises -> L-Raises -> Toes To Bar' },
+      { id: 'burpees', name: 'Burpees', category: 'Full Body', met: 12.0, defaultSets: 4, defaultReps: 15, defaultMins: 8, description: 'Explosive squat thrust with chest-to-floor drop and vertical jump.', difficulty: 'Intermediate', progression: 'No Push-up Burpee -> Standard Burpee -> Chest-to-Floor Tuck Jump Burpee' },
+      { id: 'mountain-climbers', name: 'Mountain Climbers', category: 'Full Body', met: 10.0, defaultSets: 3, defaultReps: 30, defaultMins: 5, description: 'Rapid alternating high knees in a push-up plank posture.', difficulty: 'Beginner', progression: 'Cross-body Climbers -> Standard Fast Climbers' }
+    ];
+
+    let currentSelectedEx = EXERCISE_LIB[0];
+    let isCustomMode = false;
+    let activeCatFilter = 'All';
+    let currentTabId = 'dashboard';
+    let activeNotesTag = 'All';
+    let editingNoteId = null;
+    let selectedNoteTag = 'Workout Plan';
+    let calViewYear = new Date().getFullYear();
+    let calViewMonth = new Date().getMonth();
+    let calSelectedDateKey = getTodayDateKey();
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+    }
+    function getTodayDateKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function toggleMobileSidebar(open) {
+      const sb = document.getElementById('sidebar-panel');
+      const bd = document.getElementById('mobile-backdrop');
+      if (open) {
+        sb.classList.remove('left-[-320px]');
+        sb.classList.add('left-0');
+        bd.classList.remove('hidden');
+      } else {
+        sb.classList.add('left-[-320px]');
+        sb.classList.remove('left-0');
+        bd.classList.add('hidden');
+      }
+    }
+
+    function navigate(tab) {
+      currentTabId = tab;
+      const tabs = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'settings'];
+      tabs.forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        const btn = document.getElementById('nav-btn-' + t);
+        if (el) el.classList.toggle('hidden', t !== tab);
+        if (btn) {
+          if (t === tab) {
+            btn.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all bg-[var(--accent)] text-black font-bold shadow-xs";
+            if (!btn.querySelector('.active-dot')) {
+              btn.insertAdjacentHTML('beforeend', '<div class="active-dot w-1.5 h-1.5 rounded-full bg-black shrink-0"></div>');
+            }
+          } else {
+            btn.className = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]";
+            const dot = btn.querySelector('.active-dot');
+            if (dot) dot.remove();
+          }
+        }
+      });
+      toggleMobileSidebar(false);
+      window.scrollTo(0, 0);
+
+      if (tab === 'dashboard') renderDashboardTab();
+      if (tab === 'log') renderLogWorkoutTab();
+      if (tab === 'calendar') renderCalendarTab();
+      if (tab === 'notes') renderNotesList();
+      if (tab === 'profile') renderProfileForm();
+      if (tab === 'settings') renderSettingsTab();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Audio Chime via Web Audio API
+    function playRestChime() {
+      if (!appState.settings.soundOn) return;
+      try {
+        const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtxClass) return;
+        const ctx = new AudioCtxClass();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.6);
+      } catch (e) {}
+    }
+
+    function calculateCalories(met, weightKg, mins, sets, reps) {
+      const w = weightKg > 0 ? weightKg : 70; // 70kg baseline if weight not entered yet
+      const base = (Math.max(0, mins) / 60) * met * w;
+      const vol = Math.max(0, sets) * Math.max(0, reps) * 0.08;
+      return Math.max(1, Math.round(base + vol));
+    }
+
+    function calculateStreak() {
+      const active = new Set(Object.keys(appState.logs).filter(d => (appState.logs[d] || []).length > 0));
+      Object.keys(appState.sessionTimes).forEach(d => {
+        if ((appState.sessionTimes[d] || 0) > 60) active.add(d);
+      });
+      let streak = 0;
+      let check = new Date();
+      const today = getTodayDateKey();
+      const yest = new Date(Date.now() - 86400000);
+      const yestKey = `${yest.getFullYear()}-${String(yest.getMonth() + 1).padStart(2, '0')}-${String(yest.getDate()).padStart(2, '0')}`;
+
+      if (!active.has(today)) {
+        if (!active.has(yestKey)) return 0;
+        check = yest;
+      }
+      while (true) {
+        const k = `${check.getFullYear()}-${String(check.getMonth() + 1).padStart(2, '0')}-${String(check.getDate()).padStart(2, '0')}`;
+        if (active.has(k)) {
+          streak++;
+          check.setDate(check.getDate() - 1);
+        } else break;
+      }
+      return streak;
+    }
+
+    function renderAvatarEl(id, url, initial) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (url) {
+        el.innerHTML = `<img src="${url}" alt="Athlete Avatar" class="w-full h-full object-cover rounded-full pointer-events-none" />`;
+      } else {
+        el.textContent = initial || '?';
+      }
+    }
+
+    function updateSidebarBadges() {
+      const name = (appState.profile.name || '').trim();
+      const initial = name ? name.charAt(0).toUpperCase() : '?';
+      renderAvatarEl('sidebar-avatar', appState.profile.avatarUrl, initial);
+      renderAvatarEl('mobile-avatar', appState.profile.avatarUrl, initial);
+      document.getElementById('sidebar-name').textContent = name || 'Athlete';
+      document.getElementById('sidebar-sub').textContent = name ? `${appState.profile.level} • ${appState.profile.weight > 0 ? appState.profile.weight + 'kg' : ''}` : 'Set details';
+
+      const streak = calculateStreak();
+      const sbBanner = document.getElementById('sidebar-streak-banner');
+      if (streak > 0) {
+        sbBanner.classList.remove('hidden');
+        document.getElementById('sidebar-streak-text').textContent = `${streak} Day Streak 🔥`;
+      } else {
+        sbBanner.classList.add('hidden');
+      }
+
+      const todaySec = appState.sessionTimes[getTodayDateKey()] || 0;
+      const sessionMins = `${Math.floor(todaySec / 60)}m`;
+      document.getElementById('sidebar-session-val').textContent = sessionMins;
+      document.getElementById('mobile-session-time').textContent = sessionMins;
+      document.getElementById('sidebar-rest-val').textContent = `${appState.settings.restDefault}s`;
+      document.getElementById('mobile-rest-default').textContent = `${appState.settings.restDefault}s`;
+    }
+
+    // DASHBOARD RENDERING
+    function renderDashboardTab() {
+      const today = getTodayDateKey();
+      const todayLogs = appState.logs[today] || [];
+      const todayCals = todayLogs.reduce((acc, curr) => acc + (curr.cal || 0), 0);
+      const todaySets = todayLogs.length;
+      const todaySec = appState.sessionTimes[today] || 0;
+
+      const name = appState.profile.name.trim();
+      document.getElementById('dash-greeting').textContent = `Welcome, ${name || 'Athlete'}`;
+
+      const streak = calculateStreak();
+      document.getElementById('dash-streak-sub').textContent = streak > 0 ? `You are on an active ${streak}-day workout streak. Keep your momentum high!` : `Start today's training by logging an exercise or tracking a session.`;
+
+      document.getElementById('stat-sets-today').textContent = todaySets;
+      document.getElementById('stat-sets-goal').textContent = `/ ${appState.profile.exGoal || 4}`;
+      document.getElementById('stat-cal-today').textContent = todayCals;
+      const calPercent = Math.min(100, Math.round((todayCals / (appState.profile.calGoal || 500)) * 100));
+      document.getElementById('stat-cal-goal-sub').textContent = `${calPercent}% of ${appState.profile.calGoal || 500} kcal goal`;
+
+      document.getElementById('stat-streak-val').textContent = streak;
+
+      const mins = Math.floor(todaySec / 60);
+      const secs = todaySec % 60;
+      document.getElementById('stat-time-today').textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      const allDates = Object.keys(appState.logs);
+      const totalWorkouts = new Set([...allDates.filter(d => (appState.logs[d] || []).length > 0), ...Object.keys(appState.sessionTimes).filter(d => (appState.sessionTimes[d] || 0) > 60)]).size;
+      document.getElementById('stat-total-workouts').textContent = totalWorkouts;
+
+      const lifetimeCal = allDates.reduce((sum, d) => sum + (appState.logs[d] || []).reduce((s, l) => s + (l.cal || 0), 0), 0);
+      document.getElementById('stat-lifetime-cal').textContent = lifetimeCal.toLocaleString();
+
+      // Goal Progress Bars
+      document.getElementById('goal-cal-readout').innerHTML = `<strong class="text-[var(--text-primary)]">${todayCals}</strong> / ${appState.profile.calGoal || 500} kcal`;
+      document.getElementById('goal-cal-bar').style.width = `${Math.min(100, Math.max(todayCals > 0 ? 5 : 0, calPercent))}%`;
+      document.getElementById('goal-cal-percent').textContent = `${calPercent}% completed`;
+      document.getElementById('goal-cal-remain').textContent = todayCals >= (appState.profile.calGoal || 500) ? 'Goal achieved! 🎯' : `${Math.max(0, (appState.profile.calGoal || 500) - todayCals)} kcal remaining`;
+
+      const exPercent = Math.min(100, Math.round((todaySets / (appState.profile.exGoal || 4)) * 100));
+      document.getElementById('goal-ex-readout').innerHTML = `<strong class="text-[var(--text-primary)]">${todaySets}</strong> / ${appState.profile.exGoal || 4} logged`;
+      document.getElementById('goal-ex-bar').style.width = `${Math.min(100, Math.max(todaySets > 0 ? 5 : 0, exPercent))}%`;
+      document.getElementById('goal-ex-percent').textContent = `${exPercent}% completed`;
+      document.getElementById('goal-ex-remain').textContent = todaySets >= (appState.profile.exGoal || 4) ? 'Target crushed! 💪' : `${Math.max(0, (appState.profile.exGoal || 4) - todaySets)} exercises to hit goal`;
+
+      // Weekly Calories Bar Chart (Monday to Sunday)
+      renderWeeklyChart();
+
+      // Today's list
+      document.getElementById('dash-today-subtitle').textContent = `${todaySets} movements recorded today (${todayCals} kcal)`;
+      const listEl = document.getElementById('dash-today-list');
+      if (todayLogs.length === 0) {
+        listEl.innerHTML = `
+          <div class="py-10 flex flex-col items-center justify-center text-center">
+            <div class="w-10 h-10 rounded-xl bg-[var(--bg-input)] flex items-center justify-center text-[var(--text-muted)] mb-2.5">
+              <i data-lucide="dumbbell" class="w-5 h-5"></i>
+            </div>
+            <h4 class="text-xs font-semibold text-[var(--text-primary)]">No exercises logged today yet</h4>
+            <p class="text-[11px] text-[var(--text-muted)] mt-0.5">Click "+ Log Workout" to record your sets and burn calories!</p>
+          </div>
+        `;
+      } else {
+        listEl.innerHTML = todayLogs.map(l => `
+          <div class="py-3 flex items-center justify-between gap-3 group hover:bg-[var(--bg-card-hover)] px-2 rounded-lg transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-center justify-center text-xs font-bold text-[var(--accent-text)]">
+                ${l.sets}x
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 class="font-semibold text-xs text-[var(--text-primary)]">${l.name}</h4>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-input)] text-[var(--text-muted)]">${l.category}</span>
+                </div>
+                <div class="text-[11px] text-[var(--text-muted)] mt-0.5">${l.sets} sets × ${l.reps} reps • ${l.mins} mins</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold text-amber-400">+${l.cal} kcal</span>
+              <button onclick="deleteWorkoutLog('${today}', '${l.id}')" class="p-1 rounded text-[var(--text-dim)] hover:text-red-400">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    let currentWeeklyData = [];
+
+    function renderWeeklyChart() {
+      const now = new Date();
+      const day = now.getDay();
+      const diffToMonday = day === 0 ? -6 : 1 - day;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + diffToMonday);
+
+      const todayKey = getTodayDateKey();
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const dayLogs = appState.logs[k] || [];
+        const cals = dayLogs.reduce((s, l) => s + (l.cal || 0), 0);
+        days.push({
+          key: k,
+          name: d.toLocaleDateString('en-US', { weekday: 'short' }),
+          short: `${d.getMonth() + 1}/${d.getDate()}`,
+          isToday: k === todayKey,
+          calories: cals,
+          count: dayLogs.length
+        });
+      }
+      currentWeeklyData = days;
+
+      const maxCal = Math.max(appState.profile.calGoal || 500, ...days.map(d => d.calories), 100);
+      const svgContainer = document.getElementById('chart-svg-container') || document.getElementById('chart-bars-container');
+      const labelsContainer = document.getElementById('chart-labels-container');
+
+      const goalRatio = Math.min(1, Math.max(0.1, (appState.profile.calGoal || 500) / maxCal));
+      const goalY = Math.round(145 - goalRatio * 105);
+
+      const points = days.map((d, idx) => {
+        const x = 50 + idx * 100;
+        const ratio = d.calories > 0 ? Math.min(1, d.calories / maxCal) : 0;
+        const y = Math.round(145 - ratio * 105);
+        return { x, y, day: d, idx };
+      });
+
+      const areaPoints = points.map(p => `${p.x},${p.y}`).join(' L ');
+      const areaPath = `M 50,145 L ${areaPoints} L 650,145 Z`;
+      const linePath = `M ${points.map(p => `${p.x},${p.y}`).join(' L ')}`;
+
+      const trackLinesSvg = points.map(p => `
+        <line id="chart-track-${p.idx}" x1="${p.x}" y1="25" x2="${p.x}" y2="145" stroke="var(--border-subtle)" stroke-dasharray="2 3" stroke-width="1" opacity="${p.day.isToday ? '0.45' : '0.25'}" class="transition-all duration-200" />
+      `).join('');
+
+      const dotsSvg = points.map(p => `
+        <g class="cursor-pointer" id="chart-node-${p.idx}">
+          ${p.day.isToday ? `<circle cx="${p.x}" cy="${p.y}" r="12" fill="var(--accent)" opacity="0.25" class="animate-ping pointer-events-none" />` : ''}
+          <circle id="chart-hover-ring-${p.idx}" cx="${p.x}" cy="${p.y}" r="10" fill="var(--accent-glow)" stroke="var(--accent)" stroke-width="1.5" class="hidden pointer-events-none" />
+          <circle id="chart-dot-${p.idx}" cx="${p.x}" cy="${p.y}" r="${p.day.calories > 0 ? 5.5 : 4.5}" fill="${p.day.calories > 0 || p.day.isToday ? 'var(--accent)' : 'var(--bg-card)'}" stroke="var(--accent)" stroke-width="${p.day.calories > 0 ? 2 : 2.5}" filter="${p.day.calories > 0 ? 'url(#dotGlow)' : ''}" class="transition-all duration-200" />
+          <text id="chart-lbl-${p.idx}" x="${p.x}" y="${p.y - 10}" fill="${p.day.calories > 0 ? 'var(--text-primary)' : 'var(--text-dim)'}" font-size="10" font-weight="bold" font-family="monospace" text-anchor="middle" class="transition-all duration-200 pointer-events-none">${p.day.calories > 0 ? p.day.calories : '0'}</text>
+          <rect x="${p.x - 45}" y="15" width="90" height="145" fill="transparent" class="cursor-pointer" onmouseenter="highlightChartDay(${p.idx})" onmouseleave="unhighlightChartDay(${p.idx})" onclick="highlightChartDay(${p.idx})" />
+        </g>
+      `).join('');
+
+      if (svgContainer) {
+        svgContainer.innerHTML = `
+          <svg viewBox="0 0 700 170" class="w-full h-44 sm:h-48 overflow-visible select-none">
+            <defs>
+              <linearGradient id="calAreaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.32" />
+                <stop offset="70%" stop-color="var(--accent)" stop-opacity="0.08" />
+                <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0" />
+              </linearGradient>
+              <filter id="dotGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="var(--accent)" flood-opacity="0.5" />
+              </filter>
+            </defs>
+            <g class="pointer-events-none">
+              <line x1="35" y1="${goalY}" x2="665" y2="${goalY}" stroke="var(--border-strong)" stroke-dasharray="4 4" stroke-width="1" />
+              <text x="665" y="${goalY - 6}" fill="var(--text-dim)" font-size="10" font-family="monospace" text-anchor="end">Goal: ${appState.profile.calGoal || 500} kcal</text>
+            </g>
+            <line x1="35" y1="145" x2="665" y2="145" stroke="var(--border-subtle)" stroke-width="1.5" />
+            ${trackLinesSvg}
+            <path d="${areaPath}" fill="url(#calAreaGradient)" class="transition-all duration-300" />
+            <path d="${linePath}" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="transition-all duration-300" />
+            ${dotsSvg}
+          </svg>
+        `;
+      }
+
+      if (labelsContainer) {
+        labelsContainer.innerHTML = days.map((d, idx) => `
+          <div class="flex-1 text-center cursor-pointer py-1 rounded hover:bg-[var(--bg-input)] transition-colors" onmouseenter="highlightChartDay(${idx})" onmouseleave="unhighlightChartDay(${idx})" onclick="highlightChartDay(${idx})">
+            <span class="text-xs block font-semibold ${d.isToday ? 'text-[var(--accent-text)] font-bold' : 'text-[var(--text-muted)]'}">${d.name}</span>
+            <span class="text-[10px] text-[var(--text-dim)] font-mono block">${d.short}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function highlightChartDay(idx) {
+      const d = currentWeeklyData[idx];
+      if (!d) return;
+      const pill = document.getElementById('chart-hover-pill');
+      if (pill) {
+        pill.innerHTML = `<span class="font-semibold text-[var(--text-primary)]">${d.name} (${d.short}):</span> <span class="font-mono text-[var(--accent-text)] font-bold">${d.calories} kcal</span> <span class="text-[var(--text-muted)]">(${d.count} ${d.count === 1 ? 'exercise' : 'exercises'})</span>`;
+        pill.classList.remove('hidden');
+        pill.classList.add('flex');
+      }
+      const ring = document.getElementById(`chart-hover-ring-${idx}`);
+      if (ring) ring.classList.remove('hidden');
+      const dot = document.getElementById(`chart-dot-${idx}`);
+      if (dot) dot.setAttribute('r', '6.5');
+      const track = document.getElementById(`chart-track-${idx}`);
+      if (track) {
+        track.setAttribute('stroke', 'var(--accent)');
+        track.setAttribute('stroke-width', '1.5');
+        track.setAttribute('stroke-dasharray', 'none');
+        track.setAttribute('opacity', '0.7');
+      }
+    }
+
+    function unhighlightChartDay(idx) {
+      const pill = document.getElementById('chart-hover-pill');
+      if (pill) {
+        pill.classList.add('hidden');
+        pill.classList.remove('flex');
+      }
+      const ring = document.getElementById(`chart-hover-ring-${idx}`);
+      if (ring) ring.classList.add('hidden');
+      const dot = document.getElementById(`chart-dot-${idx}`);
+      const d = currentWeeklyData[idx];
+      if (dot && d) {
+        dot.setAttribute('r', d.calories > 0 ? '5.5' : '4.5');
+      }
+      const track = document.getElementById(`chart-track-${idx}`);
+      if (track && d) {
+        track.setAttribute('stroke', 'var(--border-subtle)');
+        track.setAttribute('stroke-width', '1');
+        track.setAttribute('stroke-dasharray', '2 3');
+        track.setAttribute('opacity', d.isToday ? '0.45' : '0.25');
+      }
+    }
+
+    // LOG WORKOUT TAB RENDERING
+    function renderLogWorkoutTab() {
+      document.getElementById('log-date-picker').value = calSelectedDateKey || getTodayDateKey();
+      renderLogCategoryPills();
+      renderExercisePicker();
+      updateLiveCalorieMath();
+      renderLogHistoryTable();
+      updateLogSubmitButton();
+    }
+
+    function renderLogCategoryPills() {
+      const cats = ['All', 'Push', 'Pull', 'Legs', 'Core', 'Full Body'];
+      document.getElementById('exercise-cat-pills').innerHTML = cats.map(c => `
+        <button onclick="setLogCategory('${c}')" class="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all border ${(!isCustomMode && activeCatFilter === c) ? 'bg-[var(--accent)] border-[var(--accent)] text-black font-semibold' : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'}">${c}</button>
+      `).join('');
+    }
+
+    function setLogCategory(c) {
+      activeCatFilter = c;
+      if (isCustomMode) disableCustomExerciseMode();
+      renderLogCategoryPills();
+      renderExercisePicker();
+    }
+
+    function renderExercisePicker() {
+      const q = (document.getElementById('exercise-search-input')?.value || '').toLowerCase().trim();
+      const filtered = EXERCISE_LIB.filter(ex => (activeCatFilter === 'All' || ex.category === activeCatFilter) && (ex.name.toLowerCase().includes(q) || ex.description.toLowerCase().includes(q)));
+      const container = document.getElementById('exercise-cards-list');
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-center space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-[var(--bg-input)] flex items-center justify-center text-[var(--text-muted)] mx-auto"><i data-lucide="dumbbell" class="w-5 h-5"></i></div>
+            <h4 class="text-sm font-bold text-[var(--text-primary)]">Workout not found in library?</h4>
+            <p class="text-xs text-[var(--text-muted)]">Looking for an unlisted movement? You can name and log any custom exercise!</p>
+            <button onclick="enableCustomExerciseMode('${q}')" class="px-4 py-2 rounded-xl bg-[var(--accent)] text-black font-bold text-xs hover:brightness-110 inline-flex items-center gap-1.5">
+              <i data-lucide="plus" class="w-4 h-4"></i> Use "${q || 'Custom Workout'}" as Name
+            </button>
+          </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = filtered.map(ex => {
+        const isSel = !isCustomMode && currentSelectedEx.id === ex.id;
+        return `
+          <div onclick="selectPrebuiltExercise('${ex.id}')" class="p-3.5 rounded-xl border text-left cursor-pointer transition-all flex flex-col justify-between ${isSel ? 'bg-[var(--accent-glow)] border-[var(--accent)] shadow-xs' : 'bg-[var(--bg-card)] border-[var(--border-subtle)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-card-hover)]'}">
+            <div>
+              <div class="flex items-center justify-between gap-1 mb-1">
+                <span class="font-semibold text-xs text-[var(--text-primary)]">${ex.name}</span>
+                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--bg-input)] text-[var(--accent-text)] font-medium">MET ${ex.met}</span>
+              </div>
+              <p class="text-[11px] text-[var(--text-muted)] line-clamp-2">${ex.description}</p>
+            </div>
+            <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-[var(--border-subtle)] text-[10px] text-[var(--text-dim)]">
+              <span class="px-1.5 py-0.5 rounded bg-[var(--bg-input)] text-[var(--text-muted)]">${ex.category}</span>
+              <span>Def: ${ex.defaultSets}×${ex.defaultReps}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectPrebuiltExercise(id) {
+      isCustomMode = false;
+      currentSelectedEx = EXERCISE_LIB.find(e => e.id === id) || EXERCISE_LIB[0];
+      document.getElementById('form-prebuilt-header').classList.remove('hidden');
+      document.getElementById('form-custom-header').classList.add('hidden');
+
+      document.getElementById('selected-ex-badge').textContent = `${currentSelectedEx.category} • ${currentSelectedEx.difficulty}`;
+      document.getElementById('selected-ex-title').textContent = currentSelectedEx.name;
+      document.getElementById('selected-ex-desc').textContent = currentSelectedEx.description;
+      document.getElementById('selected-ex-prog').innerHTML = `<span class="font-semibold text-[var(--text-primary)]">Progression: </span>${currentSelectedEx.progression || 'Standard'}`;
+
+      document.getElementById('stepper-sets').value = currentSelectedEx.defaultSets;
+      document.getElementById('stepper-reps').value = currentSelectedEx.defaultReps;
+      document.getElementById('stepper-mins').value = currentSelectedEx.defaultMins;
+
+      renderLogCategoryPills();
+      renderExercisePicker();
+      updateLiveCalorieMath();
+    }
+
+    function enableCustomExerciseMode(initialName = '') {
+      isCustomMode = true;
+      document.getElementById('form-prebuilt-header').classList.add('hidden');
+      document.getElementById('form-custom-header').classList.remove('hidden');
+      const input = document.getElementById('custom-name-field');
+      if (initialName) input.value = initialName;
+      input.focus();
+      renderLogCategoryPills();
+      renderExercisePicker();
+      updateLiveCalorieMath();
+    }
+
+    function disableCustomExerciseMode() {
+      isCustomMode = false;
+      selectPrebuiltExercise(currentSelectedEx.id);
+    }
+
+    function stepperChange(field, delta) {
+      const input = document.getElementById('stepper-' + field);
+      let val = Number(input.value) || 1;
+      val = Math.max(1, val + delta);
+      input.value = val;
+      updateLiveCalorieMath();
+    }
+
+    function updateLiveCalorieMath() {
+      let met = currentSelectedEx.met;
+      if (isCustomMode) {
+        met = Number(document.getElementById('custom-met-field')?.value) || 8.0;
+      }
+      const sets = Number(document.getElementById('stepper-sets')?.value) || 1;
+      const reps = Number(document.getElementById('stepper-reps')?.value) || 1;
+      const mins = Number(document.getElementById('stepper-mins')?.value) || 1;
+      const cals = calculateCalories(met, appState.profile.weight, mins, sets, reps);
+      document.getElementById('log-calc-cals').textContent = cals;
+      document.getElementById('log-calc-sub').textContent = `Based on MET ${met} × ${appState.profile.weight > 0 ? appState.profile.weight + 'kg' : '70kg baseline'}`;
+    }
+
+    function handleLogDateChange() {
+      calSelectedDateKey = document.getElementById('log-date-picker').value || getTodayDateKey();
+      renderLogHistoryTable();
+      updateLogSubmitButton();
+    }
+
+    function updateLogSubmitButton() {
+      const pickerVal = document.getElementById('log-date-picker')?.value || getTodayDateKey();
+      const isToday = pickerVal === getTodayDateKey();
+      document.getElementById('log-submit-label').textContent = isToday ? 'Log to Today' : `Log to ${pickerVal}`;
+    }
+
+    function submitWorkoutLog() {
+      const dateKey = document.getElementById('log-date-picker').value || getTodayDateKey();
+      let exName = currentSelectedEx.name;
+      let exCat = currentSelectedEx.category;
+      let met = currentSelectedEx.met;
+
+      if (isCustomMode) {
+        const customTyped = (document.getElementById('custom-name-field')?.value || '').trim();
+        if (!customTyped) {
+          alert('Please enter an exercise or workout name.');
+          document.getElementById('custom-name-field')?.focus();
+          return;
+        }
+        exName = customTyped;
+        exCat = document.getElementById('custom-cat-field')?.value || 'Push';
+        met = Number(document.getElementById('custom-met-field')?.value) || 8.0;
+      }
+
+      const sets = Number(document.getElementById('stepper-sets').value) || 1;
+      const reps = Number(document.getElementById('stepper-reps').value) || 1;
+      const mins = Number(document.getElementById('stepper-mins').value) || 1;
+      const cal = calculateCalories(met, appState.profile.weight, mins, sets, reps);
+
+      if (!appState.logs[dateKey]) appState.logs[dateKey] = [];
+      appState.logs[dateKey].unshift({
+        id: 'log-' + Date.now(),
+        name: exName,
+        category: exCat,
+        sets,
+        reps,
+        mins,
+        cal,
+        date: dateKey
+      });
+
+      saveState();
+      renderLogHistoryTable();
+      updateSidebarBadges();
+      alert(`Logged ${sets}x${reps} ${exName} (+${cal} kcal)!`);
+      if (isCustomMode) {
+        document.getElementById('custom-name-field').value = '';
+      }
+    }
+
+    function renderLogHistoryTable() {
+      const dateKey = document.getElementById('log-date-picker')?.value || getTodayDateKey();
+      const dayLogs = appState.logs[dateKey] || [];
+      const totalCal = dayLogs.reduce((acc, curr) => acc + (curr.cal || 0), 0);
+
+      const isToday = dateKey === getTodayDateKey();
+      document.getElementById('log-history-title').textContent = `Logged Workouts for ${isToday ? 'Today' : dateKey}`;
+      document.getElementById('log-history-sub').textContent = `${dayLogs.length} exercises logged • ${totalCal} kcal burned`;
+
+      const badge = document.getElementById('log-history-badge');
+      if (totalCal > 0) {
+        badge.textContent = `Total: ${totalCal} kcal`;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      const container = document.getElementById('log-history-list');
+      if (dayLogs.length === 0) {
+        container.innerHTML = `<div class="py-6 text-center text-xs text-[var(--text-muted)]">No exercises recorded on ${dateKey}. Use the form above to log sets!</div>`;
+      } else {
+        container.innerHTML = dayLogs.map(l => `
+          <div class="py-3 flex items-center justify-between gap-3 group hover:bg-[var(--bg-card-hover)] px-2 rounded-lg transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-center justify-center text-xs font-bold text-[var(--accent-text)]">${l.sets}x</div>
+              <div>
+                <h4 class="font-semibold text-xs text-[var(--text-primary)]">${l.name}</h4>
+                <span class="text-[11px] text-[var(--text-muted)]">${l.sets} sets × ${l.reps} reps • ${l.mins} mins • ${l.category}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold text-amber-400">+${l.cal} kcal</span>
+              <button onclick="deleteWorkoutLog('${dateKey}', '${l.id}')" class="p-1 rounded text-[var(--text-dim)] hover:text-red-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function deleteWorkoutLog(dateKey, logId) {
+      if (!appState.logs[dateKey]) return;
+      appState.logs[dateKey] = appState.logs[dateKey].filter(l => l.id !== logId);
+      saveState();
+      renderLogHistoryTable();
+      renderDashboardTab();
+      updateSidebarBadges();
+    }
+
+    // CALENDAR TAB RENDERING
+    function renderCalendarTab() {
+      const monthStart = new Date(calViewYear, calViewMonth, 1);
+      document.getElementById('cal-month-readout').textContent = monthStart.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+      const daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
+      const startDay = monthStart.getDay();
+      const blanks = startDay === 0 ? 6 : startDay - 1;
+
+      const cells = [];
+      const prevDaysCount = new Date(calViewYear, calViewMonth, 0).getDate();
+      for (let i = blanks - 1; i >= 0; i--) {
+        const d = prevDaysCount - i;
+        const pk = `${calViewYear}-${String(calViewMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        cells.push({ key: pk, dayNum: d, current: false });
+      }
+      for (let i = 1; i <= daysInMonth; i++) {
+        const k = `${calViewYear}-${String(calViewMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        cells.push({ key: k, dayNum: i, current: true });
+      }
+      const remain = 42 - cells.length;
+      for (let i = 1; i <= remain; i++) {
+        const nk = `${calViewYear}-${String(calViewMonth + 2).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        cells.push({ key: nk, dayNum: i, current: false });
+      }
+
+      const today = getTodayDateKey();
+      const container = document.getElementById('cal-cells-container');
+      container.innerHTML = cells.map(c => {
+        const hasLogs = (appState.logs[c.key] || []).length > 0;
+        const hasPlans = (appState.plans[c.key] || []).length > 0;
+        const isSel = calSelectedDateKey === c.key;
+        const isToday = c.key === today;
+
+        return `
+          <button onclick="selectCalDate('${c.key}')" class="min-h-[64px] sm:min-h-[72px] p-1.5 sm:p-2 rounded-xl flex flex-col justify-between text-left transition-all border ${isSel ? 'border-[var(--accent)] bg-[var(--accent-glow)] ring-1 ring-[var(--accent)] shadow-xs' : isToday ? 'border-[var(--border-strong)] bg-[var(--bg-input)]' : c.current ? 'border-[var(--border-subtle)] bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)]' : 'border-transparent bg-transparent opacity-30'}">
+            <div class="flex items-center justify-between w-full">
+              <span class="text-xs font-mono font-bold ${isToday ? 'w-5 h-5 rounded-full bg-[var(--accent)] text-black flex items-center justify-center' : isSel ? 'text-[var(--accent-text)]' : c.current ? 'text-[var(--text-primary)]' : 'text-[var(--text-dim)]'}">${c.dayNum}</span>
+              <div class="flex items-center gap-1">
+                ${hasLogs && hasPlans ? '<span class="w-2 h-2 rounded-full bg-gradient-to-r from-emerald-500 to-amber-500"></span>' : hasLogs ? '<span class="w-2 h-2 rounded-full bg-emerald-500"></span>' : hasPlans ? '<span class="w-2 h-2 rounded-full bg-amber-400"></span>' : ''}
+              </div>
+            </div>
+            ${hasLogs ? `<div class="text-[10px] font-mono font-medium text-emerald-400 truncate">${(appState.logs[c.key] || []).reduce((s, l) => s + (l.cal || 0), 0)} kcal</div>` : ''}
+          </button>
+        `;
+      }).join('');
+
+      renderCalendarDayDetail();
+    }
+
+    function changeCalMonth(delta) {
+      calViewMonth += delta;
+      if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; }
+      if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
+      renderCalendarTab();
+    }
+    function jumpCalToday() {
+      const now = new Date();
+      calViewYear = now.getFullYear();
+      calViewMonth = now.getMonth();
+      calSelectedDateKey = getTodayDateKey();
+      renderCalendarTab();
+    }
+    function selectCalDate(key) {
+      calSelectedDateKey = key;
+      renderCalendarTab();
+    }
+
+    function renderCalendarDayDetail() {
+      const isToday = calSelectedDateKey === getTodayDateKey();
+      document.getElementById('cal-detail-dayname').textContent = isToday ? 'Today' : 'Selected Date';
+      document.getElementById('cal-detail-fulldate').textContent = calSelectedDateKey;
+
+      const dayPlans = appState.plans[calSelectedDateKey] || [];
+      const plansContainer = document.getElementById('cal-day-plans-list');
+      if (dayPlans.length === 0) {
+        plansContainer.innerHTML = `<div class="py-3 text-center text-xs text-[var(--text-muted)]">No routines scheduled for this date.</div>`;
+      } else {
+        plansContainer.innerHTML = dayPlans.map(p => `
+          <div class="p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] space-y-1.5">
+            <div class="flex items-center justify-between">
+              <button onclick="togglePlanCheck('${calSelectedDateKey}', '${p.id}')" class="flex items-center gap-2 text-left">
+                <i data-lucide="${p.completed ? 'check-circle-2' : 'circle'}" class="w-4 h-4 ${p.completed ? 'text-emerald-400' : 'text-[var(--text-muted)]'}"></i>
+                <span class="text-xs font-bold ${p.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">${p.name}</span>
+              </button>
+              <button onclick="deleteRoutinePlan('${calSelectedDateKey}', '${p.id}')" class="text-[var(--text-dim)] hover:text-red-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+            <p class="text-[11px] text-[var(--text-muted)] pl-6 whitespace-pre-line">${p.items}</p>
+          </div>
+        `).join('');
+      }
+
+      const dayLogs = appState.logs[calSelectedDateKey] || [];
+      const totalCal = dayLogs.reduce((s, l) => s + (l.cal || 0), 0);
+      const calsBadge = document.getElementById('cal-day-cals-badge');
+      if (totalCal > 0) {
+        calsBadge.textContent = `+${totalCal} kcal`;
+        calsBadge.classList.remove('hidden');
+      } else {
+        calsBadge.classList.add('hidden');
+      }
+
+      const logsContainer = document.getElementById('cal-day-logs-list');
+      if (dayLogs.length === 0) {
+        logsContainer.innerHTML = `<div class="py-3 text-center text-xs text-[var(--text-muted)]">No completed exercises recorded on this date.</div>`;
+      } else {
+        logsContainer.innerHTML = dayLogs.map(l => `
+          <div class="p-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-semibold text-[var(--text-primary)] block">${l.name}</span>
+              <span class="text-[10px] text-[var(--text-muted)]">${l.sets} sets × ${l.reps} reps • ${l.mins}m</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-xs font-semibold text-amber-400">${l.cal} kcal</span>
+              <button onclick="deleteWorkoutLog('${calSelectedDateKey}', '${l.id}')" class="p-1 rounded text-[var(--text-dim)] hover:text-red-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function jumpToLogFromCalendar() {
+      navigate('log');
+      document.getElementById('log-date-picker').value = calSelectedDateKey;
+      handleLogDateChange();
+    }
+
+    function togglePlanForm() {
+      const box = document.getElementById('cal-plan-form-box');
+      box.classList.toggle('hidden');
+    }
+
+    function applyRoutineTemplate(name) {
+      document.getElementById('plan-input-name').value = name;
+      if (name === 'Full Body Blast') document.getElementById('plan-input-items').value = 'Pull-ups (3x8)\nPush-ups (3x15)\nBodyweight Squats (4x20)\nForearm Plank (3x60s)';
+      if (name === 'Push Day Mastery') document.getElementById('plan-input-items').value = 'Parallel Bar Dips (4x10)\nPush-ups (3x15)\nPike Push-ups (3x10)\nDiamond Push-ups (3x12)';
+      if (name === 'Pull Day Power') document.getElementById('plan-input-items').value = 'Pull-ups (4x8)\nChin-ups (3x8)\nInverted Rows (3x12)\nHanging Leg Raises (3x10)';
+      if (name === 'Legs & Core Engine') document.getElementById('plan-input-items').value = 'Bodyweight Squats (4x25)\nWalking Lunges (3x20)\nBulgarian Split Squats (3x10)\nHollow Body Hold (3x45s)';
+    }
+
+    function saveRoutinePlan() {
+      const name = (document.getElementById('plan-input-name')?.value || '').trim();
+      const items = (document.getElementById('plan-input-items')?.value || '').trim();
+      if (!name) { alert('Please enter a routine name.'); return; }
+      if (!appState.plans[calSelectedDateKey]) appState.plans[calSelectedDateKey] = [];
+      appState.plans[calSelectedDateKey].push({ id: 'plan-' + Date.now(), name, items, completed: false });
+      saveState();
+      document.getElementById('plan-input-name').value = '';
+      document.getElementById('plan-input-items').value = '';
+      document.getElementById('cal-plan-form-box').classList.add('hidden');
+      renderCalendarTab();
+    }
+
+    function togglePlanCheck(dateKey, planId) {
+      if (!appState.plans[dateKey]) return;
+      appState.plans[dateKey] = appState.plans[dateKey].map(p => p.id === planId ? { ...p, completed: !p.completed } : p);
+      saveState();
+      renderCalendarTab();
+    }
+
+    function deleteRoutinePlan(dateKey, planId) {
+      if (!appState.plans[dateKey]) return;
+      appState.plans[dateKey] = appState.plans[dateKey].filter(p => p.id !== planId);
+      saveState();
+      renderCalendarTab();
+    }
+
+    // NOTES & JOURNAL TAB RENDERING
+    function renderNotesList() {
+      renderNotesTagPills();
+      const q = (document.getElementById('notes-search-input')?.value || '').toLowerCase().trim();
+      const filtered = appState.notes.filter(n => (activeNotesTag === 'All' || n.tag === activeNotesTag) && (n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q)));
+      const grid = document.getElementById('notes-cards-grid');
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+            <div class="w-10 h-10 rounded-xl bg-[var(--bg-input)] flex items-center justify-center text-[var(--text-muted)] mx-auto mb-2"><i data-lucide="file-text" class="w-5 h-5"></i></div>
+            <h4 class="text-xs font-semibold text-[var(--text-primary)]">No notes found</h4>
+            <p class="text-[11px] text-[var(--text-muted)] mt-0.5">Click "+ New Note" to jot down reflections, cues, and goals.</p>
+          </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      grid.innerHTML = filtered.map(n => `
+        <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition-all flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border bg-amber-500/10 text-amber-400 border-amber-500/20">${n.tag}</span>
+              <span class="text-[10px] text-[var(--text-dim)] font-mono">${new Date(n.updated || n.created).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+            </div>
+            <h3 class="font-bold text-sm text-[var(--text-primary)] line-clamp-1">${n.title}</h3>
+            <p class="text-xs text-[var(--text-muted)] mt-2 line-clamp-4 leading-relaxed whitespace-pre-line">${n.body}</p>
+          </div>
+          <div class="flex items-center justify-between mt-4 pt-3 border-t border-[var(--border-subtle)]">
+            <span class="text-[10px] text-[var(--text-dim)]">${n.body.split(/\s+/).filter(Boolean).length} words</span>
+            <div class="flex items-center gap-1">
+              <button onclick="editExistingNote('${n.id}')" class="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+              <button onclick="deleteExistingNote('${n.id}')" class="p-1 rounded text-[var(--text-dim)] hover:text-red-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderNotesTagPills() {
+      const tags = ['All', 'Workout Plan', 'Daily Plan', 'Journal', 'Other'];
+      document.getElementById('notes-tag-pills').innerHTML = tags.map(t => `
+        <button onclick="setNotesTagFilter('${t}')" class="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all border ${activeNotesTag === t ? 'bg-[var(--accent)] border-[var(--accent)] text-black font-semibold' : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'}">${t}</button>
+      `).join('');
+    }
+
+    function setNotesTagFilter(t) {
+      activeNotesTag = t;
+      renderNotesList();
+    }
+
+    function openNoteModal(id = null) {
+      editingNoteId = id;
+      const modal = document.getElementById('modal-note-editor');
+      modal.classList.remove('hidden');
+
+      const tags = ['Workout Plan', 'Daily Plan', 'Journal', 'Other'];
+      const selector = document.getElementById('note-tag-selector');
+      selector.innerHTML = tags.map(t => `
+        <button type="button" onclick="selectNoteEditTag('${t}')" id="note-tag-opt-${t.replace(/\s+/g,'')}" class="py-1.5 px-2 text-xs rounded-lg border font-medium transition-all ${selectedNoteTag === t ? 'bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--accent-text)] font-semibold' : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]'}">${t}</button>
+      `).join('');
+
+      if (id) {
+        const item = appState.notes.find(n => n.id === id);
+        if (item) {
+          document.getElementById('note-modal-header').textContent = 'Edit Note';
+          document.getElementById('note-edit-title').value = item.title;
+          document.getElementById('note-edit-body').value = item.body;
+          selectedNoteTag = item.tag;
+          selectNoteEditTag(item.tag);
+        }
+      } else {
+        document.getElementById('note-modal-header').textContent = 'Create New Note';
+        document.getElementById('note-edit-title').value = '';
+        document.getElementById('note-edit-body').value = '';
+        selectedNoteTag = 'Workout Plan';
+        selectNoteEditTag('Workout Plan');
+      }
+    }
+
+    function selectNoteEditTag(tag) {
+      selectedNoteTag = tag;
+      const tags = ['Workout Plan', 'Daily Plan', 'Journal', 'Other'];
+      tags.forEach(t => {
+        const btn = document.getElementById('note-tag-opt-' + t.replace(/\s+/g,''));
+        if (btn) {
+          btn.className = `py-1.5 px-2 text-xs rounded-lg border font-medium transition-all ${t === tag ? 'bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--accent-text)] font-semibold' : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]'}`;
+        }
+      });
+    }
+
+    function closeNoteModal() {
+      document.getElementById('modal-note-editor').classList.add('hidden');
+      editingNoteId = null;
+    }
+
+    function saveNoteFromModal() {
+      const title = (document.getElementById('note-edit-title')?.value || '').trim() || 'Untitled Note';
+      const body = (document.getElementById('note-edit-body')?.value || '').trim();
+      const now = Date.now();
+
+      if (editingNoteId) {
+        appState.notes = appState.notes.map(n => n.id === editingNoteId ? { ...n, title, body, tag: selectedNoteTag, updated: now } : n);
+      } else {
+        appState.notes.unshift({ id: 'note-' + now, title, body, tag: selectedNoteTag, created: now, updated: now });
+      }
+      saveState();
+      closeNoteModal();
+      renderNotesList();
+    }
+
+    function editExistingNote(id) {
+      openNoteModal(id);
+    }
+
+    function deleteExistingNote(id) {
+      appState.notes = appState.notes.filter(n => n.id !== id);
+      saveState();
+      renderNotesList();
+    }
+
+    // ATHLETE PROFILE PICTURE & PROFILE MANAGEMENT
+    function triggerAvatarUpload() {
+      const inp = document.getElementById('input-avatar-file');
+      if (inp) inp.click();
+    }
+
+    function handleAvatarFileUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      if (!file.type || !file.type.startsWith('image/')) {
+        alert('Please choose a valid image file (PNG, JPG, WebP).');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          try {
+            const canvas = document.createElement('canvas');
+            const size = 256;
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const minDim = Math.min(img.width, img.height);
+            const sx = (img.width - minDim) / 2;
+            const sy = (img.height - minDim) / 2;
+            ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+            setAthleteAvatar(dataUrl);
+          } catch (err) {
+            console.error('Avatar resize failed', err);
+            setAthleteAvatar(e.target.result);
+          }
+        };
+        img.onerror = function() {
+          alert('Could not process this image format. Please select another image.');
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    }
+
+    function removeAvatarPhoto() {
+      setAthleteAvatar('');
+    }
+
+    function setAthleteAvatar(url) {
+      appState.profile.avatarUrl = url || '';
+      saveState();
+      renderProfileForm();
+      updateSidebarBadges();
+      showProfileToast(url ? 'Profile picture updated!' : 'Profile picture removed.');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function showProfileToast(msg) {
+      const toast = document.getElementById('profile-saved-toast');
+      if (!toast) return;
+      toast.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span>${msg || 'Changes saved to device!'}</span>`;
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+      setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 3000);
+    }
+
+    // PROFILE TAB RENDERING & SUBMIT
+    function renderProfileForm() {
+      const p = appState.profile;
+      document.getElementById('input-prof-name').value = p.name || '';
+      document.getElementById('input-prof-age').value = p.age > 0 ? p.age : '';
+      document.getElementById('input-prof-weight').value = p.weight > 0 ? p.weight : '';
+      document.getElementById('input-prof-height').value = p.height > 0 ? p.height : '';
+      document.getElementById('input-prof-level').value = p.level || 'Beginner';
+      document.getElementById('input-prof-goal').value = p.goal || 'Muscle & Strength';
+      document.getElementById('input-prof-calgoal').value = p.calGoal || 500;
+      document.getElementById('input-prof-exgoal').value = p.exGoal || 4;
+
+      const name = (p.name || '').trim();
+      const initial = name ? name.charAt(0).toUpperCase() : '?';
+
+      renderAvatarEl('prof-avatar-circle', p.avatarUrl, initial);
+      renderAvatarEl('sidebar-avatar', p.avatarUrl, initial);
+      renderAvatarEl('mobile-avatar', p.avatarUrl, initial);
+
+      const removeBtn = document.getElementById('btn-remove-avatar');
+      if (removeBtn) {
+        removeBtn.classList.toggle('hidden', !p.avatarUrl);
+      }
+
+      document.getElementById('prof-display-name').textContent = name || 'Set Your Athlete Name';
+      document.getElementById('prof-display-level').textContent = p.level || 'Beginner';
+      document.getElementById('prof-display-age').textContent = p.age > 0 ? `Age ${p.age}` : 'Age not set';
+      document.getElementById('prof-display-weight').textContent = p.weight > 0 ? `${p.weight} kg` : '-- kg';
+      document.getElementById('prof-display-height').textContent = p.height > 0 ? `${p.height} cm` : '-- cm';
+
+      // BMI
+      if (p.weight > 0 && p.height > 0) {
+        const hm = p.height / 100;
+        const bmi = Number((p.weight / (hm * hm)).toFixed(1));
+        document.getElementById('prof-bmi-value').textContent = bmi;
+        let cat = 'Normal';
+        let badgeColor = 'text-emerald-400';
+        if (bmi < 18.5) { cat = 'Underweight'; badgeColor = 'text-amber-400'; }
+        else if (bmi >= 25 && bmi < 30) { cat = 'Overweight'; badgeColor = 'text-amber-400'; }
+        else if (bmi >= 30) { cat = 'Obese'; badgeColor = 'text-red-400'; }
+
+        const minIdeal = Math.round(18.5 * hm * hm);
+        const maxIdeal = Math.round(24.9 * hm * hm);
+        document.getElementById('prof-bmi-guide').textContent = `Ideal range for height: ${minIdeal} – ${maxIdeal} kg`;
+        const badge = document.getElementById('prof-bmi-cat-badge');
+        badge.textContent = cat;
+        badge.className = `text-xs font-bold px-2 py-0.5 rounded-full bg-[var(--bg-input)] ${badgeColor}`;
+      } else {
+        document.getElementById('prof-bmi-value').textContent = '--';
+        document.getElementById('prof-bmi-guide').textContent = 'Enter height and weight to calculate your BMI rating';
+        document.getElementById('prof-bmi-cat-badge').textContent = 'Unset';
+        document.getElementById('prof-bmi-cat-badge').className = 'text-xs font-bold px-2 py-0.5 rounded-full bg-[var(--bg-input)] text-[var(--text-muted)]';
+      }
+    }
+
+    function handleProfileSubmit(e) {
+      e.preventDefault();
+      appState.profile.name = (document.getElementById('input-prof-name')?.value || '').trim();
+      appState.profile.age = Number(document.getElementById('input-prof-age')?.value) || 0;
+      appState.profile.weight = Number(document.getElementById('input-prof-weight')?.value) || 0;
+      appState.profile.height = Number(document.getElementById('input-prof-height')?.value) || 0;
+      appState.profile.level = document.getElementById('input-prof-level')?.value || 'Beginner';
+      appState.profile.goal = document.getElementById('input-prof-goal')?.value || 'Muscle & Strength';
+      appState.profile.calGoal = Number(document.getElementById('input-prof-calgoal')?.value) || 500;
+      appState.profile.exGoal = Number(document.getElementById('input-prof-exgoal')?.value) || 4;
+
+      saveState();
+      renderProfileForm();
+      updateSidebarBadges();
+      showProfileToast('Profile details updated!');
+    }
+
+    // SETTINGS TAB RENDERING & ACTIONS
+    function renderSettingsTab() {
+      const presets = [30, 45, 60, 90, 120];
+      document.getElementById('settings-rest-readout').textContent = `${appState.settings.restDefault}s`;
+      document.getElementById('settings-rest-presets').innerHTML = presets.map(s => `
+        <button onclick="setSettingsRest(${s})" class="py-1.5 text-xs font-mono rounded-lg border transition-all ${appState.settings.restDefault === s ? 'bg-[var(--accent)] border-[var(--accent)] text-black font-bold' : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'}">${s}s</button>
+      `).join('');
+      document.getElementById('clock-format-sub').textContent = `Currently: ${appState.settings.clock24h ? '24-Hour (14:30)' : '12-Hour AM/PM (2:30 PM)'}`;
+      document.getElementById('clock-toggle-btn').textContent = `Switch to ${appState.settings.clock24h ? '12h' : '24h'}`;
+
+      // Highlight active theme & accent
+      const curTheme = appState.settings.theme || 'dark';
+      const curAccent = appState.settings.accent || 'amber';
+      const ALL_THEMES = ['dark', 'charcoal', 'midnight', 'cyberpunk', 'forest', 'light', 'nordic'];
+      ALL_THEMES.forEach(k => {
+        const btn = document.getElementById('theme-btn-' + k);
+        if (btn) {
+          btn.className = `p-3 rounded-xl border text-left transition-all ${k === curTheme ? 'bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--text-primary)] shadow-xs ring-1 ring-[var(--accent)] font-semibold' : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--border-strong)]'}`;
+        }
+      });
+      const ALL_ACCENTS = ['amber', 'sage', 'slate', 'crimson', 'violet', 'coral'];
+      ALL_ACCENTS.forEach(k => {
+        const btn = document.getElementById('accent-btn-' + k);
+        if (btn) {
+          btn.className = `p-2.5 rounded-xl border flex items-center gap-2 transition-all ${k === curAccent ? 'bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--text-primary)] font-semibold ring-1 ring-[var(--accent)]' : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--border-strong)]'}`;
+        }
+      });
+    }
+
+    function printDataReport() {
+      openReportModal();
+    }
+
+    function setAppTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      appState.settings.theme = t;
+      saveState();
+      const ALL_THEMES = ['dark', 'charcoal', 'midnight', 'cyberpunk', 'forest', 'light', 'nordic'];
+      ALL_THEMES.forEach(k => {
+        const btn = document.getElementById('theme-btn-' + k);
+        if (btn) {
+          btn.className = `p-3 rounded-xl border text-left transition-all ${k === t ? 'bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--text-primary)] shadow-xs ring-1 ring-[var(--accent)] font-semibold' : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--border-strong)]'}`;
+        }
+      });
+    }
+
+    function setAppAccent(a) {
+      document.documentElement.setAttribute('data-accent', a);
+      appState.settings.accent = a;
+      saveState();
+      const ALL_ACCENTS = ['amber', 'sage', 'slate', 'crimson', 'violet', 'coral'];
+      ALL_ACCENTS.forEach(k => {
+        const btn = document.getElementById('accent-btn-' + k);
+        if (btn) {
+          btn.className = `p-2.5 rounded-xl border flex items-center gap-2 transition-all ${k === a ? 'bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--text-primary)] font-semibold ring-1 ring-[var(--accent)]' : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--border-strong)]'}`;
+        }
+      });
+      renderSettingsTab();
+    }
+
+    function setAppFontSize(s) {
+      document.documentElement.setAttribute('data-font-size', s);
+      appState.settings.fontSize = s;
+      saveState();
+      ['compact', 'comfortable'].forEach(k => {
+        const btn = document.getElementById('fontsize-btn-' + k);
+        if (btn) btn.className = `p-3 rounded-xl border text-left transition-all ${k === s ? 'bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--text-primary)] font-semibold' : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]'}`;
+      });
+    }
+
+    function toggleClockMode() {
+      appState.settings.clock24h = !appState.settings.clock24h;
+      saveState();
+      renderSettingsTab();
+    }
+
+    function setSettingsRest(s) {
+      appState.settings.restDefault = s;
+      saveState();
+      renderSettingsTab();
+      updateSidebarBadges();
+    }
+
+    function exportJsonFile() {
+      const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `dopamine-backup-${getTodayDateKey()}.json`;
+      a.click();
+    }
+
+    function downloadPdfReport() {
+      exportDataToPdf();
+    }
+
+    function exportDataToPdf() {
+      const todayKey = getTodayDateKey();
+      const p = appState.profile;
+      const athleteName = (p.name || '').trim() || 'Athlete';
+
+      const hasJsPdf = typeof window.jspdf !== 'undefined' && (window.jspdf.jsPDF || typeof window.jspdf === 'function');
+      if (hasJsPdf) {
+        try {
+          const jsPDFClass = window.jspdf.jsPDF || window.jspdf;
+          const doc = new jsPDFClass({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+          const pageWidth = doc.internal.pageSize.getWidth();
+          const pageHeight = doc.internal.pageSize.getHeight();
+          const margin = 14;
+          const contentWidth = pageWidth - margin * 2;
+          let currentY = 14;
+
+          const primaryColor = [15, 23, 42];
+          const accentColor = [217, 119, 6];
+          const secondaryColor = [100, 116, 139];
+          const cardBgColor = [248, 250, 252];
+          const cardBorderColor = [226, 232, 240];
+
+          // Top Header Banner
+          doc.setFillColor(...primaryColor);
+          doc.roundedRect(margin, currentY, contentWidth, 26, 3, 3, 'F');
+          doc.setFillColor(...accentColor);
+          doc.rect(margin, currentY + 24.5, contentWidth, 1.5, 'F');
+
+          doc.setTextColor(255, 255, 255);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(16);
+          doc.text('DOPAMINE FIT', margin + 6, currentY + 11);
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8.5);
+          doc.setTextColor(203, 213, 225);
+          doc.text('Calisthenics Athlete Performance & Workout History Report', margin + 6, currentY + 18);
+
+          const now = new Date();
+          const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8);
+          doc.setTextColor(251, 191, 36);
+          doc.text(`DATE: ${dateStr.toUpperCase()}`, pageWidth - margin - 6, currentY + 10, { align: 'right' });
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(148, 163, 184);
+          doc.text(`TIME: ${timeStr}`, pageWidth - margin - 6, currentY + 16, { align: 'right' });
+
+          currentY += 32;
+
+          // Athlete Biometrics Card
+          let bmiStr = 'Uncalculated';
+          if (p.weight > 0 && p.height > 0) {
+            const hm = p.height / 100;
+            const bmi = (p.weight / (hm * hm)).toFixed(1);
+            let cat = 'Normal';
+            if (bmi < 18.5) cat = 'Underweight';
+            else if (bmi >= 25 && bmi < 30) cat = 'Overweight';
+            else if (bmi >= 30) cat = 'Obese';
+            bmiStr = `${bmi} (${cat})`;
+          }
+
+          doc.setFillColor(...cardBgColor);
+          doc.setDrawColor(...cardBorderColor);
+          doc.setLineWidth(0.3);
+          doc.roundedRect(margin, currentY, contentWidth, 30, 2, 2, 'FD');
+
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(10);
+          doc.setTextColor(...primaryColor);
+          doc.text('ATHLETE BIOMETRICS & TARGETS', margin + 5, currentY + 7);
+
+          const colW = (contentWidth - 10) / 4;
+          const colY1 = currentY + 14;
+          const colY2 = currentY + 22;
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(...secondaryColor);
+          doc.text('ATHLETE', margin + 5, colY1);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(9);
+          doc.setTextColor(...primaryColor);
+          doc.text(athleteName, margin + 5, colY1 + 5, { maxWidth: colW - 2 });
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(...secondaryColor);
+          doc.text('LEVEL', margin + 5, colY2);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8.5);
+          doc.setTextColor(...accentColor);
+          doc.text(p.level || 'Beginner', margin + 5, colY2 + 5);
+
+          const col2X = margin + 5 + colW;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(...secondaryColor);
+          doc.text('BODYWEIGHT & HEIGHT', col2X, colY1);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(9);
+          doc.setTextColor(...primaryColor);
+          doc.text(`${p.weight > 0 ? p.weight + ' kg' : '-- kg'} • ${p.height > 0 ? p.height + ' cm' : '-- cm'}`, col2X, colY1 + 5);
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(...secondaryColor);
+          doc.text('AGE', col2X, colY2);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8.5);
+          doc.setTextColor(...primaryColor);
+          doc.text(p.age > 0 ? `${p.age} Years` : 'Not set', col2X, colY2 + 5);
+
+          const col3X = margin + 5 + colW * 2;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(...secondaryColor);
+          doc.text('BODY MASS INDEX (BMI)', col3X, colY1);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(9);
+          doc.setTextColor(...primaryColor);
+          doc.text(bmiStr, col3X, colY1 + 5);
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(...secondaryColor);
+          doc.text('PRIMARY GOAL', col3X, colY2);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8.5);
+          doc.setTextColor(...primaryColor);
+          doc.text(p.goal || 'Muscle & Strength', col3X, colY2 + 5, { maxWidth: colW - 2 });
+
+          const col4X = margin + 5 + colW * 3;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(...secondaryColor);
+          doc.text('DAILY CALORIE TARGET', col4X, colY1);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(9);
+          doc.setTextColor(...accentColor);
+          doc.text(`${p.calGoal || 500} kcal/day`, col4X, colY1 + 5);
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7.5);
+          doc.setTextColor(...secondaryColor);
+          doc.text('DAILY MOVEMENTS TARGET', col4X, colY2);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8.5);
+          doc.setTextColor(...primaryColor);
+          doc.text(`${p.exGoal || 4} exercises/day`, col4X, colY2 + 5);
+
+          currentY += 35;
+
+          // Executive KPI Cards
+          const allDates = Object.keys(appState.logs);
+          const activeWorkoutDays = new Set([
+            ...allDates.filter(d => (appState.logs[d] || []).length > 0),
+            ...Object.keys(appState.sessionTimes).filter(d => (appState.sessionTimes[d] || 0) > 60)
+          ]).size;
+
+          const totalCaloriesLifetime = allDates.reduce((sum, d) => sum + (appState.logs[d] || []).reduce((s, l) => s + (l.cal || 0), 0), 0);
+          const totalSessionSecondsAll = Object.values(appState.sessionTimes).reduce((sum, sec) => sum + sec, 0);
+          const totalSessionHours = Math.floor(totalSessionSecondsAll / 3600);
+          const totalSessionMins = Math.floor((totalSessionSecondsAll % 3600) / 60);
+          const timeFormatted = totalSessionHours > 0 ? `${totalSessionHours}h ${totalSessionMins}m` : `${totalSessionMins} mins`;
+          const streak = calculateStreak();
+
+          const kpiCardWidth = (contentWidth - 9) / 4;
+          const kpiData = [
+            { title: 'ACTIVE DAYS', value: `${activeWorkoutDays} Days`, subtitle: 'Total workout days' },
+            { title: 'LIFETIME BURN', value: `${totalCaloriesLifetime.toLocaleString()} kcal`, subtitle: 'All-time energy spent' },
+            { title: 'STOPWATCH TIME', value: timeFormatted, subtitle: 'Total active sessions' },
+            { title: 'CURRENT STREAK', value: `${streak} Days`, subtitle: 'Consecutive activity 🔥' }
+          ];
+
+          kpiData.forEach((kpi, idx) => {
+            const kpiX = margin + idx * (kpiCardWidth + 3);
+            doc.setFillColor(...cardBgColor);
+            doc.setDrawColor(...cardBorderColor);
+            doc.roundedRect(kpiX, currentY, kpiCardWidth, 18, 2, 2, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(7);
+            doc.setTextColor(...secondaryColor);
+            doc.text(kpi.title, kpiX + 3.5, currentY + 5);
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.setTextColor(idx === 1 || idx === 3 ? accentColor[0] : primaryColor[0], idx === 1 || idx === 3 ? accentColor[1] : primaryColor[1], idx === 1 || idx === 3 ? accentColor[2] : primaryColor[2]);
+            doc.text(kpi.value, kpiX + 3.5, currentY + 11);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(6.5);
+            doc.setTextColor(...secondaryColor);
+            doc.text(kpi.subtitle, kpiX + 3.5, currentY + 15.5);
+          });
+
+          currentY += 23;
+
+          // Today Recap Summary
+          const todayLogs = appState.logs[todayKey] || [];
+          const todayCal = todayLogs.reduce((acc, curr) => acc + (curr.cal || 0), 0);
+          const todaySec = appState.sessionTimes[todayKey] || 0;
+
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(10.5);
+          doc.setTextColor(...primaryColor);
+          doc.text(`TODAY'S ACTIVITY RECAP (${todayKey})`, margin, currentY);
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8);
+          doc.setTextColor(...secondaryColor);
+          doc.text(`${todayLogs.length} exercises logged • ${todayCal} kcal burned • ${Math.floor(todaySec / 60)}m stopwatch active`, margin + 85, currentY);
+
+          currentY += 3;
+
+          // Workout Logs Flat Table
+          const allLogsFlat = Object.entries(appState.logs).flatMap(([dateKey, items]) => (items || []).map(item => ({ ...item, date: dateKey })));
+          allLogsFlat.sort((a, b) => b.date.localeCompare(a.date));
+
+          const tableRows = allLogsFlat.map(l => [
+            l.date,
+            l.name,
+            l.category,
+            `${l.sets} sets × ${l.reps} reps`,
+            `${l.mins}m`,
+            `+${l.cal} kcal`
+          ]);
+
+          const autoTableMethod = typeof doc.autoTable === 'function' ? doc.autoTable : (window.jspdf && typeof window.jspdf.autoTable === 'function' ? window.jspdf.autoTable : null);
+
+          if (autoTableMethod) {
+            autoTableMethod.call(doc, {
+              startY: currentY,
+              head: [['Date', 'Exercise Name', 'Category', 'Volume (Sets × Reps)', 'Duration', 'Cal Burned']],
+              body: tableRows.length > 0 ? tableRows : [['--', 'No workout exercises logged yet.', '--', '--', '--', '--']],
+              theme: 'grid',
+              headStyles: { fillColor: primaryColor, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+              styles: { fontSize: 7.5, textColor: [30, 41, 59], cellPadding: 2.2, lineColor: cardBorderColor, lineWidth: 0.2 },
+              alternateRowStyles: { fillColor: [248, 250, 252] },
+              columnStyles: {
+                0: { cellWidth: 24, fontStyle: 'bold' },
+                1: { fontStyle: 'bold' },
+                2: { cellWidth: 25 },
+                3: { cellWidth: 38 },
+                4: { cellWidth: 20, halign: 'center' },
+                5: { cellWidth: 25, halign: 'right', fontStyle: 'bold', textColor: [217, 119, 6] }
+              },
+              margin: { left: margin, right: margin, bottom: 18 }
+            });
+
+            currentY = (doc.lastAutoTable ? doc.lastAutoTable.finalY : currentY + 40) + 9;
+
+            // Routine Plans Flat Table
+            const allPlansFlat = Object.entries(appState.plans).flatMap(([dateKey, items]) => (items || []).map(p => ({ ...p, date: dateKey })));
+            allPlansFlat.sort((a, b) => b.date.localeCompare(a.date));
+
+            if (allPlansFlat.length > 0) {
+              if (currentY > pageHeight - 50) {
+                doc.addPage();
+                currentY = margin;
+              }
+              doc.setFont('helvetica', 'bold');
+              doc.setFontSize(10.5);
+              doc.setTextColor(...primaryColor);
+              doc.text('SCHEDULED ROUTINES & TRAINING PLANS', margin, currentY);
+              currentY += 3;
+
+              const planRows = allPlansFlat.map(p => {
+                let itemsFormatted = '--';
+                if (Array.isArray(p.items)) itemsFormatted = p.items.join(', ');
+                else if (typeof p.items === 'string') itemsFormatted = p.items.replace(/\r?\n+/g, ', ');
+                else if (p.notes) itemsFormatted = p.notes;
+                return [
+                  p.date,
+                  p.name,
+                  itemsFormatted,
+                  p.completed ? 'COMPLETED' : 'PLANNED'
+                ];
+              });
+
+              autoTableMethod.call(doc, {
+                startY: currentY,
+                head: [['Scheduled Date', 'Routine Name', 'Movements / Target Exercises', 'Status']],
+                body: planRows,
+                theme: 'grid',
+                headStyles: { fillColor: primaryColor, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+                styles: { fontSize: 7.5, textColor: [30, 41, 59], cellPadding: 2, lineColor: cardBorderColor, lineWidth: 0.2 },
+                columnStyles: {
+                  0: { cellWidth: 28, fontStyle: 'bold' },
+                  1: { cellWidth: 42, fontStyle: 'bold' },
+                  2: {},
+                  3: { cellWidth: 26, halign: 'center', fontStyle: 'bold' }
+                },
+                margin: { left: margin, right: margin, bottom: 18 }
+              });
+
+              currentY = (doc.lastAutoTable ? doc.lastAutoTable.finalY : currentY + 30) + 9;
+            }
+
+            // Athlete Notes Flat Table
+            if (appState.notes && appState.notes.length > 0) {
+              if (currentY > pageHeight - 50) {
+                doc.addPage();
+                currentY = margin;
+              }
+              doc.setFont('helvetica', 'bold');
+              doc.setFontSize(10.5);
+              doc.setTextColor(...primaryColor);
+              doc.text('ATHLETE JOURNAL & NOTES', margin, currentY);
+              currentY += 3;
+
+              const noteRows = appState.notes.map(n => {
+                const d = new Date(n.updated || n.created);
+                return [
+                  d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                  n.tag,
+                  n.title,
+                  n.body.length > 180 ? `${n.body.slice(0, 180)}...` : n.body
+                ];
+              });
+
+              autoTableMethod.call(doc, {
+                startY: currentY,
+                head: [['Date Updated', 'Tag', 'Title', 'Content']],
+                body: noteRows,
+                theme: 'grid',
+                headStyles: { fillColor: primaryColor, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+                styles: { fontSize: 7.5, textColor: [30, 41, 59], cellPadding: 2, lineColor: cardBorderColor, lineWidth: 0.2 },
+                columnStyles: {
+                  0: { cellWidth: 26 },
+                  1: { cellWidth: 28, fontStyle: 'bold', textColor: [217, 119, 6] },
+                  2: { cellWidth: 42, fontStyle: 'bold' },
+                  3: {}
+                },
+                margin: { left: margin, right: margin, bottom: 18 }
+              });
+            }
+
+            // Footers on each page
+            const totalPages = doc.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+              doc.setPage(i);
+              doc.setDrawColor(...cardBorderColor);
+              doc.setLineWidth(0.3);
+              doc.line(margin, pageHeight - 11, pageWidth - margin, pageHeight - 11);
+
+              doc.setFont('helvetica', 'normal');
+              doc.setFontSize(7);
+              doc.setTextColor(...secondaryColor);
+              doc.text('DOPAMINE FIT • Offline-First Calisthenics Tracker • All data stored locally in browser', margin, pageHeight - 7);
+              doc.setFont('helvetica', 'bold');
+              doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 7, { align: 'right' });
+            }
+
+            doc.save(`dopamine-fitness-report-${todayKey}.pdf`);
+            return;
+          }
+        } catch (err) {
+          console.error('Error generating jsPDF, opening in-app report modal:', err);
+        }
+      }
+
+      openReportModal();
+    }
+
+    function openReportModal() {
+      const p = appState.profile;
+      const todayKey = getTodayDateKey();
+      const athleteName = (p.name || '').trim() || 'Athlete';
+      const allDates = Object.keys(appState.logs);
+      const totalCal = allDates.reduce((sum, d) => sum + (appState.logs[d] || []).reduce((s, l) => s + (l.cal || 0), 0), 0);
+      const streak = calculateStreak();
+      const allLogs = Object.entries(appState.logs).flatMap(([dateKey, items]) => (items || []).map(l => ({ ...l, date: dateKey }))).sort((a,b) => b.date.localeCompare(a.date));
+      const totalSessionSecondsAll = Object.values(appState.sessionTimes).reduce((sum, sec) => sum + sec, 0);
+      const totalHours = Math.floor(totalSessionSecondsAll / 3600);
+      const totalMins = Math.floor((totalSessionSecondsAll % 3600) / 60);
+      const timeFormatted = totalHours > 0 ? `${totalHours}h ${totalMins}m` : `${totalMins}m`;
+
+      let bmiStr = '--';
+      if (p.weight > 0 && p.height > 0) {
+        const hm = p.height / 100;
+        const bmi = (p.weight / (hm * hm)).toFixed(1);
+        let cat = 'Normal';
+        if (bmi < 18.5) cat = 'Underweight';
+        else if (bmi >= 25 && bmi < 30) cat = 'Overweight';
+        else if (bmi >= 30) cat = 'Obese';
+        bmiStr = `${bmi} (${cat})`;
+      }
+
+      const logsHtml = allLogs.length === 0 ? '<tr><td colspan="6" class="text-center py-4 text-slate-400">No workout exercises recorded yet.</td></tr>' : allLogs.map(l => `
+        <tr class="border-b border-slate-200">
+          <td class="font-semibold py-2 px-2">${l.date}</td>
+          <td class="font-bold py-2 px-2 text-slate-800">${l.name}</td>
+          <td class="py-2 px-2 text-slate-600">${l.category}</td>
+          <td class="py-2 px-2 text-slate-700">${l.sets} sets × ${l.reps} reps</td>
+          <td class="py-2 px-2 text-center text-slate-600">${l.mins}m</td>
+          <td class="py-2 px-2 text-right font-mono font-bold text-amber-600">+${l.cal} kcal</td>
+        </tr>
+      `).join('');
+
+      const allPlans = Object.entries(appState.plans).flatMap(([dateKey, items]) => (items || []).map(item => ({ ...item, date: dateKey }))).sort((a,b) => b.date.localeCompare(a.date));
+      const plansHtml = allPlans.length === 0 ? '<tr><td colspan="4" class="text-center py-3 text-slate-400">No routines planned yet.</td></tr>' : allPlans.map(item => {
+        let itemsStr = '--';
+        if (Array.isArray(item.items)) itemsStr = item.items.join(', ');
+        else if (typeof item.items === 'string') itemsStr = item.items.replace(/\r?\n+/g, ', ');
+        else if (item.notes) itemsStr = item.notes;
+        return `
+          <tr class="border-b border-slate-200">
+            <td class="py-1.5 px-2 font-mono font-semibold">${item.date}</td>
+            <td class="py-1.5 px-2 font-bold text-slate-800">${item.name}</td>
+            <td class="py-1.5 px-2 text-slate-600">${itemsStr}</td>
+            <td class="py-1.5 px-2 text-center font-bold ${item.completed ? 'text-emerald-600' : 'text-amber-600'}">${item.completed ? 'COMPLETED' : 'PLANNED'}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const notesHtml = appState.notes.length === 0 ? '<tr><td colspan="4" class="text-center py-3 text-slate-400">No journal notes written yet.</td></tr>' : appState.notes.map(n => {
+        const d = new Date(n.updated || n.created);
+        return `
+          <tr class="border-b border-slate-200">
+            <td class="py-1.5 px-2 font-mono text-slate-500">${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+            <td class="py-1.5 px-2 font-semibold text-amber-700">${n.tag}</td>
+            <td class="py-1.5 px-2 font-bold text-slate-800">${n.title}</td>
+            <td class="py-1.5 px-2 text-slate-600 text-[11px] leading-relaxed">${n.body.length > 180 ? n.body.slice(0, 180) + '...' : n.body}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const container = document.getElementById('report-modal-body');
+      container.innerHTML = `
+        <div class="space-y-5">
+          <!-- Report Header -->
+          <div class="p-4 rounded-xl bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-4 border-amber-500">
+            <div class="flex items-center gap-3">
+              ${p.avatarUrl ? `<img src="${p.avatarUrl}" alt="Athlete Avatar" class="w-12 h-12 rounded-full object-cover border-2 border-amber-400 shrink-0" />` : `<div class="w-12 h-12 rounded-full bg-slate-800 border-2 border-amber-400 flex items-center justify-center font-bold text-lg text-amber-400 shrink-0">${athleteName.charAt(0).toUpperCase()}</div>`}
+              <div>
+                <h1 class="text-xl font-extrabold tracking-tight">DOPAMINE FIT</h1>
+                <p class="text-xs text-slate-300">Calisthenics Athlete Performance & Workout History Report</p>
+              </div>
+            </div>
+            <div class="text-left sm:text-right text-xs">
+              <span class="font-bold text-amber-400 block font-mono">REPORT DATE: ${todayKey}</span>
+              <span class="text-slate-300">Athlete: <strong class="text-white">${athleteName}</strong> (${p.level || 'Beginner'})</span>
+            </div>
+          </div>
+
+          <!-- Biometrics Card -->
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Athlete Biometrics & Discipline Targets</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div><span class="text-slate-500 block text-[10px]">ATHLETE</span><strong class="text-slate-800">${athleteName}</strong> (${p.level || 'Beginner'})</div>
+              <div><span class="text-slate-500 block text-[10px]">BODYWEIGHT & HEIGHT</span><strong class="text-slate-800">${p.weight > 0 ? p.weight + ' kg' : '--'}</strong> • <strong class="text-slate-800">${p.height > 0 ? p.height + ' cm' : '--'}</strong></div>
+              <div><span class="text-slate-500 block text-[10px]">BMI RATING</span><strong class="text-slate-800">${bmiStr}</strong></div>
+              <div><span class="text-slate-500 block text-[10px]">PRIMARY GOAL</span><strong class="text-slate-800">${p.goal || 'General Fitness'}</strong></div>
+              <div><span class="text-slate-500 block text-[10px]">DAILY CALORIE TARGET</span><strong class="text-amber-600">${p.calGoal || 500} kcal/day</strong></div>
+              <div><span class="text-slate-500 block text-[10px]">DAILY MOVEMENTS</span><strong class="text-slate-800">${p.exGoal || 4} exercises</strong></div>
+              <div><span class="text-slate-500 block text-[10px]">WEEKLY FREQUENCY</span><strong class="text-slate-800">${p.weeklyWorkoutGoal || 4} days/week</strong></div>
+              <div><span class="text-slate-500 block text-[10px]">DAILY ACTIVE TIME</span><strong class="text-slate-800">${p.dailyMinutesGoal || 30} mins</strong></div>
+            </div>
+          </div>
+
+          <!-- 4 KPI Boxes -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-500 uppercase">ACTIVE DAYS</span>
+              <div class="font-bold text-lg text-slate-900 mt-0.5">${allDates.length} Days</div>
+              <span class="text-[10px] text-slate-400">Logged workout days</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-500 uppercase">LIFETIME BURN</span>
+              <div class="font-bold text-lg text-amber-600 mt-0.5">${totalCal.toLocaleString()} kcal</div>
+              <span class="text-[10px] text-slate-400">Total energy spent</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-500 uppercase">STOPWATCH ACTIVE</span>
+              <div class="font-bold text-lg text-slate-900 mt-0.5">${timeFormatted}</div>
+              <span class="text-[10px] text-slate-400">Total tracked time</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-500 uppercase">CURRENT STREAK</span>
+              <div class="font-bold text-lg text-amber-500 mt-0.5">${streak} Days 🔥</div>
+              <span class="text-[10px] text-slate-400">Consecutive activity</span>
+            </div>
+          </div>
+
+          <!-- Workout History Table -->
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">Workout History Log (${allLogs.length} Records)</h3>
+            <div class="overflow-x-auto border border-slate-200 rounded-lg">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-900 text-white font-semibold text-[11px]">
+                  <tr>
+                    <th class="py-2 px-2">Date</th>
+                    <th class="py-2 px-2">Exercise</th>
+                    <th class="py-2 px-2">Category</th>
+                    <th class="py-2 px-2">Volume</th>
+                    <th class="py-2 px-2 text-center">Duration</th>
+                    <th class="py-2 px-2 text-right">Calories</th>
+                  </tr>
+                </thead>
+                <tbody>${logsHtml}</tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Routine Plans Table -->
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">Scheduled Routine Plans (${allPlans.length} Plans)</h3>
+            <div class="overflow-x-auto border border-slate-200 rounded-lg">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-900 text-white font-semibold text-[11px]">
+                  <tr>
+                    <th class="py-2 px-2">Date</th>
+                    <th class="py-2 px-2">Routine</th>
+                    <th class="py-2 px-2">Movements</th>
+                    <th class="py-2 px-2 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody>${plansHtml}</tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Athlete Journal Table -->
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">Athlete Journal & Notes (${appState.notes.length} Entries)</h3>
+            <div class="overflow-x-auto border border-slate-200 rounded-lg">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-900 text-white font-semibold text-[11px]">
+                  <tr>
+                    <th class="py-2 px-2">Date</th>
+                    <th class="py-2 px-2">Category</th>
+                    <th class="py-2 px-2">Title</th>
+                    <th class="py-2 px-2">Content</th>
+                  </tr>
+                </thead>
+                <tbody>${notesHtml}</tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Report Footer -->
+          <div class="pt-4 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-500">
+            <span>DOPAMINE FIT • Offline Calisthenics Tracker</span>
+            <span>All biometric & training records stored locally in browser</span>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('modal-report-preview').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeReportModal() {
+      document.getElementById('modal-report-preview').classList.add('hidden');
+    }
+
+    function importJsonFile(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const r = new FileReader();
+      r.onload = ev => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          if (parsed.profile) {
+            appState = parsed;
+            saveState();
+            location.reload();
+          }
+        } catch (err) { alert('Invalid JSON backup file.'); }
+      };
+      r.readAsText(file);
+    }
+
+    function resetAllAppData() {
+      if (confirm('Clear all recorded workouts, routines, and profile data from this device?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        appState = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        saveState();
+        location.reload();
+      }
+    }
+
+    // REST COUNTDOWN TIMER
+    let restInterval = null;
+    let restTotalSec = 60;
+    let restRemainingSec = 60;
+    let restRunning = false;
+
+    function openRestModal() {
+      document.getElementById('modal-rest-timer').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+    function closeRestModal() {
+      document.getElementById('modal-rest-timer').classList.add('hidden');
+    }
+    function setRestDuration(sec) {
+      restTotalSec = sec;
+      restRemainingSec = sec;
+      updateRestUi();
+    }
+    function stepRestSec(delta) {
+      restRemainingSec = Math.max(5, restRemainingSec + delta);
+      if (restRemainingSec > restTotalSec) restTotalSec = restRemainingSec;
+      updateRestUi();
+    }
+    function toggleRestCountdown() {
+      if (restRunning) {
+        clearInterval(restInterval);
+        restRunning = false;
+        document.getElementById('rest-play-btn').querySelector('span').textContent = 'Resume';
+        document.getElementById('rest-countdown-sub').textContent = 'Paused';
+      } else {
+        restRunning = true;
+        document.getElementById('rest-play-btn').querySelector('span').textContent = 'Pause';
+        document.getElementById('rest-countdown-sub').textContent = 'Resting...';
+        restInterval = setInterval(() => {
+          restRemainingSec--;
+          updateRestUi();
+          if (restRemainingSec <= 0) {
+            clearInterval(restInterval);
+            restRunning = false;
+            playRestChime();
+            document.getElementById('rest-countdown-sub').textContent = 'Rest Complete!';
+            document.getElementById('rest-play-btn').querySelector('span').textContent = 'Restart';
+          }
+        }, 1000);
+      }
+    }
+    function resetRestCountdown() {
+      clearInterval(restInterval);
+      restRunning = false;
+      restRemainingSec = restTotalSec;
+      document.getElementById('rest-play-btn').querySelector('span').textContent = 'Start';
+      document.getElementById('rest-countdown-sub').textContent = 'Ready';
+      updateRestUi();
+    }
+    function updateRestUi() {
+      const m = Math.floor(restRemainingSec / 60);
+      const s = restRemainingSec % 60;
+      document.getElementById('rest-countdown-text').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      const circumference = 427.25;
+      const fraction = restTotalSec > 0 ? restRemainingSec / restTotalSec : 0;
+      const offset = circumference - fraction * circumference;
+      document.getElementById('rest-svg-progress').style.strokeDashoffset = offset;
+    }
+
+    // SESSION STOPWATCH
+    let sessionInterval = null;
+    let sessionAccumulatedSec = 0;
+    let sessionRunning = false;
+    let sessionStartTime = null;
+
+    function openSessionModal() {
+      document.getElementById('modal-session-timer').classList.remove('hidden');
+      updateSessionDisplay();
+      if (window.lucide) lucide.createIcons();
+    }
+    function closeSessionModal() {
+      document.getElementById('modal-session-timer').classList.add('hidden');
+    }
+    function toggleSessionTimer() {
+      if (sessionRunning) {
+        clearInterval(sessionInterval);
+        sessionRunning = false;
+        if (sessionStartTime) {
+          sessionAccumulatedSec += Math.floor((Date.now() - sessionStartTime) / 1000);
+          sessionStartTime = null;
+        }
+        document.getElementById('session-action-btn').querySelector('span').textContent = 'Resume';
+        document.getElementById('session-status-text').textContent = 'Paused';
+        document.getElementById('session-dot').className = 'w-2 h-2 rounded-full bg-amber-400';
+      } else {
+        sessionRunning = true;
+        sessionStartTime = Date.now();
+        document.getElementById('session-action-btn').querySelector('span').textContent = 'Pause';
+        document.getElementById('session-status-text').textContent = 'Active Recording';
+        document.getElementById('session-dot').className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+        sessionInterval = setInterval(() => {
+          const currentTotal = sessionAccumulatedSec + Math.floor((Date.now() - sessionStartTime) / 1000);
+          const m = Math.floor(currentTotal / 60);
+          const s = currentTotal % 60;
+          document.getElementById('session-time-display').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+          const cals = calculateCalories(6.0, appState.profile.weight, currentTotal / 60, 0, 0);
+          document.getElementById('session-burn-estimate').innerHTML = `~${cals} <span class="text-xs font-normal text-[var(--text-muted)]">kcal</span>`;
+        }, 500);
+      }
+    }
+    function resetSessionTimer() {
+      clearInterval(sessionInterval);
+      sessionRunning = false;
+      sessionAccumulatedSec = 0;
+      sessionStartTime = null;
+      document.getElementById('session-time-display').textContent = '00:00';
+      document.getElementById('session-action-btn').querySelector('span').textContent = 'Start Session';
+      document.getElementById('session-status-text').textContent = 'Ready';
+      document.getElementById('session-dot').className = 'w-2 h-2 rounded-full bg-amber-400';
+      updateSessionDisplay();
+    }
+    function updateSessionDisplay() {
+      const todaySec = appState.sessionTimes[getTodayDateKey()] || 0;
+      const m = Math.floor(todaySec / 60);
+      const s = todaySec % 60;
+      document.getElementById('session-today-total').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+    function saveSessionToTodayRecord() {
+      const elapsed = sessionAccumulatedSec + (sessionRunning && sessionStartTime ? Math.floor((Date.now() - sessionStartTime) / 1000) : 0);
+      if (elapsed <= 0) return;
+      const todayKey = getTodayDateKey();
+      appState.sessionTimes[todayKey] = (appState.sessionTimes[todayKey] || 0) + elapsed;
+      saveState();
+      resetSessionTimer();
+      closeSessionModal();
+      renderDashboardTab();
+      updateSidebarBadges();
+      alert(`Saved ${Math.floor(elapsed / 60)}m training session to today's active time!`);
+    }
+
+    // Live Clock ticking
+    setInterval(() => {
+      const now = new Date();
+      const clockEl = document.getElementById('sidebar-live-clock');
+      const dateEl = document.getElementById('sidebar-live-date');
+      if (clockEl) {
+        clockEl.textContent = now.toLocaleTimeString('en-US', { hour12: !appState.settings.clock24h });
+      }
+      if (dateEl) {
+        dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      }
+    }, 1000);
+
+    // Initial Bootstrap
+    window.addEventListener('DOMContentLoaded', () => {
+      document.documentElement.setAttribute('data-theme', appState.settings.theme || 'dark');
+      document.documentElement.setAttribute('data-accent', appState.settings.accent || 'amber');
+      document.documentElement.setAttribute('data-font-size', appState.settings.fontSize || 'comfortable');
+
+      restTotalSec = appState.settings.restDefault || 60;
+      restRemainingSec = restTotalSec;
+      updateRestUi();
+
+      updateSidebarBadges();
+      navigate('dashboard');
+    });
+  </script>
+</body>
+</html>

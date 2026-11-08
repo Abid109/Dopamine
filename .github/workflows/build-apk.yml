@@ -1,0 +1,62 @@
+name: Build Dopamine APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Add Android platform
+        run: npx cap add android
+
+      - name: Apply app icon and name
+        run: |
+          RES=android/app/src/main/res
+          rm -f $RES/drawable-v24/ic_launcher_foreground.xml $RES/drawable/ic_launcher_background.xml
+          rm -f $RES/mipmap-*/ic_launcher*.png $RES/mipmap-*/ic_launcher*.webp
+          cp -r android-res/* $RES/
+          sed -i 's|<string name="app_name">.*</string>|<string name="app_name">Dopamine</string>|; s|<string name="title_activity_main">.*</string>|<string name="title_activity_main">Dopamine</string>|' $RES/values/strings.xml
+
+      - name: Sync web assets
+        run: npx cap sync android
+
+      - name: Build APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk Dopamine.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Dopamine-apk
+          path: Dopamine.apk
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest Dopamine.apk --title "Dopamine APK" --notes "Latest build of the Dopamine fitness app." --target ${{ github.sha }}

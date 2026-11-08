@@ -1,0 +1,6 @@
+{
+  "appId": "com.dopamine.fitness",
+  "appName": "Dopamine",
+  "webDir": "www",
+  "android": { "allowMixedContent": false }
+}
