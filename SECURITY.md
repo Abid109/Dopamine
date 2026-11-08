@@ -14,7 +14,8 @@ You can expect a first reply within a few days. Once a fix is released, the repo
 
 ## Scope
 
-Dopamine stores data only on the device and has no server. Reports about the following are most useful:
+Dopamine stores data on the device. The optional account feature uses a hosted database where each user can only access their own backup. Reports about the following are most useful:
 
 - Importing a crafted file or QR code that crashes the app or changes data that was not selected.
 - Anything that sends user data off the phone without the user's action.
+- Any way to read or change another user's cloud backup.

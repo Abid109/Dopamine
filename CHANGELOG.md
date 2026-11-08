@@ -4,6 +4,16 @@ All notable changes to Dopamine are listed here.
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-08
+
+### Added
+- **Account & Sync** section in the sidebar: optional email login with sign up, email code confirmation, password reset and log out.
+- Cloud backup and sync across devices. Profile, settings, workout logs, plans, notes and workout time stay in sync.
+- Syncing merges two devices instead of overwriting, including deletions, so nothing is lost.
+- Sync runs on opening the app, after changes and when the phone comes back online, with a Sync now button.
+- Delete my cloud backup button.
+- Logging in is optional. Without an account the app works exactly as before.
+
 ## [1.3.0] - 2026-11-08
 
 ### Added

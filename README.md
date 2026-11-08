@@ -28,6 +28,7 @@
 | **Calendar Planner** | Monthly calendar showing logged and planned days, with ready-made routine templates. |
 | **Notes & Journal** | Tagged training notes for cues, routines and reflections. |
 | **Profile & Bio** | Name, photo, age, weight, height, BMI rating, level, objective and daily targets. |
+| **Account & Sync** | Optional email login that backs up your data and keeps all your devices in sync. The app works fully without it. |
 | **Share & Receive** | Send data to another phone with QR codes or a file. The receiving phone chooses exactly which changes to import. |
 | **Timers** | Rest timer with presets and a session stopwatch that keeps accurate time when you switch tabs. |
 | **Reports & Backup** | PDF fitness report that opens in your PDF viewer, plus JSON export and import. |
@@ -45,7 +46,11 @@ Full steps and troubleshooting are on the [Installation](https://github.com/Abid
 
 ## Your data stays with you
 
-Everything you enter is saved on your phone. There are no accounts, no servers and no tracking. Data only leaves your phone when you choose to share it. See [PRIVACY.md](PRIVACY.md).
+Everything you enter is saved on your phone, and the app works fully without an account. There is no tracking. Data only leaves your phone when you choose to: by sharing it, or by turning on the optional cloud backup with an email login. See [PRIVACY.md](PRIVACY.md).
+
+## Optional account and cloud sync
+
+Open **Account & Sync** in the sidebar to log in with your email. Your profile, settings, workouts, plans and notes are then backed up privately and kept in sync across all your devices. Changes made on two phones are merged, so nothing is lost, and deletions sync too. Log out any time to stop syncing. Your data stays on the phone.
 
 ## Share between phones
 
@@ -70,7 +75,8 @@ Details are in [Building from Source](https://github.com/Abid109/Dopamine/wiki/B
 ## Project layout
 
 ```
-www/                 The app (index.html and vendor/ QR libraries)
+www/                 The app (index.html and vendor/ libraries)
+supabase/            Database setup for the optional cloud backup
 android-res/         Launcher icons applied during the Android build
 .github/workflows/   APK build and wiki sync
 wiki/                Source of the GitHub wiki pages

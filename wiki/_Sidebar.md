@@ -14,6 +14,7 @@
 - [Notes and Journal](Notes-and-Journal)
 - [Profile and Biometrics](Profile-and-Biometrics)
 - [Timers](Timers)
+- [Account and Sync](Account-and-Sync)
 - [Share and Receive](Share-and-Receive)
 - [PDF Reports and Backup](PDF-Reports-and-Backup)
 - [Settings and Themes](Settings-and-Themes)

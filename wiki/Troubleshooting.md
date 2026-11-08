@@ -41,6 +41,18 @@ The first press on the Dashboard shows a message. Press it again within about tw
 
 Data lives inside the app. It is lost if the app is uninstalled or if you used **Reset All Data** or **Import Backup** (which replaces current data). Keep regular backups with **Export JSON**.
 
+## I did not get the email code
+
+- Check your spam folder and wait a minute.
+- Tap **Send a new code**. Email sending is limited, so too many requests in a short time are blocked.
+- If your email contains a link instead of a code, tap the link to confirm, then come back and log in.
+
+## Sync says offline or failed
+
+- Check your internet connection. The app retries when it comes back online.
+- Tap **Sync now** on the **Account & Sync** page.
+- If it keeps failing, log out and log in again.
+
 ## Something else
 
 [Report a bug](https://github.com/Abid109/Dopamine/issues/new/choose) with your phone model and Android version.

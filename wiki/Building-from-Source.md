@@ -48,5 +48,10 @@ The APK is created at `android/app/build/outputs/apk/debug/app-debug.apk`.
 | --- | --- |
 | `qrcode-generator` | Creating QR codes |
 | `jsQR` | Reading QR codes from the camera |
+| `supabase-js` | Optional email login and cloud backup |
 
-Both are included in the app so QR sharing works offline.
+The QR libraries are included in the app so QR sharing works offline.
+
+## Cloud backup setup (optional)
+
+The app talks to a [Supabase](https://supabase.com) project. To use your own, create a project, run `supabase/setup.sql` in the SQL Editor, and set `SUPABASE_URL` and `SUPABASE_KEY` (the publishable key) near the top of the account code in `www/index.html`. Never put a secret or service-role key in the app.

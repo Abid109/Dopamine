@@ -15,6 +15,122 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="vendor/qrcode.js"></script>
   <script src="vendor/jsQR.js"></script>
+  <script src="vendor/supabase.js"></script>
+  <script>
+/* Dopamine cloud sync: merge logic (pure functions, no network) */
+(function (g) {
+  var TOMB_MAX_AGE = 90 * 24 * 3600 * 1000;
+  var MAX_AVATAR = 350000;
+
+  function stable(v) {
+    if (Array.isArray(v)) return '[' + v.map(stable).join(',') + ']';
+    if (v && typeof v === 'object') return '{' + Object.keys(v).sort().map(function (k) { return JSON.stringify(k) + ':' + stable(v[k]); }).join(',') + '}';
+    return JSON.stringify(v === undefined ? null : v);
+  }
+  function hash(v) {
+    var s = stable(v), h = 5381;
+    for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return String(h >>> 0) + ':' + s.length;
+  }
+  function mergeTombs(a, b, now) {
+    var out = {}, k;
+    [a || {}, b || {}].forEach(function (src) {
+      for (k in src) {
+        var t = Number(src[k]) || 0;
+        if (now - t > TOMB_MAX_AGE) continue;
+        if (!(k in out) || t > out[k]) out[k] = t;
+      }
+    });
+    return out;
+  }
+  function byDate(localMap, remoteMap, tombs, pick) {
+    var out = {}, dates = {}, d;
+    for (d in (localMap || {})) dates[d] = 1;
+    for (d in (remoteMap || {})) dates[d] = 1;
+    Object.keys(dates).sort().forEach(function (date) {
+      var order = [], seen = {};
+      ((localMap || {})[date] || []).concat((remoteMap || {})[date] || []).forEach(function (item) {
+        if (!item || !item.id || tombs[item.id]) return;
+        if (seen[item.id] === undefined) { seen[item.id] = order.length; order.push(item); }
+        else order[seen[item.id]] = pick(order[seen[item.id]], item);
+      });
+      if (order.length) out[date] = order;
+    });
+    return out;
+  }
+  function pickLog(a) { return a; }
+  function pickPlan(a, b) {
+    var ua = Number(a.u) || 0, ub = Number(b.u) || 0;
+    if (ua !== ub) return ua > ub ? a : b;
+    return (b.completed && !a.completed) ? b : a;
+  }
+  function mergeNotes(l, r, tombs) {
+    var map = {}, order = [];
+    (l || []).concat(r || []).forEach(function (n) {
+      if (!n || !n.id || tombs[n.id]) return;
+      if (map[n.id] === undefined) { map[n.id] = order.length; order.push(n); }
+      else if ((Number(n.updated) || 0) > (Number(order[map[n.id]].updated) || 0)) order[map[n.id]] = n;
+    });
+    return order.sort(function (a, b) { return (Number(b.created) || 0) - (Number(a.created) || 0); });
+  }
+  function mergeTimes(l, r) {
+    var out = {}, d;
+    [l || {}, r || {}].forEach(function (src) {
+      for (d in src) { var v = Number(src[d]) || 0; if (v > (out[d] || 0)) out[d] = v; }
+    });
+    return out;
+  }
+  /* Per-field three-way merge: a field you changed since the last sync wins, otherwise the cloud value is used */
+  function threeWay(key, local, remote, meta, defaults) {
+    var lv = local[key] || {}, rv = remote ? remote[key] : null;
+    var base = meta[key + 'Base'] || null, dv = defaults[key] || {};
+    var keys = {}, k, out = {};
+    [lv, rv || {}, dv].forEach(function (o) { for (k in o) keys[k] = 1; });
+    Object.keys(keys).forEach(function (k) {
+      var l = lv[k], r = rv ? rv[k] : undefined, changed;
+      if (key === 'profile' && k === 'avatarUrl') {
+        var bh = meta.avatarHash != null ? meta.avatarHash : hash('');
+        changed = hash(l || '') !== bh;
+      } else {
+        var b = (base && k in base) ? base[k] : dv[k];
+        changed = stable(l) !== stable(b);
+      }
+      if (changed || r === undefined) out[k] = l;
+      else out[k] = r;
+    });
+    return out;
+  }
+  function baseFrom(m) {
+    var p = Object.assign({}, m.profile); var av = p.avatarUrl || ''; delete p.avatarUrl;
+    return { profileBase: p, avatarHash: hash(av), settingsBase: Object.assign({}, m.settings) };
+  }
+  /* local: {profile,settings,logs,plans,notes,sessionTimes,deleted}; remote: payload or null */
+  function merge(local, remote, meta, defaults, now) {
+    meta = meta || {}; now = now || Date.now();
+    var tombs = mergeTombs(local.deleted, remote && remote.deleted, now);
+    return {
+      profile: threeWay('profile', local, remote, meta, defaults),
+      settings: threeWay('settings', local, remote, meta, defaults),
+      logs: byDate(local.logs, remote && remote.logs, tombs, pickLog),
+      plans: byDate(local.plans, remote && remote.plans, tombs, pickPlan),
+      notes: mergeNotes(local.notes, remote && remote.notes, tombs),
+      sessionTimes: mergeTimes(local.sessionTimes, remote && remote.sessionTimes),
+      deleted: tombs
+    };
+  }
+  /* what gets stored in the cloud (a big profile photo is left out and kept per device) */
+  function buildPayload(m) {
+    var p = Object.assign({}, m.profile);
+    if (p.avatarUrl && p.avatarUrl.length > MAX_AVATAR) delete p.avatarUrl;
+    return {
+      v: 1, profile: p, settings: m.settings,
+      logs: m.logs, plans: m.plans, notes: m.notes, sessionTimes: m.sessionTimes, deleted: m.deleted
+    };
+  }
+  g.DopSync = { merge: merge, buildPayload: buildPayload, baseFrom: baseFrom, stable: stable, hash: hash, MAX_AVATAR: MAX_AVATAR };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+  </script>
   <script>
 /* Dopamine share codec: compress -> base64 -> numbered QR frames, and reassembly */
 (function (g) {
@@ -409,6 +525,10 @@
         <button onclick="navigate('share')" id="nav-btn-share" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
           <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg><span>Share &amp; Receive</span></div>
           <span id="share-badge" class="hidden min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--accent)] text-black text-[10px] font-bold items-center justify-center">0</span>
+        </button>
+        <button onclick="navigate('account')" id="nav-btn-account" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
+          <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg><span>Account &amp; Sync</span></div>
+          <span id="acct-dot" class="hidden w-2 h-2 rounded-full bg-emerald-400 shrink-0" title="Cloud sync on"></span>
         </button>
         <button onclick="navigate('settings')" id="nav-btn-settings" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
           <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg><span>Settings</span></div>
@@ -1057,6 +1177,17 @@
       </div>
     </div>
 
+    <div id="tab-account" class="hidden space-y-6">
+      <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-[var(--accent)]"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+          Account &amp; Sync
+        </h1>
+        <p class="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">Optional. Log in to back up your data and keep all your devices in sync. The app works fully without an account.</p>
+      </div>
+      <div id="account-root" class="max-w-xl"></div>
+    </div>
+
     <div id="tab-settings" class="hidden space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
         <div>
@@ -1479,7 +1610,8 @@
       plans: {},
       notes: [],
       sessionTimes: {},
-      received: []
+      received: [],
+      deleted: {}
     };
 
     let appState = loadState();
@@ -1493,6 +1625,7 @@
         merged.profile = Object.assign({}, DEFAULT_DATA.profile, parsed.profile || {});
         merged.settings = Object.assign({}, DEFAULT_DATA.settings, parsed.settings || {});
         merged.received = Array.isArray(parsed.received) ? parsed.received : [];
+        merged.deleted = (parsed.deleted && typeof parsed.deleted === 'object') ? parsed.deleted : {};
         return merged;
       } catch (e) {
         return JSON.parse(JSON.stringify(DEFAULT_DATA));
@@ -1554,6 +1687,7 @@
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      if (typeof acctOnLocalSaved === 'function') acctOnLocalSaved();
     }
     function getTodayDateKey() {
       const d = new Date();
@@ -1652,7 +1786,7 @@
         window.history.pushState({ tab: tab, modal: null }, '', '#' + tab);
       }
 
-      const tabs = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'settings'];
+      const tabs = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'account', 'settings'];
       tabs.forEach(t => {
         const el = document.getElementById('tab-' + t);
         const btn = document.getElementById('nav-btn-' + t);
@@ -1681,6 +1815,7 @@
       if (tab === 'profile') renderProfileForm();
       if (tab === 'settings') renderSettingsTab();
       if (tab === 'share') renderShareTab();
+      if (tab === 'account') renderAccountTab();
       if (window.lucide) lucide.createIcons();
     }
 
@@ -2243,6 +2378,7 @@
         const fresh = shDiffLogs(date, d.logs[date]);
         if (!fresh.length) return;
         appState.logs[date] = (appState.logs[date] || []).concat(fresh);
+        fresh.forEach(e => { if (appState.deleted) delete appState.deleted[e.id]; });
         added.logs += fresh.length;
       });
       Object.keys(sel.plans).forEach(date => {
@@ -2250,12 +2386,14 @@
         const fresh = shDiffPlans(date, d.plans[date]);
         if (!fresh.length) return;
         appState.plans[date] = (appState.plans[date] || []).concat(fresh);
+        fresh.forEach(p => { if (appState.deleted) delete appState.deleted[p.id]; });
         added.plans += fresh.length;
       });
       (d.notes || []).forEach(n => {
         if (!sel.notes[n.id]) return;
         const idx = appState.notes.findIndex(x => x.id === n.id);
         if (idx >= 0) appState.notes[idx] = n; else appState.notes.unshift(n);
+        if (appState.deleted) delete appState.deleted[n.id];
         added.notes++;
       });
       if (sel.sessionTimes && d.sessionTimes) {
@@ -2278,6 +2416,392 @@
       showToast('Imported ' + bits.join(', '), 3500);
       renderShareTab();
       updateSidebarBadges();
+    }
+
+    // =====================================================================
+    // ACCOUNT & CLOUD SYNC (optional): email login + backup across devices
+    // =====================================================================
+    const SUPABASE_URL = 'https://ohbsudgdwebituirxvjj.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_V6yD5ZhI__T3yxrpAUg3LA_JH6_MIuT';
+    const SYNC_META_KEY = 'dopamine_sync_meta_v1';
+    let sb = null;
+    const acct = { session: null, mode: 'login', email: '', syncing: false, again: false, applying: false, timer: null, status: '', busy: false };
+
+    function markDeleted(id) {
+      if (!id) return;
+      if (!appState.deleted || typeof appState.deleted !== 'object') appState.deleted = {};
+      appState.deleted[id] = Date.now();
+    }
+    function getSyncMeta() {
+      try { return JSON.parse(localStorage.getItem(SYNC_META_KEY)) || {}; } catch (e) { return {}; }
+    }
+    function setSyncMeta(m) { try { localStorage.setItem(SYNC_META_KEY, JSON.stringify(m)); } catch (e) { } }
+    function acctSignedIn() { return !!(sb && acct.session); }
+    function localSyncView() {
+      return { profile: appState.profile, settings: appState.settings, logs: appState.logs, plans: appState.plans, notes: appState.notes, sessionTimes: appState.sessionTimes, deleted: appState.deleted || {} };
+    }
+
+    // ---------- helpers ----------
+    function acctVal(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+    function acctMsg(text, kind) {
+      const el = document.getElementById('acct-msg');
+      if (!el) { if (text) showToast(text, 3500); return; }
+      el.textContent = text || '';
+      el.className = 'text-xs font-semibold min-h-[1rem] ' + (kind === 'ok' ? 'text-emerald-400' : 'text-red-400');
+    }
+    function acctSetBusy(b) {
+      acct.busy = b;
+      document.querySelectorAll('#account-root button[data-act]').forEach(x => { x.disabled = b; x.style.opacity = b ? '0.6' : ''; });
+    }
+    function acctErr(e) {
+      const code = String((e && (e.code || e.error_code)) || '').toLowerCase();
+      const msg = String((e && e.message) || e || '');
+      const low = msg.toLowerCase();
+      if (code === 'invalid_credentials' || low.indexOf('invalid login') !== -1) return 'Wrong email or password.';
+      if (code === 'email_not_confirmed' || low.indexOf('not confirmed') !== -1) return 'Please confirm your email first.';
+      if (code === 'user_already_exists' || low.indexOf('already registered') !== -1) return 'That email already has an account. Try logging in.';
+      if (code.indexOf('rate_limit') !== -1 || low.indexOf('rate limit') !== -1 || low.indexOf('too many') !== -1) return 'Too many attempts. Wait a few minutes and try again.';
+      if (code === 'weak_password' || low.indexOf('password should') !== -1) return 'Choose a stronger password (at least 8 characters).';
+      if (code === 'otp_expired' || low.indexOf('expired') !== -1 || low.indexOf('invalid') !== -1 && low.indexOf('token') !== -1) return 'That code is wrong or has expired.';
+      if (low.indexOf('failed to fetch') !== -1 || low.indexOf('network') !== -1 || (e && e.name === 'TypeError')) return 'No internet connection. Please try again.';
+      if (code === 'signup_disabled') return 'New sign-ups are turned off for this project.';
+      return msg || 'Something went wrong.';
+    }
+    function acctIsEmail(s) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
+    function acctUpdateDot() {
+      const d = document.getElementById('acct-dot');
+      if (d) d.classList.toggle('hidden', !acctSignedIn());
+    }
+
+    // ---------- init ----------
+    async function acctInit() {
+      if (!window.supabase || !window.supabase.createClient) { renderAccountTab(); return; }
+      try {
+        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } });
+        const { data } = await sb.auth.getSession();
+        acct.session = data && data.session ? data.session : null;
+        sb.auth.onAuthStateChange((evt, session) => {
+          setTimeout(() => {
+            const was = !!acct.session;
+            acct.session = session || null;
+            acctUpdateDot();
+            if (was !== !!acct.session) renderAccountTab();
+          }, 0);
+        });
+      } catch (e) { console.warn('Account setup failed', e); sb = null; }
+      acctUpdateDot();
+      renderAccountTab();
+      if (acctSignedIn()) scheduleSync(1500);
+      window.addEventListener('online', () => { if (acctSignedIn()) scheduleSync(1000); });
+      document.addEventListener('visibilitychange', () => { if (!document.hidden && acctSignedIn()) scheduleSync(800); });
+      setInterval(() => { if (acctSignedIn() && !document.hidden) scheduleSync(0); }, 120000);
+    }
+    function acctOnLocalSaved() {
+      if (acct.applying || !acctSignedIn()) return;
+      scheduleSync(4000);
+    }
+    function scheduleSync(ms) {
+      if (acct.timer) clearTimeout(acct.timer);
+      acct.timer = setTimeout(() => { acct.timer = null; syncNow(false); }, ms);
+    }
+
+    // ---------- rendering ----------
+    const ACCT_INPUT = 'w-full px-3 py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]';
+    const ACCT_PRIMARY = 'w-full p-3 rounded-xl bg-[var(--accent)] text-black font-bold text-xs hover:brightness-110 active:scale-[0.98] transition-all';
+    const ACCT_LINK = 'text-[11px] font-bold text-[var(--accent)]';
+    function acctCard(inner) { return `<div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">${inner}</div>`; }
+    function acctField(label, id, type, auto, extra) {
+      return `<div><label class="text-xs font-semibold text-[var(--text-primary)] block mb-1.5">${label}</label><input id="${id}" type="${type}" autocomplete="${auto}" ${extra || ''} class="${ACCT_INPUT}"></div>`;
+    }
+    function renderAccountTab() {
+      const root = document.getElementById('account-root');
+      if (!root) return;
+      acctUpdateDot();
+      if (!sb) {
+        root.innerHTML = acctCard('<p class="text-xs text-[var(--text-muted)]">Cloud sync is not available right now. The app keeps working normally and your data stays on this phone.</p>');
+        return;
+      }
+      if (acctSignedIn()) { root.innerHTML = acctSignedInHtml(); return; }
+      const m = acct.mode;
+      let html = '';
+      if (m === 'login') {
+        html = acctCard(`
+          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Log in</h2><p class="text-[11px] text-[var(--text-muted)]">Your data on this phone is kept and merged with your cloud backup.</p></div>
+          ${acctField('Email', 'acct-email', 'email', 'email', 'inputmode="email"')}
+          ${acctField('Password', 'acct-pass', 'password', 'current-password')}
+          <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
+          <button data-act onclick="acctLogin()" class="${ACCT_PRIMARY}">Log in</button>
+          <div class="flex items-center justify-between"><button onclick="acctGo('signup')" class="${ACCT_LINK}">Create an account</button><button onclick="acctGo('forgot')" class="${ACCT_LINK}">Forgot password?</button></div>`);
+      } else if (m === 'signup') {
+        html = acctCard(`
+          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Create an account</h2><p class="text-[11px] text-[var(--text-muted)]">Use any email. Password must be at least 8 characters.</p></div>
+          ${acctField('Email', 'acct-email', 'email', 'email', 'inputmode="email"')}
+          ${acctField('Password', 'acct-pass', 'password', 'new-password')}
+          ${acctField('Repeat password', 'acct-pass2', 'password', 'new-password')}
+          <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
+          <button data-act onclick="acctSignup()" class="${ACCT_PRIMARY}">Create account</button>
+          <button onclick="acctGo('login')" class="${ACCT_LINK}">I already have an account</button>`);
+      } else if (m === 'verify') {
+        html = acctCard(`
+          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Check your email</h2><p class="text-[11px] text-[var(--text-muted)]">We sent a code to ${shEsc(acct.email)}. Type it here. If your email has a link instead of a code, tap the link, then come back and log in.</p></div>
+          ${acctField('Code', 'acct-code', 'text', 'one-time-code', 'inputmode="numeric" maxlength="10"')}
+          <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
+          <button data-act onclick="acctVerify()" class="${ACCT_PRIMARY}">Confirm</button>
+          <div class="flex items-center justify-between"><button data-act onclick="acctResend()" class="${ACCT_LINK}">Send a new code</button><button onclick="acctGo('login')" class="${ACCT_LINK}">Back to log in</button></div>`);
+      } else if (m === 'forgot') {
+        html = acctCard(`
+          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Reset password</h2><p class="text-[11px] text-[var(--text-muted)]">Enter your email and we will send you a code.</p></div>
+          ${acctField('Email', 'acct-email', 'email', 'email', 'inputmode="email"')}
+          <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
+          <button data-act onclick="acctForgot()" class="${ACCT_PRIMARY}">Send code</button>
+          <button onclick="acctGo('login')" class="${ACCT_LINK}">Back to log in</button>`);
+      } else if (m === 'reset') {
+        html = acctCard(`
+          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Choose a new password</h2><p class="text-[11px] text-[var(--text-muted)]">Type the code we emailed to ${shEsc(acct.email)} and a new password.</p></div>
+          ${acctField('Code', 'acct-code', 'text', 'one-time-code', 'inputmode="numeric" maxlength="10"')}
+          ${acctField('New password', 'acct-pass', 'password', 'new-password')}
+          <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
+          <button data-act onclick="acctResetSubmit()" class="${ACCT_PRIMARY}">Set new password</button>
+          <button onclick="acctGo('login')" class="${ACCT_LINK}">Back to log in</button>`);
+      }
+      html += '<p class="text-[10px] text-[var(--text-dim)] mt-3">Logging in is optional. Without an account, everything stays on this phone.</p>';
+      root.innerHTML = html;
+    }
+    function acctSignedInHtml() {
+      const meta = getSyncMeta();
+      const last = meta.lastSyncAt ? new Date(meta.lastSyncAt).toLocaleString() : 'Not yet';
+      const email = shEsc((acct.session.user && acct.session.user.email) || '');
+      return acctCard(`
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-[var(--accent)] text-black font-extrabold flex items-center justify-center">${shEsc((email[0] || '?').toUpperCase())}</div>
+          <div class="min-w-0"><div class="text-xs text-[var(--text-muted)]">Signed in as</div><div class="text-sm font-bold text-[var(--text-primary)] truncate">${email}</div></div>
+        </div>
+        <div class="p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] space-y-1">
+          <div id="acct-status" class="text-xs font-semibold text-[var(--text-primary)]">${shEsc(acct.status || 'Ready')}</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Last synced: <span id="acct-last">${shEsc(last)}</span></div>
+        </div>
+        <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
+        <div class="grid grid-cols-2 gap-2">
+          <button data-act onclick="syncNow(true)" class="p-3 rounded-xl bg-[var(--accent)] text-black font-bold text-xs hover:brightness-110 active:scale-[0.98] transition-all">Sync now</button>
+          <button data-act onclick="acctLogout()" class="p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] font-bold text-xs">Log out</button>
+        </div>
+        <p class="text-[10px] text-[var(--text-dim)]">Synced: profile, settings, workout logs, plans, notes and workout time. Received files from Share &amp; Receive stay on each phone. Syncing merges both devices, so nothing is lost. Log out any time to stop syncing. Your data stays on this phone.</p>
+        <button data-act onclick="acctDeleteCloud()" class="w-full p-2.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-red-400 text-[11px] font-bold">Delete my cloud backup</button>`);
+    }
+    function acctGo(mode) { acct.mode = mode; renderAccountTab(); }
+    function acctSetStatus(t) {
+      acct.status = t;
+      const el = document.getElementById('acct-status');
+      if (el) el.textContent = t;
+      const last = document.getElementById('acct-last');
+      if (last) { const m = getSyncMeta(); last.textContent = m.lastSyncAt ? new Date(m.lastSyncAt).toLocaleString() : 'Not yet'; }
+    }
+
+    // ---------- auth actions ----------
+    async function acctAfterLogin(session) {
+      acct.session = session;
+      const uid = session.user.id, meta = getSyncMeta();
+      if (meta.uid && meta.uid !== uid) {
+        const keep = confirm('This phone still has data from a different account.\n\nOK = add it to this account\nCancel = erase it from this phone first');
+        if (!keep) {
+          acct.applying = true;
+          try { appState = JSON.parse(JSON.stringify(DEFAULT_DATA)); saveState(); } finally { acct.applying = false; }
+          acctRefreshViews();
+        }
+        setSyncMeta({ uid: uid });
+      } else if (!meta.uid) { setSyncMeta(Object.assign({}, meta, { uid: uid })); }
+      acct.mode = 'login';
+      acctUpdateDot();
+      renderAccountTab();
+      showToast('Logged in. Syncing...');
+      syncNow(true);
+    }
+    async function acctLogin() {
+      if (acct.busy) return;
+      const email = acctVal('acct-email').trim(), pass = acctVal('acct-pass');
+      if (!acctIsEmail(email) || !pass) { acctMsg('Enter your email and password.'); return; }
+      acctSetBusy(true); acctMsg('Logging in...', 'ok');
+      try {
+        const { data, error } = await sb.auth.signInWithPassword({ email: email, password: pass });
+        if (error) throw error;
+        await acctAfterLogin(data.session);
+      } catch (e) {
+        const low = String((e && e.message) || '').toLowerCase();
+        if ((e && e.code === 'email_not_confirmed') || low.indexOf('not confirmed') !== -1) {
+          acct.email = email; acct.mode = 'verify'; renderAccountTab();
+          acctMsg('Your email is not confirmed yet. Enter the code we send now.', 'ok');
+          try { await sb.auth.resend({ type: 'signup', email: email }); } catch (e2) { }
+        } else acctMsg(acctErr(e));
+      } finally { acctSetBusy(false); }
+    }
+    async function acctSignup() {
+      if (acct.busy) return;
+      const email = acctVal('acct-email').trim(), p1 = acctVal('acct-pass'), p2 = acctVal('acct-pass2');
+      if (!acctIsEmail(email)) { acctMsg('Enter a valid email address.'); return; }
+      if (p1.length < 8) { acctMsg('Password must be at least 8 characters.'); return; }
+      if (p1 !== p2) { acctMsg('The two passwords do not match.'); return; }
+      acctSetBusy(true); acctMsg('Creating account...', 'ok');
+      try {
+        const { data, error } = await sb.auth.signUp({ email: email, password: p1 });
+        if (error) throw error;
+        if (data.user && data.user.identities && data.user.identities.length === 0) { acctMsg('That email already has an account. Try logging in.'); return; }
+        if (data.session) { await acctAfterLogin(data.session); showToast('Account created'); }
+        else { acct.email = email; acct.mode = 'verify'; renderAccountTab(); acctMsg('Account created. Check your email.', 'ok'); }
+      } catch (e) { acctMsg(acctErr(e)); }
+      finally { acctSetBusy(false); }
+    }
+    async function acctVerify() {
+      if (acct.busy) return;
+      const code = acctVal('acct-code').trim();
+      if (code.length < 4) { acctMsg('Enter the code from your email.'); return; }
+      acctSetBusy(true); acctMsg('Checking...', 'ok');
+      try {
+        const { data, error } = await sb.auth.verifyOtp({ email: acct.email, token: code, type: 'signup' });
+        if (error) throw error;
+        if (data.session) await acctAfterLogin(data.session);
+        else { acct.mode = 'login'; renderAccountTab(); acctMsg('Email confirmed. You can log in now.', 'ok'); }
+      } catch (e) { acctMsg(acctErr(e)); }
+      finally { acctSetBusy(false); }
+    }
+    async function acctResend() {
+      if (acct.busy) return;
+      acctSetBusy(true);
+      try {
+        const { error } = await sb.auth.resend({ type: 'signup', email: acct.email });
+        if (error) throw error;
+        acctMsg('A new code is on its way.', 'ok');
+      } catch (e) { acctMsg(acctErr(e)); }
+      finally { acctSetBusy(false); }
+    }
+    async function acctForgot() {
+      if (acct.busy) return;
+      const email = acctVal('acct-email').trim();
+      if (!acctIsEmail(email)) { acctMsg('Enter a valid email address.'); return; }
+      acctSetBusy(true); acctMsg('Sending...', 'ok');
+      try {
+        const { error } = await sb.auth.resetPasswordForEmail(email);
+        if (error) throw error;
+        acct.email = email; acct.mode = 'reset'; renderAccountTab();
+        acctMsg('If that email has an account, a code is on its way.', 'ok');
+      } catch (e) { acctMsg(acctErr(e)); }
+      finally { acctSetBusy(false); }
+    }
+    async function acctResetSubmit() {
+      if (acct.busy) return;
+      const code = acctVal('acct-code').trim(), np = acctVal('acct-pass');
+      if (code.length < 4) { acctMsg('Enter the code from your email.'); return; }
+      if (np.length < 8) { acctMsg('Password must be at least 8 characters.'); return; }
+      acctSetBusy(true); acctMsg('Updating...', 'ok');
+      try {
+        const v = await sb.auth.verifyOtp({ email: acct.email, token: code, type: 'recovery' });
+        if (v.error) throw v.error;
+        const u = await sb.auth.updateUser({ password: np });
+        if (u.error) throw u.error;
+        showToast('Password updated');
+        if (v.data && v.data.session) await acctAfterLogin(v.data.session);
+      } catch (e) { acctMsg(acctErr(e)); }
+      finally { acctSetBusy(false); }
+    }
+    async function acctLogout() {
+      if (!confirm('Log out? Your data stays on this phone but will stop syncing.')) return;
+      try { await sb.auth.signOut(); } catch (e) { }
+      acct.session = null; acct.mode = 'login';
+      if (acct.timer) { clearTimeout(acct.timer); acct.timer = null; }
+      acctUpdateDot(); renderAccountTab();
+      showToast('Logged out');
+    }
+    async function acctDeleteCloud() {
+      if (!acctSignedIn()) return;
+      if (!confirm('Delete your cloud backup? Data on your phones is not touched. If you stay logged in, the next sync uploads a fresh copy.')) return;
+      acctSetBusy(true);
+      try {
+        const { error } = await sb.from('user_backups').delete().eq('user_id', acct.session.user.id);
+        if (error) throw error;
+        const m = getSyncMeta(); setSyncMeta({ uid: m.uid });
+        acctMsg('Cloud backup deleted.', 'ok');
+        acctSetStatus('Cloud backup deleted');
+      } catch (e) { acctMsg(acctErr(e)); }
+      finally { acctSetBusy(false); }
+    }
+
+    // ---------- sync ----------
+    function acctRefreshViews() {
+      try {
+        document.documentElement.setAttribute('data-theme', appState.settings.theme || 'dark');
+        document.documentElement.setAttribute('data-accent', appState.settings.accent || 'amber');
+        document.documentElement.setAttribute('data-font-size', appState.settings.fontSize || 'comfortable');
+        const t = currentTabId;
+        if (t === 'dashboard') renderDashboardTab();
+        else if (t === 'log') renderLogWorkoutTab();
+        else if (t === 'calendar') renderCalendarTab();
+        else if (t === 'notes') renderNotesList();
+        else if (t === 'profile') renderProfileForm();
+        else if (t === 'settings') renderSettingsTab();
+        else if (t === 'share') renderShareTab();
+        updateSidebarBadges();
+      } catch (e) { console.warn('View refresh failed', e); }
+    }
+    function acctApplyMerged(m) {
+      const before = DopSync.stable(localSyncView());
+      acct.applying = true;
+      try {
+        appState.profile = Object.assign({}, DEFAULT_DATA.profile, m.profile);
+        appState.settings = Object.assign({}, DEFAULT_DATA.settings, m.settings);
+        appState.logs = m.logs; appState.plans = m.plans; appState.notes = m.notes;
+        appState.sessionTimes = m.sessionTimes; appState.deleted = m.deleted;
+        saveState();
+      } finally { acct.applying = false; }
+      if (DopSync.stable(localSyncView()) !== before) acctRefreshViews();
+    }
+    async function syncNow(manual) {
+      if (!sb || !acct.session) return;
+      if (acct.syncing) { acct.again = true; return; }
+      acct.syncing = true;
+      acctSetStatus('Syncing...');
+      try {
+        const uid = acct.session.user.id;
+        const defaults = { profile: DEFAULT_DATA.profile, settings: DEFAULT_DATA.settings };
+        let done = false;
+        for (let attempt = 0; attempt < 4 && !done; attempt++) {
+          const sel = await sb.from('user_backups').select('data,updated_at').eq('user_id', uid).maybeSingle();
+          if (sel.error) throw sel.error;
+          const row = sel.data, remote = row ? row.data : null;
+          const meta = getSyncMeta();
+          const m = DopSync.merge(localSyncView(), remote, meta, defaults, Date.now());
+          const payload = DopSync.buildPayload(m);
+          const same = !!row && DopSync.stable(payload) === DopSync.stable(Object.assign({}, remote, { v: 1 }));
+          let wrote = same;
+          if (!same) {
+            if (JSON.stringify(payload).length > 4000000) throw new Error('Your data is too large to back up.');
+            if (!row) {
+              const ins = await sb.from('user_backups').insert({ user_id: uid, data: payload });
+              if (ins.error) { if (ins.error.code === '23505') continue; throw ins.error; }
+              wrote = true;
+            } else {
+              const upd = await sb.from('user_backups').update({ data: payload, updated_at: new Date().toISOString() }).eq('user_id', uid).eq('updated_at', row.updated_at).select('updated_at');
+              if (upd.error) throw upd.error;
+              if (!upd.data || !upd.data.length) continue; // someone else wrote first: merge again
+              wrote = true;
+            }
+          }
+          if (wrote) {
+            acctApplyMerged(m);
+            setSyncMeta(Object.assign({ uid: uid }, DopSync.baseFrom(m), { lastSyncAt: Date.now() }));
+            done = true;
+          }
+        }
+        if (!done) throw new Error('Could not finish syncing. Try again.');
+        acctSetStatus('Synced just now');
+        if (manual) showToast('Synced');
+      } catch (e) {
+        console.warn('Sync failed', e);
+        const msg = acctErr(e);
+        acctSetStatus(msg.indexOf('No internet') === 0 ? 'Offline. Will sync when you are back online.' : 'Sync failed: ' + msg);
+        if (manual) showToast(msg.indexOf('No internet') === 0 ? 'You are offline' : 'Sync failed', 3500);
+      } finally {
+        acct.syncing = false;
+        if (acct.again) { acct.again = false; scheduleSync(1500); }
+      }
     }
 
     // Native Android back button (Capacitor): close sidebar/modal, go to previous page, then double-press to exit
@@ -2332,7 +2856,7 @@
 
       // 4. Hash fallback
       const hash = window.location.hash.replace('#', '').split('-')[0];
-      if (hash && ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'settings'].includes(hash)) {
+      if (hash && ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'account', 'settings'].includes(hash)) {
         navigate(hash, false);
         return;
       }
@@ -2893,6 +3417,7 @@
 
     function deleteWorkoutLog(dateKey, logId) {
       if (!appState.logs[dateKey]) return;
+      markDeleted(logId);
       appState.logs[dateKey] = appState.logs[dateKey].filter(l => l.id !== logId);
       saveState();
       renderLogHistoryTable();
@@ -3058,13 +3583,14 @@
 
     function togglePlanCheck(dateKey, planId) {
       if (!appState.plans[dateKey]) return;
-      appState.plans[dateKey] = appState.plans[dateKey].map(p => p.id === planId ? { ...p, completed: !p.completed } : p);
+      appState.plans[dateKey] = appState.plans[dateKey].map(p => p.id === planId ? { ...p, completed: !p.completed, u: Date.now() } : p);
       saveState();
       renderCalendarTab();
     }
 
     function deleteRoutinePlan(dateKey, planId) {
       if (!appState.plans[dateKey]) return;
+      markDeleted(planId);
       appState.plans[dateKey] = appState.plans[dateKey].filter(p => p.id !== planId);
       saveState();
       renderCalendarTab();
@@ -3189,6 +3715,7 @@
     }
 
     function deleteExistingNote(id) {
+      markDeleted(id);
       appState.notes = appState.notes.filter(n => n.id !== id);
       saveState();
       renderNotesList();
@@ -4211,8 +4738,12 @@
       r.readAsText(file);
     }
 
-    function resetAllAppData() {
+    async function resetAllAppData() {
       if (confirm('Clear all recorded workouts, routines, and profile data from this device?')) {
+        if (acctSignedIn() && confirm('You are logged in. Also delete your cloud backup?\n\nOK = delete it too\nCancel = keep it (it will restore your data on the next sync)')) {
+          try { await sb.from('user_backups').delete().eq('user_id', acct.session.user.id); } catch (e) { }
+        }
+        try { const um = getSyncMeta(); setSyncMeta({ uid: um.uid }); } catch (e) { }
         localStorage.removeItem(STORAGE_KEY);
         appState = JSON.parse(JSON.stringify(DEFAULT_DATA));
         saveState();
@@ -4383,11 +4914,12 @@
 
       // Initialize root history state so back button knows initial entry
       const initialTab = window.location.hash.replace('#', '').split('-')[0] || 'dashboard';
-      const validTab = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'settings'].includes(initialTab) ? initialTab : 'dashboard';
+      const validTab = ['dashboard', 'log', 'calendar', 'notes', 'profile', 'share', 'account', 'settings'].includes(initialTab) ? initialTab : 'dashboard';
       window.history.replaceState({ tab: validTab, modal: null }, '', '#' + validTab);
 
       navigate(validTab, false);
       setupNativeBackButton();
+      acctInit();
     });
   </script>
 </body>
