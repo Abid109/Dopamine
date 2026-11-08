@@ -27,12 +27,12 @@ jobs:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
         run: |
           if [ -z "$KEYSTORE_B64" ]; then
-            echo "::error title=Signing key missing::Add the repository secret ANDROID_KEYSTORE_B64 (see the wiki page App Updates). The build stops here so an APK signed with a random key is never published."
+            echo "::error title=Signing key missing::Add the repository secret ANDROID_KEYSTORE_B64 (see the wiki page Updating the App). The build stops here so an APK signed with a random key is never published."
             exit 1
           fi
-          mkdir -p ~/.android
-          echo "$KEYSTORE_B64" | base64 -d > ~/.android/debug.keystore
-          keytool -list -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey | head -3
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/dopamine.keystore"
+          echo "KEYSTORE_PATH=$RUNNER_TEMP/dopamine.keystore" >> "$GITHUB_ENV"
+          keytool -list -keystore "$RUNNER_TEMP/dopamine.keystore" -storepass android -alias androiddebugkey | head -3
 
       - uses: actions/setup-node@v4
         with:
@@ -70,6 +70,23 @@ jobs:
           sed -i 's|<application|<uses-permission android:name="android.permission.CAMERA" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n    <application|' $MF
           grep -n "CAMERA" $MF
 
+      - name: Sign with the permanent key
+        run: |
+          cat >> android/app/build.gradle <<EOF
+
+          android {
+              signingConfigs {
+                  debug {
+                      storeFile file("${KEYSTORE_PATH}")
+                      storePassword "android"
+                      keyAlias "androiddebugkey"
+                      keyPassword "android"
+                  }
+              }
+          }
+          EOF
+          tail -14 android/app/build.gradle
+
       - name: Sync web assets
         run: npx cap sync android
 
@@ -102,8 +119,14 @@ jobs:
       - name: Package outputs
         run: |
           cp android/app/build/outputs/apk/debug/app-debug.apk Dopamine.apk
-          apksigner_out=$(ls $ANDROID_HOME/build-tools/*/apksigner | tail -1)
-          "$apksigner_out" verify --print-certs Dopamine.apk | head -3 || true
+          EXPECTED="53:B5:65:08:97:1C:3B:30:78:75:BC:E7:30:8A:A3:93:BA:C4:6D:AD:87:DF:BE:93:B2:C7:7A:5D:99:F0:25:BB"
+          ACTUAL=$(keytool -printcert -jarfile Dopamine.apk | grep -m1 "SHA256:" | sed 's/.*SHA256: *//')
+          echo "APK signer SHA-256: $ACTUAL"
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "::error title=Wrong signing key::The APK is not signed with the Dopamine key, so it was not published."
+            exit 1
+          fi
+          echo "Signature matches the permanent Dopamine key."
 
       - uses: actions/upload-artifact@v4
         with:
