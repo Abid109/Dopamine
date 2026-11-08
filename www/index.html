@@ -1350,6 +1350,7 @@
     // ANDROID BACK BUTTON & HISTORY NAVIGATION
     // ==========================================
     let lastBackPressTime = 0;
+    const tabHistory = []; // previously visited tabs, used by the native Android back button
     const MODAL_IDS = [
       'modal-rest-timer',
       'modal-session-timer',
@@ -1451,6 +1452,8 @@
       currentTabId = tab;
 
       if (push && prevTab !== tab) {
+        tabHistory.push(prevTab);
+        if (tabHistory.length > 30) tabHistory.shift();
         window.history.pushState({ tab: tab, modal: null }, '', '#' + tab);
       }
 
@@ -1483,6 +1486,33 @@
       if (tab === 'profile') renderProfileForm();
       if (tab === 'settings') renderSettingsTab();
       if (window.lucide) lucide.createIcons();
+    }
+
+    // Native Android back button (Capacitor): close sidebar/modal, go to previous page, then double-press to exit
+    function handleNativeBack() {
+      if (isMobileSidebarOpen()) { closeSidebarWithHistory(); return; }
+      const openModal = getCurrentlyOpenModalId();
+      if (openModal) { closeModalWithHistory(openModal); return; }
+      if (tabHistory.length) {
+        const prev = tabHistory.pop();
+        navigate(prev, false);
+        return;
+      }
+      if (currentTabId !== 'dashboard') { navigate('dashboard', false); return; }
+      const now = Date.now();
+      if (now - lastBackPressTime < 2200) {
+        try { window.Capacitor.Plugins.App.exitApp(); } catch (e) { window.history.back(); }
+      } else {
+        lastBackPressTime = now;
+        showToast('Press BACK again to exit Dopamine');
+      }
+    }
+    function setupNativeBackButton() {
+      try {
+        if (!isNativeApp()) return;
+        const AppPlugin = window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+        if (AppPlugin && AppPlugin.addListener) AppPlugin.addListener('backButton', handleNativeBack);
+      } catch (e) { console.warn('Back button setup failed', e); }
     }
 
     // Android Hardware / Gesture Back Button Handling (popstate listener)
@@ -3563,6 +3593,7 @@
       window.history.replaceState({ tab: validTab, modal: null }, '', '#' + validTab);
 
       navigate(validTab, false);
+      setupNativeBackButton();
     });
   </script>
 </body>
