@@ -28,3 +28,7 @@ When height and weight are set, the app shows your Body Mass Index and a range:
 | 30 and above | Obese |
 
 BMI is a rough guide. It does not account for muscle mass, so it can be misleading for people who train with weights or bodyweight.
+
+## Where to find it
+
+Tap your **avatar** in the top corner, or the profile card in the sidebar. The sign in card for [Sign In and Sync](Account-and-Sync) is at the top of this page.

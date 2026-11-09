@@ -84,3 +84,17 @@ The sync metadata (last synced values and account id) is kept under the separate
 ## Versions and updates
 
 Each build sets the Android version code to the workflow run number, so every build counts as a newer version than the last. Builds are signed with one permanent key, so Android accepts a new APK as an update to the installed app and keeps its saved data.
+
+## Performance
+
+- **Prebuilt stylesheet:** `www/tailwind.css` replaces the in-browser style compiler.
+- **On-demand libraries:** `vendor/qrcode.js`, `vendor/jsQR.js` and `vendor/supabase.js` load only when QR sharing, the scanner or sign in is used. The sign in library also loads at start if a saved session exists.
+- **Profile photo storage:** the photo is saved under its own key (`dopamine_avatar_v1`) and only rewritten when it changes. The main data holds a short marker, so each save stays small.
+- **Early appearance:** a tiny copy of the look settings (`dopamine_prefs_v1`) is applied before the first paint, so the theme, navigation style and Smooth mode appear instantly.
+- **Smooth mode:** `html[data-perf="on"]` switches off blur, shadows, transitions and the decorative background.
+- **Cheaper styles:** specific properties are animated instead of everything, and the pastel background is a fixed layer instead of a repainting background.
+- **Fonts:** loaded without blocking the first screen.
+
+## Navigation styles
+
+`html[data-nav]` selects the style. The bars are built from one list of destinations (`NAV_ITEMS`) by `renderNav()`, and `navRefreshActive()` highlights the current page. The sidebar is hidden when another style is active.

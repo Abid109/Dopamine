@@ -39,6 +39,30 @@ In the soft themes, **Amber Gold** takes on the theme's own colour (apricot for 
 - **Compact:** dense data
 - **Comfortable:** standard readability
 
+## Navigation style
+
+Choose how you move around the app. The change applies at once and is remembered.
+
+| Style | What it looks like |
+| --- | --- |
+| Sidebar | The classic side menu opened with the menu button |
+| Bottom bar | Tabs along the bottom of the screen |
+| Floating dock | A rounded bar floating above the bottom. The active tab shows its name |
+| Center button | A bottom bar with a raised **Log** button in the middle and a **More** tab for Share and Settings |
+| Top tabs | A scrollable strip of tabs under the header |
+| Side rail | A slim column of icons on the left |
+| Floating menu | One round button in the corner that opens a menu |
+
+In every style your Profile is one tap away on the avatar in the header. The Android back button closes an open menu first.
+
+## Performance
+
+**Smooth mode** removes shadows, blur and animations so the app runs better on older phones. Nothing else changes.
+
+- **Auto** (default): turns Smooth mode on for slower phones.
+- **Smooth mode**: always on.
+- **Full effects**: always off.
+
 ## Timer and clock
 
 - **Clock Display Format:** switch between 12-hour AM/PM and 24-hour.

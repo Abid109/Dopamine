@@ -50,3 +50,7 @@ Install the app, open **Profile**, and sign in. Your data downloads automaticall
 ## Privacy
 
 See [Privacy and Data](Privacy-and-Data). Each user can only access their own backup.
+
+## The sign in screen
+
+The sign in card has a welcome banner and two tabs, **Sign in** and **Create account**. Each field has an icon, and the eye button shows or hides your password. While you create an account, a strength bar shows how strong your password is. The email code is typed into one large field. Pressing Enter on the keyboard submits the form.

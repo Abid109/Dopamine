@@ -11,11 +11,24 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="vendor/qrcode.js"></script>
-  <script src="vendor/jsQR.js"></script>
-  <script src="vendor/supabase.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"></noscript>
+  <script>
+    /* Apply saved look instantly (before first paint) from a tiny mirror of the settings */
+    try {
+      var _p = JSON.parse(localStorage.getItem('dopamine_prefs_v1') || 'null');
+      if (_p) {
+        var _h = document.documentElement;
+        _h.setAttribute('data-theme', _p.theme || 'dark');
+        _h.setAttribute('data-accent', _p.accent || 'amber');
+        _h.setAttribute('data-font-size', _p.fontSize || 'comfortable');
+        _h.setAttribute('data-nav', _p.navStyle || 'sidebar');
+        var _low = ((navigator.deviceMemory || 4) <= 3) || ((navigator.hardwareConcurrency || 4) <= 4);
+        _h.setAttribute('data-perf', (_p.perfMode === 'on' || (_p.perfMode !== 'off' && _low)) ? 'on' : 'off');
+      }
+    } catch (e) { }
+  </script>
+  <link rel="stylesheet" href="tailwind.css">
   <script>
 /* Dopamine cloud sync: merge logic (pure functions, no network) */
 (function (g) {
@@ -401,20 +414,28 @@
     }
     :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) { color-scheme: light; }
     :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) body {
+      background-color: transparent;
+      font-family: var(--font-sans);
+    }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) body::before {
+      content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
       background-image:
         radial-gradient(circle 200px at -50px 30%, var(--blob) 99%, transparent 100%),
         radial-gradient(circle 240px at calc(100% + 70px) 62%, var(--blob) 99%, transparent 100%),
         radial-gradient(circle 170px at 18% 108%, var(--blob) 99%, transparent 100%);
-      background-attachment: fixed;
-      font-family: var(--font-sans);
     }
     :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) button, :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) input, :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) select, :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) textarea { font-family: var(--font-sans); }
     :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) .font-mono { font-family: var(--font-sans); font-variant-numeric: tabular-nums; }
-    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) header { background: transparent !important; border-color: transparent !important; backdrop-filter: none !important; }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) header { background: var(--bg-base) !important; border-color: transparent !important; backdrop-filter: none !important; }
     :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) [class*="rounded-2xl"][class*="bg-[var(--bg-card)]"] {
       border-color: transparent; border-radius: 1.4rem; box-shadow: 0 10px 24px -12px var(--card-shadow);
     }
     :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) #sidebar-panel { box-shadow: 8px 0 30px -18px var(--card-shadow); }
+    html[data-signed-in="1"] #mobile-avatar, html[data-signed-in="1"] #sidebar-avatar { position: relative; }
+    html[data-signed-in="1"] #mobile-avatar::after, html[data-signed-in="1"] #sidebar-avatar::after {
+      content: ""; position: absolute; right: 0; bottom: 0; width: 9px; height: 9px; border-radius: 50%;
+      background: #34d399; border: 2px solid var(--bg-card);
+    }
     .theme-hero { display: none; }
     :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) .theme-hero { display: block; width: 100%; max-width: 540px; margin: 0 auto; pointer-events: none; user-select: none; }
     :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) .theme-hero + div { margin-top: -8px !important; position: relative; z-index: 1; }
@@ -489,7 +510,70 @@
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    button, input, select, textarea { transition: all 0.15s ease-in-out; }
+    button, input, select, textarea { transition: background-color .15s ease-in-out, border-color .15s ease-in-out, color .15s ease-in-out, opacity .15s ease-in-out, box-shadow .15s ease-in-out, transform .15s ease-in-out; }
+    html { touch-action: manipulation; }
+    /* ===== Navigation styles (Settings, Navigation) ===== */
+    #nav-bottom, #nav-tabs, #nav-rail, #nav-fab, #nav-sheet, #nav-sheet-bg { display: none; }
+    html[data-nav]:not([data-nav="sidebar"]) #sidebar-panel,
+    html[data-nav]:not([data-nav="sidebar"]) #mobile-backdrop,
+    html[data-nav]:not([data-nav="sidebar"]) #header-menu-btn { display: none !important; }
+    html[data-nav]:not([data-nav="sidebar"]) header { display: flex !important; }
+    html[data-nav]:not([data-nav="sidebar"]) body { flex-direction: column !important; }
+    .nv-item { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 6px 2px; border-radius: 14px; color: var(--text-muted); font-size: 10px; font-weight: 600; position: relative; background: none; border: 0; cursor: pointer; }
+    .nv-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+    .nv-item[data-on="1"] { color: var(--accent-text); background: var(--accent-glow); }
+    .nv-badge { position: absolute; top: 2px; right: 22%; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--accent); color: #000; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+    .nv-badge.hidden, .nv-tab .nv-badge.hidden { display: none !important; }
+    /* bottom bar */
+    html[data-nav="bottom"] #nav-bottom { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 35; background: var(--bg-surface); border-top: 1px solid var(--border-subtle); padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); gap: 2px; }
+    /* floating dock */
+    html[data-nav="dock"] #nav-bottom { display: flex; position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 35; max-width: 460px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 26px; padding: 6px; gap: 2px; box-shadow: 0 14px 34px -12px rgba(0,0,0,.5); }
+    html[data-nav="dock"] .nv-item { flex-direction: row; gap: 6px; border-radius: 20px; padding: 10px 4px; }
+    html[data-nav="dock"] .nv-item .nv-label { display: none; }
+    html[data-nav="dock"] .nv-item[data-on="1"] { background: var(--accent); color: #000; flex: 2.2 1 0; }
+    html[data-nav="dock"] .nv-item[data-on="1"] .nv-label { display: inline; font-size: 11px; }
+    html[data-nav="dock"] .nv-badge { right: 8px; top: 4px; }
+    /* bottom bar with a raised centre button */
+    html[data-nav="center"] #nav-bottom { display: flex; align-items: flex-end; position: fixed; left: 0; right: 0; bottom: 0; z-index: 35; background: var(--bg-surface); border-top: 1px solid var(--border-subtle); padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); gap: 2px; }
+    html[data-nav="center"] .nv-center { flex: 0 0 60px; width: 60px; height: 60px; margin-top: -26px; border-radius: 50%; background: var(--accent); color: #000; box-shadow: 0 10px 22px -8px rgba(0,0,0,.55); border: 4px solid var(--bg-base); }
+    html[data-nav="center"] .nv-center svg { width: 26px; height: 26px; }
+    html[data-nav="center"] .nv-center[data-on="1"] { background: var(--accent); color: #000; }
+    html[data-nav="center"] .nv-center .nv-label { display: none; }
+    /* top tabs */
+    html[data-nav="tabs"] #nav-tabs { display: flex; position: sticky; top: var(--header-h, 52px); z-index: 29; gap: 8px; overflow-x: auto; padding: 8px 12px; background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); scrollbar-width: none; }
+    html[data-nav="tabs"] #nav-tabs::-webkit-scrollbar { display: none; }
+    .nv-tab { flex: 0 0 auto; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border-subtle); background: var(--bg-input); color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; position: relative; }
+    .nv-tab[data-on="1"] { background: var(--accent); color: #000; border-color: var(--accent); }
+    .nv-tab .nv-badge { position: static; display: inline-flex; margin-left: 6px; }
+    /* side rail */
+    html[data-nav="rail"] #nav-rail { display: flex; flex-direction: column; align-items: stretch; gap: 4px; position: fixed; left: 0; top: var(--header-h, 52px); bottom: 0; width: 64px; z-index: 34; padding: 10px 4px; background: var(--bg-surface); border-right: 1px solid var(--border-subtle); overflow-y: auto; }
+    html[data-nav="rail"] #nav-rail .nv-item { flex: 0 0 auto; padding: 9px 2px; }
+    html[data-nav="rail"] .nv-badge { right: 6px; }
+    html[data-nav="rail"] main { padding-left: calc(64px + 1rem) !important; }
+    /* floating menu button */
+    html[data-nav="fab"] #nav-fab { display: flex; position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 37; width: 58px; height: 58px; border-radius: 50%; align-items: center; justify-content: center; background: var(--accent); color: #000; border: 0; box-shadow: 0 12px 26px -8px rgba(0,0,0,.55); cursor: pointer; }
+    html[data-nav="fab"] #nav-fab svg { width: 24px; height: 24px; }
+    /* menu sheet used by the floating button and the "More" item */
+    #nav-sheet-bg.open { display: block; position: fixed; inset: 0; z-index: 38; background: rgba(0,0,0,.4); }
+    #nav-sheet.open { display: block; position: fixed; z-index: 39; right: 14px; bottom: calc(86px + env(safe-area-inset-bottom)); width: min(260px, calc(100vw - 28px)); background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 22px; padding: 8px; box-shadow: 0 18px 40px -14px rgba(0,0,0,.55); }
+    html[data-nav="center"] #nav-sheet.open { right: 14px; }
+    #nav-sheet .nv-row { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: none; border: 0; color: var(--text-primary); font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
+    #nav-sheet .nv-row svg { width: 20px; height: 20px; color: var(--text-muted); }
+    #nav-sheet .nv-row[data-on="1"] { background: var(--accent-glow); color: var(--accent-text); }
+    #nav-sheet .nv-row[data-on="1"] svg { color: var(--accent-text); }
+    /* room for the bars */
+    html[data-nav="bottom"] main, html[data-nav="center"] main, html[data-nav="dock"] main { padding-bottom: calc(6.5rem + env(safe-area-inset-bottom)) !important; }
+    html[data-nav="fab"] main { padding-bottom: 6.5rem !important; }
+    html[data-nav="bottom"] #app-toast, html[data-nav="center"] #app-toast, html[data-nav="dock"] #app-toast { bottom: calc(5.5rem + env(safe-area-inset-bottom)) !important; }
+    .acct-spin { width: 16px; height: 16px; border-radius: 50%; border: 2.5px solid rgba(0,0,0,.25); border-top-color: #000; animation: acct-rot .7s linear infinite; }
+    @keyframes acct-rot { to { transform: rotate(360deg); } }
+    /* Performance mode: no blur, shadows or animation (for older phones) */
+    html[data-perf="on"] *, html[data-perf="on"] *::before, html[data-perf="on"] *::after {
+      backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+      transition-duration: 0s !important; animation-duration: 0s !important; scroll-behavior: auto !important;
+    }
+    html[data-perf="on"] [class*="shadow"], html[data-perf="on"] [class*="rounded-2xl"] { box-shadow: none !important; }
+    html[data-perf="on"] body::before { display: none !important; }
   </style>
 </head>
 <body class="bg-[var(--bg-base)] text-[var(--text-primary)] antialiased min-h-screen flex flex-col md:flex-row selection:bg-[var(--accent)] selection:text-black">
@@ -504,7 +588,7 @@
   <!-- Mobile Top Header -->
   <header class="md:hidden sticky top-0 z-30 w-full border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/95 backdrop-blur-md px-4 py-2.5 flex items-center justify-between gap-2">
     <div class="flex items-center gap-2.5">
-      <button onclick="openSidebarWithHistory()" class="p-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-[var(--accent)] active:scale-95">
+      <button onclick="openSidebarWithHistory()" id="header-menu-btn" class="p-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-[var(--accent)] active:scale-95">
         <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
       </button>
       <div class="flex items-center">
@@ -580,10 +664,6 @@
         <button onclick="navigate('notes')" id="nav-btn-notes" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
           <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span>Notes & Journal</span></div>
         </button>
-        <button onclick="navigate('profile')" id="nav-btn-profile" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
-          <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Profile & Bio</span></div>
-          <span id="acct-dot" class="hidden w-2 h-2 rounded-full bg-emerald-400 shrink-0" title="Signed in, cloud sync on"></span>
-        </button>
         <button onclick="navigate('share')" id="nav-btn-share" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)]">
           <div class="flex items-center gap-2.5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg><span>Share &amp; Receive</span></div>
           <span id="share-badge" class="hidden min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--accent)] text-black text-[10px] font-bold items-center justify-center">0</span>
@@ -627,7 +707,7 @@
   <main class="flex-1 w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-16 overflow-y-auto">
     <!-- DASHBOARD TAB -->
     <div id="tab-dashboard" class="space-y-6">
-      <img class="theme-hero" src="assets/hero-athletes.png" alt="" draggable="false">
+      <img class="theme-hero" src="assets/hero-athletes.webp" alt="" width="688" height="257" decoding="async" draggable="false">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-xs">
         <div>
           <div class="flex items-center gap-2 mb-1">
@@ -1346,6 +1426,61 @@
           </div>
         </div>
 
+        <!-- Navigation & Performance -->
+        <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-6">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--accent)]"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg> Navigation &amp; Speed
+          </h2>
+          <div>
+            <label class="text-xs font-semibold text-[var(--text-primary)] block mb-2">Navigation Style</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="settings-nav-grid">
+            <button onclick="setNavStyle('sidebar')" id="navstyle-btn-sidebar" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
+              <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><rect x="2" y="2" width="14" height="60" rx="5" fill="var(--accent)" fill-opacity=".85"/><rect x="21" y="12" width="21" height="6" rx="3" fill="currentColor" fill-opacity=".25"/><rect x="21" y="24" width="21" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
+              <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Sidebar</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Classic side menu</span></span>
+            </button>
+            <button onclick="setNavStyle('bottom')" id="navstyle-btn-bottom" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
+              <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><rect x="2" y="48" width="44" height="14" rx="5" fill="var(--accent)" fill-opacity=".85"/><rect x="9" y="12" width="30" height="6" rx="3" fill="currentColor" fill-opacity=".25"/><rect x="9" y="24" width="30" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
+              <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Bottom bar</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Tabs at the bottom</span></span>
+            </button>
+            <button onclick="setNavStyle('dock')" id="navstyle-btn-dock" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
+              <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><rect x="7" y="46" width="34" height="11" rx="5.5" fill="var(--accent)" fill-opacity=".85"/><rect x="9" y="12" width="30" height="6" rx="3" fill="currentColor" fill-opacity=".25"/><rect x="9" y="24" width="30" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
+              <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Floating dock</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Rounded floating bar</span></span>
+            </button>
+            <button onclick="setNavStyle('center')" id="navstyle-btn-center" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
+              <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><rect x="2" y="48" width="44" height="14" rx="5" fill="currentColor" fill-opacity=".25"/><circle cx="24" cy="46" r="8" fill="var(--accent)"/><rect x="9" y="12" width="30" height="6" rx="3" fill="currentColor" fill-opacity=".25"/><rect x="9" y="24" width="30" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
+              <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Center button</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Log button in the middle</span></span>
+            </button>
+            <button onclick="setNavStyle('tabs')" id="navstyle-btn-tabs" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
+              <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><rect x="6" y="10" width="10" height="6" rx="3" fill="var(--accent)"/><rect x="19" y="10" width="10" height="6" rx="3" fill="currentColor" fill-opacity=".3"/><rect x="32" y="10" width="10" height="6" rx="3" fill="currentColor" fill-opacity=".3"/><rect x="9" y="24" width="30" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
+              <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Top tabs</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Scrollable tab strip</span></span>
+            </button>
+            <button onclick="setNavStyle('rail')" id="navstyle-btn-rail" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
+              <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><rect x="2" y="2" width="8" height="60" rx="4" fill="var(--accent)" fill-opacity=".85"/><rect x="16" y="12" width="26" height="6" rx="3" fill="currentColor" fill-opacity=".25"/><rect x="16" y="24" width="26" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
+              <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Side rail</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Slim icon column</span></span>
+            </button>
+            <button onclick="setNavStyle('fab')" id="navstyle-btn-fab" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
+              <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><circle cx="37" cy="52" r="7" fill="var(--accent)"/><rect x="9" y="12" width="30" height="6" rx="3" fill="currentColor" fill-opacity=".25"/><rect x="9" y="24" width="30" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
+              <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Floating menu</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">One button opens a menu</span></span>
+            </button>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-[var(--text-primary)] block mb-1">Performance</label>
+            <p class="text-[11px] text-[var(--text-muted)] mb-2">Smooth mode removes shadows, blur and animations so the app runs better on older phones. Nothing else changes.</p>
+            <div class="grid grid-cols-3 gap-2" id="settings-perf-grid">
+            <button onclick="setPerfMode('auto')" id="perf-btn-auto" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+              <span class="block font-semibold text-xs text-[var(--text-primary)]">Auto</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Smart for your phone</span>
+            </button>
+            <button onclick="setPerfMode('on')" id="perf-btn-on" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+              <span class="block font-semibold text-xs text-[var(--text-primary)]">Smooth mode</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Fewer effects, faster</span>
+            </button>
+            <button onclick="setPerfMode('off')" id="perf-btn-off" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+              <span class="block font-semibold text-xs text-[var(--text-primary)]">Full effects</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Shadows and blur</span>
+            </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Timers, Backup & System Storage -->
         <div class="space-y-6">
           <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-6">
@@ -1676,7 +1811,7 @@
     // Default application state
     const DEFAULT_DATA = {
       profile: { name: '', age: 0, weight: 0, height: 0, calGoal: 500, exGoal: 4, level: 'Beginner', goal: 'Muscle & Strength', weeklyWorkoutGoal: 4, dailyMinutesGoal: 30, targetWeight: 0, avatarUrl: '' },
-      settings: { theme: 'dark', accent: 'amber', fontSize: 'comfortable', showChart: true, restDefault: 60, soundOn: true, clock24h: false },
+      settings: { theme: 'dark', accent: 'amber', fontSize: 'comfortable', showChart: true, restDefault: 60, soundOn: true, clock24h: false, navStyle: 'sidebar', perfMode: 'auto' },
       logs: {},
       plans: {},
       notes: [],
@@ -1685,6 +1820,8 @@
       deleted: {}
     };
 
+    const AVATAR_KEY = 'dopamine_avatar_v1';
+    let _lastAvatarSaved = '';
     let appState = loadState();
 
     function loadState() {
@@ -1694,6 +1831,10 @@
         const parsed = JSON.parse(raw);
         const merged = Object.assign({}, DEFAULT_DATA, parsed);
         merged.profile = Object.assign({}, DEFAULT_DATA.profile, parsed.profile || {});
+        if (merged.profile.avatarUrl === '__AV__') {
+          merged.profile.avatarUrl = localStorage.getItem(AVATAR_KEY) || '';
+          _lastAvatarSaved = merged.profile.avatarUrl;
+        }
         merged.settings = Object.assign({}, DEFAULT_DATA.settings, parsed.settings || {});
         merged.received = Array.isArray(parsed.received) ? parsed.received : [];
         merged.deleted = (parsed.deleted && typeof parsed.deleted === 'object') ? parsed.deleted : {};
@@ -1757,7 +1898,23 @@
     ];
 
     function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      const av = appState.profile && appState.profile.avatarUrl;
+      const big = typeof av === 'string' && av.length > 2000;
+      let json;
+      if (big) {
+        // the photo is stored under its own key and only rewritten when it changes
+        if (av !== _lastAvatarSaved) { localStorage.setItem(AVATAR_KEY, av); _lastAvatarSaved = av; }
+        appState.profile.avatarUrl = '__AV__';
+        try { json = JSON.stringify(appState); } finally { appState.profile.avatarUrl = av; }
+      } else {
+        if (_lastAvatarSaved) { try { localStorage.removeItem(AVATAR_KEY); } catch (e) { } _lastAvatarSaved = ''; }
+        json = JSON.stringify(appState);
+      }
+      localStorage.setItem(STORAGE_KEY, json);
+      try {
+        const st = appState.settings;
+        localStorage.setItem('dopamine_prefs_v1', JSON.stringify({ theme: st.theme, accent: st.accent, fontSize: st.fontSize, navStyle: st.navStyle, perfMode: st.perfMode }));
+      } catch (e) { }
       if (typeof acctOnLocalSaved === 'function') acctOnLocalSaved();
     }
     function getTodayDateKey() {
@@ -1877,6 +2034,7 @@
       });
 
       toggleMobileSidebar(false);
+      navRefreshActive(tab);
       window.scrollTo(0, 0);
 
       if (tab === 'dashboard') renderDashboardTab();
@@ -1888,6 +2046,99 @@
       if (tab === 'share') renderShareTab();
       if (window.lucide) lucide.createIcons();
     }
+
+    const _libPromises = {};
+    function loadLibOnce(src) {
+      if (!_libPromises[src]) _libPromises[src] = loadScriptAsync(src).catch(e => { delete _libPromises[src]; throw e; });
+      return _libPromises[src];
+    }
+
+    // =====================================================================
+    // NAVIGATION STYLES: sidebar, bottom bar, floating dock, centre button, top tabs, side rail, floating menu
+    // =====================================================================
+    const NAV_ITEMS = [
+      { id: 'dashboard', label: 'Home' }, { id: 'log', label: 'Log' }, { id: 'calendar', label: 'Plan' },
+      { id: 'notes', label: 'Notes' }, { id: 'share', label: 'Share' }, { id: 'settings', label: 'Settings' }
+    ];
+    const NAV_ICON_PLUS = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
+    const NAV_ICON_MORE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.2"></circle><circle cx="12" cy="12" r="1.2"></circle><circle cx="19" cy="12" r="1.2"></circle></svg>';
+    const NAV_ICON_MENU = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>';
+    function navIcon(id) {
+      const svg = document.querySelector('#nav-btn-' + id + ' svg');
+      return svg ? svg.outerHTML.replace(/ class="[^"]*"/, '') : '';
+    }
+    function navEnsure() {
+      if (document.getElementById('nav-bottom')) return;
+      const mk = (tag, id) => { const e = document.createElement(tag); e.id = id; return e; };
+      const header = document.querySelector('header');
+      const tabs = mk('nav', 'nav-tabs');
+      if (header && header.parentNode) header.parentNode.insertBefore(tabs, header.nextSibling); else document.body.appendChild(tabs);
+      const fab = mk('button', 'nav-fab'); fab.setAttribute('aria-label', 'Menu'); fab.onclick = () => navOpenSheet('all');
+      const bg = mk('div', 'nav-sheet-bg'); bg.onclick = navCloseSheet;
+      document.body.append(mk('nav', 'nav-bottom'), mk('nav', 'nav-rail'), fab, bg, mk('div', 'nav-sheet'));
+    }
+    function navItemHtml(it) {
+      return `<button class="nv-item" data-nav-tab="${it.id}" onclick="navGo('${it.id}')" aria-label="${it.label}">${navIcon(it.id)}<span class="nv-label">${it.label}</span>${it.id === 'share' ? '<span class="nv-badge nav-share-badge hidden">0</span>' : ''}</button>`;
+    }
+    function renderNav() {
+      navEnsure();
+      const style = (appState.settings && appState.settings.navStyle) || 'sidebar';
+      const $ = id => document.getElementById(id);
+      ['nav-bottom', 'nav-tabs', 'nav-rail', 'nav-fab'].forEach(id => { $(id).innerHTML = ''; });
+      navCloseSheet();
+      const by = id => NAV_ITEMS.find(i => i.id === id);
+      if (style === 'bottom' || style === 'dock') $('nav-bottom').innerHTML = NAV_ITEMS.map(navItemHtml).join('');
+      else if (style === 'center') {
+        $('nav-bottom').innerHTML = navItemHtml(by('dashboard')) + navItemHtml(by('calendar'))
+          + `<button class="nv-item nv-center" data-nav-tab="log" onclick="navGo('log')" aria-label="Log workout">${NAV_ICON_PLUS}</button>`
+          + navItemHtml(by('notes'))
+          + `<button class="nv-item" data-nav-alt="share,settings" onclick="navOpenSheet('more')" aria-label="More">${NAV_ICON_MORE}<span class="nv-label">More</span><span class="nv-badge nav-share-badge hidden">0</span></button>`;
+      }
+      else if (style === 'tabs') $('nav-tabs').innerHTML = NAV_ITEMS.map(it => `<button class="nv-tab" data-nav-tab="${it.id}" onclick="navGo('${it.id}')">${it.label}${it.id === 'share' ? '<span class="nv-badge nav-share-badge hidden">0</span>' : ''}</button>`).join('');
+      else if (style === 'rail') $('nav-rail').innerHTML = NAV_ITEMS.map(navItemHtml).join('');
+      else if (style === 'fab') $('nav-fab').innerHTML = NAV_ICON_MENU + '<span class="nav-share-badge nv-badge hidden" style="top:2px;right:2px">0</span>';
+      navRefreshActive(currentTabId);
+      if (typeof updateShareBadge === 'function') updateShareBadge();
+      navMeasure();
+    }
+    function navRefreshActive(tab) {
+      document.querySelectorAll('[data-nav-tab]').forEach(b => b.setAttribute('data-on', b.getAttribute('data-nav-tab') === tab ? '1' : '0'));
+      document.querySelectorAll('[data-nav-alt]').forEach(b => b.setAttribute('data-on', b.getAttribute('data-nav-alt').split(',').indexOf(tab) !== -1 ? '1' : '0'));
+      const on = document.querySelector('#nav-tabs [data-on="1"]');
+      if (on && on.scrollIntoView) { try { on.scrollIntoView({ inline: 'center', block: 'nearest' }); } catch (e) { } }
+    }
+    function navMeasure() {
+      const h = document.querySelector('header');
+      if (h && h.offsetHeight) document.documentElement.style.setProperty('--header-h', h.offsetHeight + 'px');
+    }
+    function navGo(tab) { navCloseSheet(); navigate(tab); }
+    function navOpenSheet(kind) {
+      const sheet = document.getElementById('nav-sheet'), bg = document.getElementById('nav-sheet-bg');
+      if (!sheet) return;
+      const list = kind === 'more' ? NAV_ITEMS.filter(i => i.id === 'share' || i.id === 'settings') : NAV_ITEMS;
+      sheet.innerHTML = list.map(it => `<button class="nv-row" data-nav-tab="${it.id}" onclick="navGo('${it.id}')">${navIcon(it.id)}<span>${it.label}</span></button>`).join('');
+      sheet.classList.add('open'); bg.classList.add('open');
+      navRefreshActive(currentTabId);
+    }
+    function navCloseSheet() {
+      ['nav-sheet', 'nav-sheet-bg'].forEach(id => { const e = document.getElementById(id); if (e) e.classList.remove('open'); });
+    }
+    function navSheetOpen() { const e = document.getElementById('nav-sheet'); return !!(e && e.classList.contains('open')); }
+    function setNavStyle(id) {
+      appState.settings.navStyle = id;
+      applyAppearance();
+      saveState();
+      renderNav();
+      renderSettingsTab();
+    }
+    function setPerfMode(m) {
+      appState.settings.perfMode = m;
+      applyAppearance();
+      saveState();
+      renderSettingsTab();
+    }
+    let _navResizeT = null;
+    window.addEventListener('resize', () => { clearTimeout(_navResizeT); _navResizeT = setTimeout(navMeasure, 150); });
 
     // =====================================================================
     // SHARE & RECEIVE (QR codes + file) - phone to phone, no internet needed
@@ -1986,6 +2237,7 @@
       el.textContent = n;
       el.classList.toggle('hidden', n === 0);
       el.classList.toggle('flex', n > 0);
+      document.querySelectorAll('.nav-share-badge').forEach(b => { b.textContent = n; b.classList.toggle('hidden', n === 0); });
     }
     function shareDeleteReceived(id) {
       if (!confirm('Delete this received file? Anything you already imported from it stays on this phone.')) return;
@@ -2102,6 +2354,7 @@
     async function shareShowQr() {
       const payload = buildSharePayload(true);
       if (!payload) return;
+      try { if (typeof qrcode === 'undefined') await loadLibOnce('vendor/qrcode.js'); } catch (e) { showToast('Could not load the QR tool.'); return; }
       showToast('Preparing QR codes...');
       try {
         const packed = await DopShare.pack(payload);
@@ -2184,6 +2437,7 @@
       openModalWithHistory('modal-qr-scan');
       shareRenderScanProgress();
       shareSetScanMsg('Starting camera...');
+      try { if (typeof jsQR === 'undefined') await loadLibOnce('vendor/jsQR.js'); } catch (e) { shareSetScanMsg('Could not load the scanner. Check your connection.'); return; }
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         shareSetScanMsg('Camera is not available here. Use "Import from file" instead.');
         return;
@@ -2517,11 +2771,19 @@
       const el = document.getElementById('acct-msg');
       if (!el) { if (text) showToast(text, 3500); return; }
       el.textContent = text || '';
-      el.className = 'text-xs font-semibold min-h-[1rem] ' + (kind === 'ok' ? 'text-emerald-400' : 'text-red-400');
+      el.className = text
+        ? 'text-xs font-semibold rounded-xl px-3 py-2.5 ' + (kind === 'ok' ? 'text-emerald-500 bg-emerald-500/10' : 'text-red-500 bg-red-500/10')
+        : 'hidden';
     }
     function acctSetBusy(b) {
       acct.busy = b;
-      document.querySelectorAll('#account-root button[data-act]').forEach(x => { x.disabled = b; x.style.opacity = b ? '0.6' : ''; });
+      document.querySelectorAll('#account-root button[data-act]').forEach(x => {
+        x.disabled = b; x.style.opacity = b ? '0.7' : '';
+        if (x.hasAttribute('data-primary')) {
+          if (b && !x.dataset.orig) { x.dataset.orig = x.innerHTML; x.innerHTML = '<span class="acct-spin"></span><span>Please wait</span>'; }
+          else if (!b && x.dataset.orig) { x.innerHTML = x.dataset.orig; delete x.dataset.orig; }
+        }
+      });
     }
     function acctErr(e) {
       const code = String((e && (e.code || e.error_code)) || '').toLowerCase();
@@ -2539,32 +2801,55 @@
     }
     function acctIsEmail(s) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
     function acctUpdateDot() {
-      const d = document.getElementById('acct-dot');
-      if (d) d.classList.toggle('hidden', !acctSignedIn());
+      document.documentElement.setAttribute('data-signed-in', acctSignedIn() ? '1' : '0');
     }
 
     // ---------- init ----------
-    async function acctInit() {
-      if (!window.supabase || !window.supabase.createClient) { renderAccountTab(); return; }
+    function acctHasStoredSession() {
       try {
-        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } });
-        const { data } = await sb.auth.getSession();
-        acct.session = data && data.session ? data.session : null;
-        sb.auth.onAuthStateChange((evt, session) => {
-          setTimeout(() => {
-            const was = !!acct.session;
-            acct.session = session || null;
-            acctUpdateDot();
-            if (was !== !!acct.session) renderAccountTab();
-          }, 0);
-        });
-      } catch (e) { console.warn('Account setup failed', e); sb = null; }
-      acctUpdateDot();
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.indexOf('sb-') === 0 && k.slice(-11) === '-auth-token') return true;
+        }
+      } catch (e) { }
+      return false;
+    }
+    // The sign-in library (about 200 KB) is only loaded when someone signs in, or already has a saved session
+    function acctEnsure() {
+      if (sb) return Promise.resolve(true);
+      if (acct.ensuring) return acct.ensuring;
+      acct.ensuring = (async () => {
+        try {
+          if (!window.supabase || !window.supabase.createClient) await loadLibOnce('vendor/supabase.js');
+          if (!window.supabase || !window.supabase.createClient) return false;
+          sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } });
+          const { data } = await sb.auth.getSession();
+          acct.session = data && data.session ? data.session : null;
+          sb.auth.onAuthStateChange((evt, session) => {
+            setTimeout(() => {
+              const was = !!acct.session;
+              acct.session = session || null;
+              acctUpdateDot();
+              if (was !== !!acct.session) renderAccountTab();
+            }, 0);
+          });
+          acctUpdateDot();
+          return true;
+        } catch (e) { console.warn('Account setup failed', e); sb = null; return false; }
+        finally { acct.ensuring = null; }
+      })();
+      return acct.ensuring;
+    }
+    function acctInit() {
       renderAccountTab();
-      if (acctSignedIn()) scheduleSync(1500);
       window.addEventListener('online', () => { if (acctSignedIn()) scheduleSync(1000); });
       document.addEventListener('visibilitychange', () => { if (!document.hidden && acctSignedIn()) scheduleSync(800); });
       setInterval(() => { if (acctSignedIn() && !document.hidden) scheduleSync(0); }, 120000);
+      if (acctHasStoredSession()) {
+        setTimeout(async () => {
+          if (await acctEnsure()) { renderAccountTab(); if (acctSignedIn()) scheduleSync(500); }
+        }, 1500);
+      }
     }
     function acctOnLocalSaved() {
       if (acct.applying || !acctSignedIn()) return;
@@ -2576,87 +2861,158 @@
     }
 
     // ---------- rendering ----------
-    const ACCT_INPUT = 'w-full px-3 py-2.5 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]';
-    const ACCT_PRIMARY = 'w-full p-3 rounded-xl bg-[var(--accent)] text-black font-bold text-xs hover:brightness-110 active:scale-[0.98] transition-all';
-    const ACCT_LINK = 'text-[11px] font-bold text-[var(--accent)]';
-    function acctCard(inner) { return `<div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">${inner}</div>`; }
-    function acctField(label, id, type, auto, extra) {
-      return `<div><label class="text-xs font-semibold text-[var(--text-primary)] block mb-1.5">${label}</label><input id="${id}" type="${type}" autocomplete="${auto}" ${extra || ''} class="${ACCT_INPUT}"></div>`;
+    const ACCT_ICONS = {
+      mail: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 8 8 6 8-6"/>',
+      lock: '<rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+      eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+      eyeoff: '<path d="M3 3l18 18"/><path d="M10.6 6.1A9.9 9.9 0 0 1 12 6c6.4 0 10 6 10 6a17 17 0 0 1-3.2 3.9M6.4 7.6A17 17 0 0 0 2 12s3.6 7 10 7c1.6 0 3-.4 4.2-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+      cloud: '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
+      refresh: '<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/>',
+      shield: '<path d="M12 3 4 6v6c0 5 3.4 8 8 9 4.6-1 8-4 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/>',
+      arrow: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
+      back: '<path d="M19 12H5"/><path d="m11 6-6 6 6 6"/>',
+      devices: '<rect x="2" y="5" width="13" height="10" rx="2"/><rect x="17" y="9" width="5" height="10" rx="1.5"/><path d="M6 19h5"/>',
+      key: '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9"/><path d="m16 7 3 3"/>',
+      logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
+      trash: '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m6 6 1 14h10l1-14"/>'
+    };
+    function acctSvg(n, cls) {
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="${cls || 'w-5 h-5'}">${ACCT_ICONS[n]}</svg>`;
+    }
+    const ACCT_BTN = 'w-full h-12 rounded-2xl bg-[var(--accent)] text-black font-bold text-sm flex items-center justify-center gap-2 hover:brightness-105 active:scale-[0.985] transition-all shadow-sm';
+    const ACCT_LINK = 'text-xs font-semibold text-[var(--accent-text)] hover:underline';
+    function acctInput(id, type, placeholder, icon, auto, extra, eye) {
+      return `<div class="relative">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-dim)] pointer-events-none">${acctSvg(icon, 'w-[18px] h-[18px]')}</span>
+        <input id="${id}" type="${type}" placeholder="${placeholder}" aria-label="${placeholder}" autocomplete="${auto}" ${extra || ''} class="w-full h-12 pl-11 ${eye ? 'pr-12' : 'pr-4'} rounded-2xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-sm font-medium text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-glow)]">
+        ${eye ? `<button type="button" onclick="acctTogglePw('${id}', this)" aria-label="Show password" class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl flex items-center justify-center text-[var(--text-dim)] hover:text-[var(--text-primary)]">${acctSvg('eye', 'w-[18px] h-[18px]')}</button>` : ''}
+      </div>`;
+    }
+    function acctTogglePw(id, btn) {
+      const el = document.getElementById(id); if (!el) return;
+      const show = el.type === 'password';
+      el.type = show ? 'text' : 'password';
+      btn.innerHTML = acctSvg(show ? 'eyeoff' : 'eye', 'w-[18px] h-[18px]');
+    }
+    function acctStrength(pw) {
+      let n = 0;
+      if (pw.length >= 8) n++;
+      if (pw.length >= 12) n++;
+      if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) n++;
+      if (/\d/.test(pw) && /[^A-Za-z0-9]/.test(pw)) n++;
+      else if (/\d/.test(pw) || /[^A-Za-z0-9]/.test(pw)) n += 0.5;
+      return Math.min(4, Math.floor(n));
+    }
+    function acctPwInput(el) {
+      const box = document.getElementById('acct-strength'); if (!box) return;
+      const n = el.value ? Math.max(1, acctStrength(el.value)) : 0;
+      const cols = ['#ef4444', '#f59e0b', '#84cc16', '#22c55e'];
+      const names = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+      box.innerHTML = [0, 1, 2, 3].map(i => `<span style="flex:1;height:4px;border-radius:2px;background:${i < n ? cols[n - 1] : 'var(--border-subtle)'}"></span>`).join('')
+        + `<span style="font-size:10px;font-weight:700;margin-left:8px;min-width:38px;color:${n ? cols[n - 1] : 'transparent'}">${names[n] || '.'}</span>`;
+    }
+    function acctOtpInput(el) { el.value = el.value.replace(/[^0-9a-zA-Z]/g, '').slice(0, 10); }
+    function acctBanner(title, sub, icon) {
+      return `<div class="relative overflow-hidden px-6 pt-6 pb-5" style="background:var(--accent);color:#000">
+        <span style="position:absolute;right:-30px;top:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.22)"></span>
+        <span style="position:absolute;right:46px;bottom:-46px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.16)"></span>
+        <div class="relative flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style="background:rgba(255,255,255,.42)">${acctSvg(icon || 'cloud', 'w-6 h-6')}</div>
+          <div class="min-w-0"><div class="text-lg font-extrabold leading-tight">${title}</div><div class="text-[12px] font-medium opacity-80 mt-0.5 leading-snug">${sub}</div></div>
+        </div>
+      </div>`;
+    }
+    function acctShell(banner, body) {
+      return `<div class="rounded-3xl overflow-hidden bg-[var(--bg-card)] border border-[var(--border-subtle)]">${banner}<div class="p-6 space-y-4">${body}</div></div>`;
+    }
+    function acctSeg(active) {
+      const b = (m, label) => `<button type="button" onclick="acctGo('${m}')" class="flex-1 h-10 rounded-xl text-[13px] font-bold transition-all ${active === m ? 'bg-[var(--bg-card)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)]'}">${label}</button>`;
+      return `<div class="p-1 rounded-2xl bg-[var(--bg-input)] flex gap-1">${b('login', 'Sign in')}${b('signup', 'Create account')}</div>`;
+    }
+    const ACCT_MSG = '<div id="acct-msg" class="hidden"></div>';
+    function acctPrimary(onclick, label, icon) {
+      return `<button data-act data-primary onclick="${onclick}" class="${ACCT_BTN}"><span>${label}</span>${icon === false ? '' : acctSvg('arrow', 'w-[18px] h-[18px]')}</button>`;
+    }
+    function acctBenefits() {
+      const it = (ic, t) => `<div class="flex-1 min-w-0 flex flex-col items-center text-center gap-1.5"><span class="w-9 h-9 rounded-xl flex items-center justify-center bg-[var(--accent-glow)] text-[var(--accent-text)]">${acctSvg(ic, 'w-[18px] h-[18px]')}</span><span class="text-[10px] font-semibold text-[var(--text-muted)] leading-tight">${t}</span></div>`;
+      return `<div class="pt-2 flex gap-2">${it('cloud', 'Cloud backup')}${it('devices', 'Sync devices')}${it('shield', 'Private to you')}</div>
+        <p class="text-[10px] text-center text-[var(--text-dim)]">Optional. The app works fully without an account.</p>`;
+    }
+    function acctBack(label) {
+      return `<button type="button" onclick="acctGo('login')" class="flex items-center gap-1.5 ${ACCT_LINK}">${acctSvg('back', 'w-4 h-4')} ${label || 'Back to sign in'}</button>`;
     }
     function renderAccountTab() {
       const root = document.getElementById('account-root');
       if (!root) return;
       acctUpdateDot();
-      if (!sb) {
-        root.innerHTML = acctCard('<p class="text-xs text-[var(--text-muted)]">Cloud sync is not available right now. The app keeps working normally and your data stays on this phone.</p>');
+      if (acct.failed) {
+        root.innerHTML = acctShell('', '<p class="text-xs text-[var(--text-muted)]">Cloud sync is not available right now. The app keeps working normally and your data stays on this phone.</p>');
         return;
       }
       if (acctSignedIn()) { root.innerHTML = acctSignedInHtml(); return; }
       const m = acct.mode;
       let html = '';
       if (m === 'login') {
-        html = acctCard(`
-          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Sign in</h2><p class="text-[11px] text-[var(--text-muted)]">Optional. Sign in to back up your data and keep your devices in sync.</p></div>
-          ${acctField('Email', 'acct-email', 'email', 'email', 'inputmode="email"')}
-          ${acctField('Password', 'acct-pass', 'password', 'current-password')}
-          <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
-          <button data-act onclick="acctLogin()" class="${ACCT_PRIMARY}">Sign in</button>
-          <div class="flex items-center justify-between"><button onclick="acctGo('signup')" class="${ACCT_LINK}">Create account</button><button onclick="acctGo('forgot')" class="${ACCT_LINK}">Forgot password?</button></div>`);
+        html = acctShell(acctBanner('Welcome back', 'Sign in to restore your data and keep every device in sync.', 'cloud'),
+          acctSeg('login')
+          + acctInput('acct-email', 'email', 'Email address', 'mail', 'email', 'inputmode="email"')
+          + acctInput('acct-pass', 'password', 'Password', 'lock', 'current-password', 'onkeydown="if(event.key===\'Enter\')acctLogin()"', true)
+          + `<div class="flex justify-end -mt-1"><button type="button" onclick="acctGo('forgot')" class="${ACCT_LINK}">Forgot password?</button></div>`
+          + ACCT_MSG + acctPrimary('acctLogin()', 'Sign in') + acctBenefits());
       } else if (m === 'signup') {
-        html = acctCard(`
-          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Create account</h2><p class="text-[11px] text-[var(--text-muted)]">Use any email. Password must be at least 8 characters.</p></div>
-          ${acctField('Email', 'acct-email', 'email', 'email', 'inputmode="email"')}
-          ${acctField('Password', 'acct-pass', 'password', 'new-password')}
-          ${acctField('Repeat password', 'acct-pass2', 'password', 'new-password')}
-          <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
-          <button data-act onclick="acctSignup()" class="${ACCT_PRIMARY}">Create account</button>
-          <button onclick="acctGo('login')" class="${ACCT_LINK}">I already have an account</button>`);
+        html = acctShell(acctBanner('Create your account', 'Free cloud backup for your workouts, plans and notes.', 'cloud'),
+          acctSeg('signup')
+          + acctInput('acct-email', 'email', 'Email address', 'mail', 'email', 'inputmode="email"')
+          + acctInput('acct-pass', 'password', 'Password (8+ characters)', 'lock', 'new-password', 'oninput="acctPwInput(this)"', true)
+          + '<div id="acct-strength" class="flex items-center -mt-1 min-h-[16px]"></div>'
+          + acctInput('acct-pass2', 'password', 'Repeat password', 'lock', 'new-password', 'onkeydown="if(event.key===\'Enter\')acctSignup()"', true)
+          + ACCT_MSG + acctPrimary('acctSignup()', 'Create account') + acctBenefits());
       } else if (m === 'verify') {
-        html = acctCard(`
-          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Check your email</h2><p class="text-[11px] text-[var(--text-muted)]">We sent a code to ${shEsc(acct.email)}. Type it here. If your email has a link instead of a code, tap the link, then come back and sign in.</p></div>
-          ${acctField('Code', 'acct-code', 'text', 'one-time-code', 'inputmode="numeric" maxlength="10"')}
-          <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
-          <button data-act onclick="acctVerify()" class="${ACCT_PRIMARY}">Confirm</button>
-          <div class="flex items-center justify-between"><button data-act onclick="acctResend()" class="${ACCT_LINK}">Send a new code</button><button onclick="acctGo('login')" class="${ACCT_LINK}">Back to sign in</button></div>`);
+        html = acctShell(acctBanner('Check your email', 'We sent a code to ' + shEsc(acct.email), 'mail'),
+          acctBack()
+          + '<p class="text-xs text-[var(--text-muted)] leading-relaxed">Type the code from the email. If it contains a link instead of a code, tap the link, then come back and sign in.</p>'
+          + `<input id="acct-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="------" oninput="acctOtpInput(this)" onkeydown="if(event.key==='Enter')acctVerify()" aria-label="Verification code" class="w-full h-14 rounded-2xl text-center text-2xl font-extrabold tracking-[0.4em] bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-glow)]">`
+          + ACCT_MSG + acctPrimary('acctVerify()', 'Confirm')
+          + `<div class="text-center"><button type="button" data-act onclick="acctResend()" class="${ACCT_LINK}">Send a new code</button></div>`);
       } else if (m === 'forgot') {
-        html = acctCard(`
-          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Reset password</h2><p class="text-[11px] text-[var(--text-muted)]">Enter your email and we will send you a code.</p></div>
-          ${acctField('Email', 'acct-email', 'email', 'email', 'inputmode="email"')}
-          <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
-          <button data-act onclick="acctForgot()" class="${ACCT_PRIMARY}">Send code</button>
-          <button onclick="acctGo('login')" class="${ACCT_LINK}">Back to sign in</button>`);
+        html = acctShell(acctBanner('Reset password', 'We will email you a code to set a new one.', 'key'),
+          acctBack()
+          + acctInput('acct-email', 'email', 'Email address', 'mail', 'email', 'inputmode="email" onkeydown="if(event.key===\'Enter\')acctForgot()"')
+          + ACCT_MSG + acctPrimary('acctForgot()', 'Send code'));
       } else if (m === 'reset') {
-        html = acctCard(`
-          <div><h2 class="font-bold text-sm text-[var(--text-primary)]">Choose a new password</h2><p class="text-[11px] text-[var(--text-muted)]">Type the code we emailed to ${shEsc(acct.email)} and a new password.</p></div>
-          ${acctField('Code', 'acct-code', 'text', 'one-time-code', 'inputmode="numeric" maxlength="10"')}
-          ${acctField('New password', 'acct-pass', 'password', 'new-password')}
-          <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
-          <button data-act onclick="acctResetSubmit()" class="${ACCT_PRIMARY}">Set new password</button>
-          <button onclick="acctGo('login')" class="${ACCT_LINK}">Back to sign in</button>`);
+        html = acctShell(acctBanner('New password', 'Enter the code sent to ' + shEsc(acct.email), 'key'),
+          acctBack()
+          + `<input id="acct-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="------" oninput="acctOtpInput(this)" aria-label="Verification code" class="w-full h-14 rounded-2xl text-center text-2xl font-extrabold tracking-[0.4em] bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-glow)]">`
+          + acctInput('acct-pass', 'password', 'New password (8+ characters)', 'lock', 'new-password', 'oninput="acctPwInput(this)" onkeydown="if(event.key===\'Enter\')acctResetSubmit()"', true)
+          + '<div id="acct-strength" class="flex items-center -mt-1 min-h-[16px]"></div>'
+          + ACCT_MSG + acctPrimary('acctResetSubmit()', 'Set new password'));
       }
-      html += '<p class="text-[10px] text-[var(--text-dim)] mt-3">Signing in is optional. Without an account, everything stays on this phone.</p>';
       root.innerHTML = html;
     }
     function acctSignedInHtml() {
       const meta = getSyncMeta();
       const last = meta.lastSyncAt ? new Date(meta.lastSyncAt).toLocaleString() : 'Not yet';
       const email = shEsc((acct.session.user && acct.session.user.email) || '');
-      return acctCard(`
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-[var(--accent)] text-black font-extrabold flex items-center justify-center">${shEsc((email[0] || '?').toUpperCase())}</div>
-          <div class="min-w-0"><div class="text-xs text-[var(--text-muted)]">Signed in as</div><div class="text-sm font-bold text-[var(--text-primary)] truncate">${email}</div></div>
-        </div>
-        <div class="p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] space-y-1">
-          <div id="acct-status" class="text-xs font-semibold text-[var(--text-primary)]">${shEsc(acct.status || 'Ready')}</div>
-          <div class="text-[10px] text-[var(--text-muted)]">Last synced: <span id="acct-last">${shEsc(last)}</span></div>
-        </div>
-        <div id="acct-msg" class="text-xs font-semibold min-h-[1rem]"></div>
+      const banner = `<div class="relative overflow-hidden px-6 pt-6 pb-5" style="background:var(--accent);color:#000">
+        <span style="position:absolute;right:-30px;top:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.22)"></span>
+        <div class="relative flex items-center gap-3.5">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-xl font-extrabold shrink-0" style="background:rgba(255,255,255,.5)">${shEsc((email[0] || '?').toUpperCase())}</div>
+          <div class="min-w-0">
+            <span class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background:rgba(0,0,0,.12)"><span style="width:6px;height:6px;border-radius:50%;background:#16a34a"></span>Cloud sync on</span>
+            <div class="text-base font-extrabold truncate mt-1">${email}</div>
+          </div>
+        </div></div>`;
+      const body = `
         <div class="grid grid-cols-2 gap-2">
-          <button data-act onclick="syncNow(true)" class="p-3 rounded-xl bg-[var(--accent)] text-black font-bold text-xs hover:brightness-110 active:scale-[0.98] transition-all">Sync now</button>
-          <button data-act onclick="acctLogout()" class="p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] font-bold text-xs">Sign out</button>
+          <div class="p-3 rounded-2xl bg-[var(--bg-input)]"><div class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)]">Status</div><div id="acct-status" class="text-xs font-bold text-[var(--text-primary)] mt-1 leading-snug">${shEsc(acct.status || 'Ready')}</div></div>
+          <div class="p-3 rounded-2xl bg-[var(--bg-input)]"><div class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)]">Last synced</div><div id="acct-last" class="text-xs font-bold text-[var(--text-primary)] mt-1 leading-snug">${shEsc(last)}</div></div>
         </div>
-        <p class="text-[10px] text-[var(--text-dim)]">Synced: profile, settings, workout logs, plans, notes and workout time. Received files from Share &amp; Receive stay on each phone. Syncing merges both devices, so nothing is lost. Sign out any time to stop syncing. Your data stays on this phone.</p>
-        <button data-act onclick="acctDeleteCloud()" class="w-full p-2.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] text-red-400 text-[11px] font-bold">Delete my cloud backup</button>`);
+        ${ACCT_MSG}
+        <button data-act data-primary onclick="syncNow(true)" class="${ACCT_BTN}">${acctSvg('refresh', 'w-[18px] h-[18px]')}<span>Sync now</span></button>
+        <button data-act onclick="acctLogout()" class="w-full h-12 rounded-2xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-primary)] font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.985] transition-all">${acctSvg('logout', 'w-[18px] h-[18px]')}<span>Sign out</span></button>
+        <p class="text-[10px] text-[var(--text-dim)] leading-relaxed">Synced: profile, settings, workout logs, plans, notes and workout time. Received files from Share &amp; Receive stay on each phone. Syncing merges your devices, so nothing is lost. Signing out stops syncing and your data stays on this phone.</p>
+        <div class="text-center"><button data-act onclick="acctDeleteCloud()" class="text-[11px] font-semibold text-red-500 hover:underline">Delete my cloud backup</button></div>`;
+      return acctShell(banner, body);
     }
     function acctGo(mode) { acct.mode = mode; renderAccountTab(); }
     function acctSetStatus(t) {
@@ -2688,6 +3044,7 @@
     }
     async function acctLogin() {
       if (acct.busy) return;
+      if (!(await acctEnsure())) { acctMsg('Could not load sign in. Check your internet connection.'); return; }
       const email = acctVal('acct-email').trim(), pass = acctVal('acct-pass');
       if (!acctIsEmail(email) || !pass) { acctMsg('Enter your email and password.'); return; }
       acctSetBusy(true); acctMsg('Signing in...', 'ok');
@@ -2706,6 +3063,7 @@
     }
     async function acctSignup() {
       if (acct.busy) return;
+      if (!(await acctEnsure())) { acctMsg('Could not load sign in. Check your internet connection.'); return; }
       const email = acctVal('acct-email').trim(), p1 = acctVal('acct-pass'), p2 = acctVal('acct-pass2');
       if (!acctIsEmail(email)) { acctMsg('Enter a valid email address.'); return; }
       if (p1.length < 8) { acctMsg('Password must be at least 8 characters.'); return; }
@@ -2722,6 +3080,7 @@
     }
     async function acctVerify() {
       if (acct.busy) return;
+      if (!(await acctEnsure())) { acctMsg('Could not load sign in. Check your internet connection.'); return; }
       const code = acctVal('acct-code').trim();
       if (code.length < 4) { acctMsg('Enter the code from your email.'); return; }
       acctSetBusy(true); acctMsg('Checking...', 'ok');
@@ -2735,6 +3094,7 @@
     }
     async function acctResend() {
       if (acct.busy) return;
+      if (!(await acctEnsure())) { acctMsg('Could not load sign in. Check your internet connection.'); return; }
       acctSetBusy(true);
       try {
         const { error } = await sb.auth.resend({ type: 'signup', email: acct.email });
@@ -2745,6 +3105,7 @@
     }
     async function acctForgot() {
       if (acct.busy) return;
+      if (!(await acctEnsure())) { acctMsg('Could not load sign in. Check your internet connection.'); return; }
       const email = acctVal('acct-email').trim();
       if (!acctIsEmail(email)) { acctMsg('Enter a valid email address.'); return; }
       acctSetBusy(true); acctMsg('Sending...', 'ok');
@@ -2758,6 +3119,7 @@
     }
     async function acctResetSubmit() {
       if (acct.busy) return;
+      if (!(await acctEnsure())) { acctMsg('Could not load sign in. Check your internet connection.'); return; }
       const code = acctVal('acct-code').trim(), np = acctVal('acct-pass');
       if (code.length < 4) { acctMsg('Enter the code from your email.'); return; }
       if (np.length < 8) { acctMsg('Password must be at least 8 characters.'); return; }
@@ -2797,9 +3159,8 @@
     // ---------- sync ----------
     function acctRefreshViews() {
       try {
-        document.documentElement.setAttribute('data-theme', appState.settings.theme || 'dark');
-        document.documentElement.setAttribute('data-accent', appState.settings.accent || 'amber');
-        document.documentElement.setAttribute('data-font-size', appState.settings.fontSize || 'comfortable');
+        applyAppearance();
+        if (typeof renderNav === 'function') renderNav();
         const t = currentTabId;
         if (t === 'dashboard') renderDashboardTab();
         else if (t === 'log') renderLogWorkoutTab();
@@ -2876,6 +3237,7 @@
 
     // Native Android back button (Capacitor): close sidebar/modal, go to previous page, then double-press to exit
     function handleNativeBack() {
+      if (navSheetOpen()) { navCloseSheet(); return; }
       if (isMobileSidebarOpen()) { closeSidebarWithHistory(); return; }
       const openModal = getCurrentlyOpenModalId();
       if (openModal) { closeModalWithHistory(openModal); return; }
@@ -3952,6 +4314,16 @@
           btn.className = `p-3 rounded-xl border text-left transition-all ${k === curTheme ? 'bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--text-primary)] shadow-xs ring-1 ring-[var(--accent)] font-semibold' : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--border-strong)]'}`;
         }
       });
+      const selCls = 'p-3 rounded-xl border text-left transition-all bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--text-primary)] ring-1 ring-[var(--accent)]';
+      const offCls = 'p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]';
+      ['sidebar', 'bottom', 'dock', 'center', 'tabs', 'rail', 'fab'].forEach(k => {
+        const b = document.getElementById('navstyle-btn-' + k);
+        if (b) b.className = (k === (appState.settings.navStyle || 'sidebar') ? selCls : offCls) + ' flex items-center gap-3';
+      });
+      ['auto', 'on', 'off'].forEach(k => {
+        const b = document.getElementById('perf-btn-' + k);
+        if (b) b.className = k === (appState.settings.perfMode || 'auto') ? selCls : offCls;
+      });
       const ALL_ACCENTS = ['amber', 'sage', 'slate', 'crimson', 'violet', 'coral'];
       ALL_ACCENTS.forEach(k => {
         const btn = document.getElementById('accent-btn-' + k);
@@ -3961,6 +4333,20 @@
       });
     }
 
+    function resolvePerf(mode) {
+      if (mode === 'on') return 'on';
+      if (mode === 'off') return 'off';
+      const low = ((navigator.deviceMemory || 4) <= 3) || ((navigator.hardwareConcurrency || 4) <= 4);
+      return low ? 'on' : 'off';
+    }
+    function applyAppearance() {
+      const h = document.documentElement, st = appState.settings;
+      h.setAttribute('data-theme', st.theme || 'dark');
+      h.setAttribute('data-accent', st.accent || 'amber');
+      h.setAttribute('data-font-size', st.fontSize || 'comfortable');
+      h.setAttribute('data-nav', st.navStyle || 'sidebar');
+      h.setAttribute('data-perf', resolvePerf(st.perfMode || 'auto'));
+    }
     function setAppTheme(t) {
       document.documentElement.setAttribute('data-theme', t);
       appState.settings.theme = t;
@@ -4815,6 +5201,7 @@
         }
         try { const um = getSyncMeta(); setSyncMeta({ uid: um.uid }); } catch (e) { }
         localStorage.removeItem(STORAGE_KEY);
+        try { localStorage.removeItem(AVATAR_KEY); localStorage.removeItem('dopamine_prefs_v1'); } catch (e) { }
         appState = JSON.parse(JSON.stringify(DEFAULT_DATA));
         saveState();
         location.reload();
@@ -4959,6 +5346,9 @@
 
     // Live Clock ticking
     setInterval(() => {
+      if (document.hidden) return;
+      if (document.documentElement.getAttribute('data-nav') && document.documentElement.getAttribute('data-nav') !== 'sidebar') return;
+      if (window.innerWidth < 768 && !isMobileSidebarOpen()) return;
       const now = new Date();
       const clockEl = document.getElementById('sidebar-live-clock');
       const dateEl = document.getElementById('sidebar-live-date');
@@ -4972,9 +5362,8 @@
 
     // Initial Bootstrap
     window.addEventListener('DOMContentLoaded', () => {
-      document.documentElement.setAttribute('data-theme', appState.settings.theme || 'dark');
-      document.documentElement.setAttribute('data-accent', appState.settings.accent || 'amber');
-      document.documentElement.setAttribute('data-font-size', appState.settings.fontSize || 'comfortable');
+      applyAppearance();
+      renderNav();
 
       restTotalSec = appState.settings.restDefault || 60;
       restRemainingSec = restTotalSec;

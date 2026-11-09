@@ -28,11 +28,12 @@
 | **Calendar Planner** | Monthly calendar showing logged and planned days, with ready-made routine templates. |
 | **Notes & Journal** | Tagged training notes for cues, routines and reflections. |
 | **Profile & Bio** | Name, photo, age, weight, height, BMI rating, level, objective and daily targets. |
-| **Sign in & Sync** | Optional email sign in on the Profile page that backs up your data and keeps all your devices in sync. The app works fully without it. |
+| **Sign in & Sync** | Optional, modern email sign in on the Profile page that backs up your data and keeps all your devices in sync. The app works fully without it. |
 | **Easy updates** | Install a new APK straight over the old app. No uninstalling, all your data stays. |
 | **Share & Receive** | Send data to another phone with QR codes or a file. The receiving phone chooses exactly which changes to import. |
 | **Timers** | Rest timer with presets and a session stopwatch that keeps accurate time when you switch tabs. |
 | **Reports & Backup** | PDF fitness report that opens in your PDF viewer, plus JSON export and import. |
+| **Navigation styles** | Choose how you move around: sidebar, bottom bar, floating dock, center button, top tabs, side rail or floating menu. |
 | **Themes** | 12 colour themes (including 5 soft, serif pastel themes), 6 accent colours, 2 font scales and a 12/24-hour clock. |
 
 ## Install
@@ -63,6 +64,10 @@ Open **Share & Receive** in the sidebar.
 
 - **Send:** tick what to include, then show QR codes or send a file through the Android share sheet.
 - **Receive:** scan the codes or import a file. Received data is kept in a list. Nothing on your phone changes until you review it and pick what to import. You can delete any received file.
+
+## Fast on older phones
+
+The app loads its styles from one small prebuilt file, loads heavy tools (QR codes, sign in) only when you use them, and keeps your profile photo out of the main data so every save is quick. Settings has a **Smooth mode** that removes shadows, blur and animations. It turns on automatically for older phones.
 
 ## Build from source
 

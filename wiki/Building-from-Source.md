@@ -57,3 +57,14 @@ The QR libraries are included in the app so QR sharing works offline.
 ## Cloud backup setup (optional)
 
 The app talks to a [Supabase](https://supabase.com) project. To use your own, create a project, run `supabase/setup.sql` in the SQL Editor, and set `SUPABASE_URL` and `SUPABASE_KEY` (the publishable key) near the top of the account code in `www/index.html`. Never put a secret or service-role key in the app.
+
+## Styles
+
+The app uses one prebuilt stylesheet, `www/tailwind.css`, instead of compiling Tailwind in the browser. After you change classes in `www/index.html`, rebuild it:
+
+```bash
+npm install
+npm run build:css
+```
+
+The GitHub workflow rebuilds it on every build, so the published app is always up to date.

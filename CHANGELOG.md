@@ -4,6 +4,18 @@ All notable changes to Dopamine are listed here.
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-11-09
+
+### Added
+- **Navigation styles** in Settings: Sidebar, Bottom bar, Floating dock, Center button, Top tabs, Side rail and Floating menu. The choice applies instantly and is remembered.
+- **Smooth mode** (Settings, Navigation & Speed): removes shadows, blur and animations for older phones. The default, Auto, switches it on for slower devices.
+- A redesigned sign in: welcome banner, icon fields, show/hide password, password strength meter, large code field and a cleaner signed-in card.
+
+### Changed
+- Removed the duplicate Profile & Bio entry from the sidebar list. Profile is still one tap away from your avatar and the profile card in the sidebar.
+- Faster start and smoother scrolling: the app uses a prebuilt stylesheet instead of compiling styles in the browser, the sign in, QR and scanner tools load only when used, the profile photo is stored separately so saving stays quick, the dashboard picture is 80% smaller, and the sidebar clock no longer updates when nobody can see it.
+- Styles load without needing the internet, and the fonts no longer delay the first screen.
+
 ## [1.6.0] - 2026-11-09
 
 ### Added

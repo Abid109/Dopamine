@@ -31,5 +31,5 @@ Go to **Settings** and tap **Export JSON** now and then, or share your data to a
 
 ## Moving around
 
-- Open the menu from the top-left button.
+- Open the menu from the top-left button. You can switch to a bottom bar, floating dock, top tabs and more in **Settings**, **Navigation Style**.
 - The Android back button closes menus and popups first, then takes you to the previous page. On the Dashboard, press it twice to exit.
