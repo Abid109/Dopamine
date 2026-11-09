@@ -33,7 +33,7 @@
 | **Share & Receive** | Send data to another phone with QR codes or a file. The receiving phone chooses exactly which changes to import. |
 | **Timers** | Rest timer with presets and a session stopwatch that keeps accurate time when you switch tabs. |
 | **Reports & Backup** | PDF fitness report that opens in your PDF viewer, plus JSON export and import. |
-| **Themes** | 7 colour themes, 6 accent colours, 2 font scales and a 12/24-hour clock. |
+| **Themes** | 12 colour themes (including 5 soft, serif pastel themes), 6 accent colours, 2 font scales and a 12/24-hour clock. |
 
 ## Install
 

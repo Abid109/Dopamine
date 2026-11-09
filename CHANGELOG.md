@@ -4,6 +4,13 @@ All notable changes to Dopamine are listed here.
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-11-09
+
+### Added
+- Five soft pastel themes with a serif typeface, cream cards and rounded corners: **Sunrise**, **Blush**, **Mint**, **Sky** and **Lilac**. Choose them in Settings under "Soft & serif".
+- A line-art athletes illustration across the top of the Dashboard in the soft themes.
+- The default accent (Amber Gold) now takes on each soft theme's own colour. Other accents work as before.
+
 ## [1.5.0] - 2026-11-08
 
 ### Added

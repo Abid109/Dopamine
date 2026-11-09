@@ -30,4 +30,4 @@ Dopamine is a calisthenics workout tracker for Android. Log your sets, plan rout
 - Updates that install over the old app and keep your data
 - QR and file sharing with selective import
 - PDF fitness report and JSON backup
-- 7 themes and 6 accent colours
+- 12 themes (including 5 soft pastel serif themes) and 6 accent colours

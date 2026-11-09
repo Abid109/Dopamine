@@ -11,7 +11,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="vendor/qrcode.js"></script>
   <script src="vendor/jsQR.js"></script>
@@ -363,6 +363,67 @@
       --text-muted: #475569;
       --text-dim: #64748b;
     }
+    /* ===== Soft pastel themes (serif type, cream cards, rounded corners) ===== */
+    :root[data-theme="sunrise"] {
+      --bg-base: #fdcd7f; --bg-surface: #fff3de; --bg-card: #fef0d8; --bg-card-hover: #fde6c0; --bg-input: #fbe3ba;
+      --border-subtle: #ecd0a0; --border-strong: #d9b473;
+      --text-primary: #1b1408; --text-muted: #6d5a3b; --text-dim: #9c8761;
+      --blob: #f6b75e; --card-shadow: rgba(150,90,10,.22);
+      --font-sans: 'Newsreader', 'Georgia', 'Times New Roman', serif;
+    }
+    :root[data-theme="blush"] {
+      --bg-base: #f7c6c2; --bg-surface: #fff4f2; --bg-card: #fff0ed; --bg-card-hover: #ffe4df; --bg-input: #fbddd9;
+      --border-subtle: #ebc3be; --border-strong: #d9a29b;
+      --text-primary: #2a1416; --text-muted: #7a5558; --text-dim: #a58588;
+      --blob: #f2b1ac; --card-shadow: rgba(160,70,60,.20);
+      --font-sans: 'Newsreader', 'Georgia', 'Times New Roman', serif;
+    }
+    :root[data-theme="mint"] {
+      --bg-base: #bfe3c8; --bg-surface: #f5fbf6; --bg-card: #f1faf3; --bg-card-hover: #e3f4e8; --bg-input: #ddf0e2;
+      --border-subtle: #b5d6be; --border-strong: #8fbf9e;
+      --text-primary: #10241a; --text-muted: #4d6b5a; --text-dim: #7c9988;
+      --blob: #a9d6b4; --card-shadow: rgba(40,110,70,.20);
+      --font-sans: 'Newsreader', 'Georgia', 'Times New Roman', serif;
+    }
+    :root[data-theme="sky"] {
+      --bg-base: #bbd9f4; --bg-surface: #f5faff; --bg-card: #f1f8ff; --bg-card-hover: #e2effc; --bg-input: #dcebfa;
+      --border-subtle: #b1cce6; --border-strong: #8bb0d2;
+      --text-primary: #0e1d2e; --text-muted: #4b6580; --text-dim: #7b93ab;
+      --blob: #a5c9ec; --card-shadow: rgba(40,90,150,.20);
+      --font-sans: 'Newsreader', 'Georgia', 'Times New Roman', serif;
+    }
+    :root[data-theme="lilac"] {
+      --bg-base: #d5c9f2; --bg-surface: #faf7ff; --bg-card: #f6f2ff; --bg-card-hover: #ebe4fb; --bg-input: #e7dffa;
+      --border-subtle: #cbbfe8; --border-strong: #aa9bd4;
+      --text-primary: #1d1530; --text-muted: #5f5480; --text-dim: #8e84ad;
+      --blob: #c4b5ea; --card-shadow: rgba(90,60,160,.20);
+      --font-sans: 'Newsreader', 'Georgia', 'Times New Roman', serif;
+    }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) { color-scheme: light; }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) body {
+      background-image:
+        radial-gradient(circle 200px at -50px 30%, var(--blob) 99%, transparent 100%),
+        radial-gradient(circle 240px at calc(100% + 70px) 62%, var(--blob) 99%, transparent 100%),
+        radial-gradient(circle 170px at 18% 108%, var(--blob) 99%, transparent 100%);
+      background-attachment: fixed;
+      font-family: var(--font-sans);
+    }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) button, :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) input, :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) select, :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) textarea { font-family: var(--font-sans); }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) .font-mono { font-family: var(--font-sans); font-variant-numeric: tabular-nums; }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) header { background: transparent !important; border-color: transparent !important; backdrop-filter: none !important; }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) [class*="rounded-2xl"][class*="bg-[var(--bg-card)]"] {
+      border-color: transparent; border-radius: 1.4rem; box-shadow: 0 10px 24px -12px var(--card-shadow);
+    }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) #sidebar-panel { box-shadow: 8px 0 30px -18px var(--card-shadow); }
+    .theme-hero { display: none; }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) .theme-hero { display: block; width: 100%; max-width: 540px; margin: 0 auto; pointer-events: none; user-select: none; }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) .theme-hero + div { margin-top: -8px !important; position: relative; z-index: 1; }
+    /* "Amber Gold" (the default accent) takes on the colour of the soft themes; other accents are unchanged */
+    :root[data-theme="sunrise"][data-accent="amber"] { --accent: #f9b556; --accent-hover: #e9a03c; --accent-glow: rgba(249,181,86,.26); --accent-border: rgba(214,140,30,.55); --accent-text: #8f5200; }
+    :root[data-theme="blush"][data-accent="amber"] { --accent: #f2909f; --accent-hover: #e27789; --accent-glow: rgba(242,144,159,.26); --accent-border: rgba(205,90,110,.55); --accent-text: #a3304a; }
+    :root[data-theme="mint"][data-accent="amber"] { --accent: #6cc496; --accent-hover: #55b082; --accent-glow: rgba(108,196,150,.28); --accent-border: rgba(50,150,100,.55); --accent-text: #1b6b43; }
+    :root[data-theme="sky"][data-accent="amber"] { --accent: #6baeea; --accent-hover: #4f98d8; --accent-glow: rgba(107,174,234,.28); --accent-border: rgba(50,120,200,.55); --accent-text: #1d5a9c; }
+    :root[data-theme="lilac"][data-accent="amber"] { --accent: #a68bea; --accent-hover: #8f72d8; --accent-glow: rgba(166,139,234,.28); --accent-border: rgba(120,85,205,.55); --accent-text: #5230a8; }
     [data-accent="sage"] {
       --accent: #10b981;
       --accent-hover: #059669;
@@ -566,6 +627,7 @@
   <main class="flex-1 w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-16 overflow-y-auto">
     <!-- DASHBOARD TAB -->
     <div id="tab-dashboard" class="space-y-6">
+      <img class="theme-hero" src="assets/hero-athletes.png" alt="" draggable="false">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-xs">
         <div>
           <div class="flex items-center gap-2 mb-1">
@@ -1222,6 +1284,27 @@
               <button onclick="setAppTheme('nordic')" id="theme-btn-nordic" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                 <div class="flex items-center gap-1.5 font-semibold text-xs text-[var(--text-primary)]"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-cyan-400"><path d="M12.8 19.6A2 2 0 1 0 14 16H2"></path><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"></path><path d="M9.8 4.4A2 2 0 1 1 11 8H2"></path></svg> Nordic</div>
                 <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Frost Slate</span>
+              </button>
+              <div class="col-span-full text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)] pt-2">Soft &amp; serif</div>
+              <button onclick="setAppTheme('sunrise')" id="theme-btn-sunrise" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <div class="flex items-center gap-2 font-semibold text-xs text-[var(--text-primary)]"><span class="inline-block w-4 h-4 rounded-full shrink-0" style="background:linear-gradient(135deg,#fdcd7f 50%,#fef0d8 50%);border:1px solid rgba(0,0,0,.18)"></span>Sunrise</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Warm Apricot</span>
+              </button>
+              <button onclick="setAppTheme('blush')" id="theme-btn-blush" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <div class="flex items-center gap-2 font-semibold text-xs text-[var(--text-primary)]"><span class="inline-block w-4 h-4 rounded-full shrink-0" style="background:linear-gradient(135deg,#f7c6c2 50%,#fff0ed 50%);border:1px solid rgba(0,0,0,.18)"></span>Blush</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Rose Petal</span>
+              </button>
+              <button onclick="setAppTheme('mint')" id="theme-btn-mint" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <div class="flex items-center gap-2 font-semibold text-xs text-[var(--text-primary)]"><span class="inline-block w-4 h-4 rounded-full shrink-0" style="background:linear-gradient(135deg,#bfe3c8 50%,#f1faf3 50%);border:1px solid rgba(0,0,0,.18)"></span>Mint</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Garden Mint</span>
+              </button>
+              <button onclick="setAppTheme('sky')" id="theme-btn-sky" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <div class="flex items-center gap-2 font-semibold text-xs text-[var(--text-primary)]"><span class="inline-block w-4 h-4 rounded-full shrink-0" style="background:linear-gradient(135deg,#bbd9f4 50%,#f1f8ff 50%);border:1px solid rgba(0,0,0,.18)"></span>Sky</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Clear Morning</span>
+              </button>
+              <button onclick="setAppTheme('lilac')" id="theme-btn-lilac" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <div class="flex items-center gap-2 font-semibold text-xs text-[var(--text-primary)]"><span class="inline-block w-4 h-4 rounded-full shrink-0" style="background:linear-gradient(135deg,#d5c9f2 50%,#f6f2ff 50%);border:1px solid rgba(0,0,0,.18)"></span>Lilac</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Soft Lavender</span>
               </button>
             </div>
           </div>
@@ -3862,7 +3945,7 @@
 
       const curTheme = appState.settings.theme || 'dark';
       const curAccent = appState.settings.accent || 'amber';
-      const ALL_THEMES = ['dark', 'charcoal', 'midnight', 'cyberpunk', 'forest', 'light', 'nordic'];
+      const ALL_THEMES = ['dark', 'charcoal', 'midnight', 'cyberpunk', 'forest', 'light', 'nordic', 'sunrise', 'blush', 'mint', 'sky', 'lilac'];
       ALL_THEMES.forEach(k => {
         const btn = document.getElementById('theme-btn-' + k);
         if (btn) {
