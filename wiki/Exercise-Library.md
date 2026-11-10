@@ -12,4 +12,6 @@ Dopamine includes 18 calisthenics movements. Each has a difficulty, default sets
 
 Difficulty levels are Beginner, Intermediate and Advanced.
 
+The Forearm Plank and Hollow Body Hold are timed holds: you enter seconds instead of repetitions. See [Calorie Calculation](Calorie-Calculation) for the intensity and tempo of every movement.
+
 Missing a movement? Use **Custom Exercise** in [Logging Workouts](Logging-Workouts), or [suggest it](https://github.com/Abid109/Dopamine/issues/new/choose).

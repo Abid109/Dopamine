@@ -6,7 +6,7 @@ Open **Log Workout** from the menu.
 
 1. Choose a movement. Use the category filter (All, Push, Pull, Legs, Core, Full Body) to narrow the list.
 2. The card shows the difficulty, a description and a progression path.
-3. Set **Sets**, **Reps per Set** and **Duration (Minutes)**. For holds such as planks, enter the seconds as reps.
+3. Set **Sets**, **Reps per Set** and **Duration (Minutes)**. For timed holds such as planks the field becomes **Hold per Set (seconds)**. Enter the full time of the exercise, rests included.
 4. Check the **Estimated Calorie Burn**.
 5. Tap **Log to Today**.
 
@@ -16,7 +16,8 @@ Tap **Custom Exercise**, then fill in:
 
 - **Exercise Name**
 - **Muscle Group:** Push, Pull, Legs, Core or Full Body
-- **Intensity:** Moderate (MET 6.0), Standard (MET 8.0), Vigorous (MET 9.5) or High Explosive (MET 11.0)
+- **Counted in:** Repetitions, or Seconds (a hold)
+- **Intensity:** Moderate (MET 5.0), Standard (MET 7.0), Vigorous (MET 8.5) or High Explosive (MET 10.0)
 
 Tap **Browse Library Instead** to go back to the list.
 

@@ -6,9 +6,9 @@
 | --- | --- |
 | Display Name | Greeting and sidebar |
 | Photo | Avatar. Use **Upload Photo**, **Change** or **Remove** |
-| Age | Shown on your profile |
+| Age | Used for the [calorie estimate](Calorie-Calculation) |
 | Weight (kg) | Feeds the [calorie estimate](Calorie-Calculation) |
-| Height (cm) | Feeds the BMI rating |
+| Height (cm) | Feeds the BMI rating and the calorie estimate |
 | Proficiency Level | Beginner, Intermediate, Advanced or Elite |
 | Primary Fitness Objective | Muscle & Strength, Endurance, Weight Loss, Skill Mastery or General Fitness |
 | Daily Calorie Burn Goal | Target shown on the [Dashboard](Dashboard) |

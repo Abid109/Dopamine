@@ -904,12 +904,19 @@
                   </select>
                 </div>
                 <div>
+                  <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1">Counted in</label>
+                  <select id="custom-type-field" onchange="updateRepsLabel(); updateLiveCalorieMath()" class="w-full px-2.5 py-1.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] text-xs text-[var(--text-primary)] focus:outline-none">
+                    <option value="reps" selected>Repetitions</option>
+                    <option value="hold">Seconds (a hold)</option>
+                  </select>
+                </div>
+                <div>
                   <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1">Intensity</label>
                   <select id="custom-met-field" onchange="updateLiveCalorieMath()" class="w-full px-2.5 py-1.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] text-xs text-[var(--text-primary)] focus:outline-none">
-                    <option value="6.0">Moderate (MET 6.0)</option>
-                    <option value="8.0" selected>Standard (MET 8.0)</option>
-                    <option value="9.5">Vigorous (MET 9.5)</option>
-                    <option value="11.0">High Explosive (MET 11.0)</option>
+                    <option value="5.0">Moderate (MET 5.0)</option>
+                    <option value="7.0" selected>Standard (MET 7.0)</option>
+                    <option value="8.5">Vigorous (MET 8.5)</option>
+                    <option value="10.0">High Explosive (MET 10.0)</option>
                   </select>
                 </div>
               </div>
@@ -926,7 +933,7 @@
                 </div>
               </div>
               <div class="flex items-center justify-between">
-                <div><label class="text-xs font-semibold text-[var(--text-primary)] block">Reps per Set</label><span class="text-[11px] text-[var(--text-muted)]">Repetitions (or hold secs)</span></div>
+                <div><label id="reps-label" class="text-xs font-semibold text-[var(--text-primary)] block">Reps per Set</label><span id="reps-help" class="text-[11px] text-[var(--text-muted)]">Repetitions</span></div>
                 <div class="flex items-center gap-2">
                   <button onclick="stepperChange('reps', -1)" class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] flex items-center justify-center text-[var(--text-primary)] active:scale-95"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M5 12h14"></path></svg></button>
                   <input type="number" id="stepper-reps" min="1" max="500" value="15" onchange="updateLiveCalorieMath()" class="w-14 text-center font-mono font-bold text-sm bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-lg py-1 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
@@ -1481,6 +1488,22 @@
           </div>
         </div>
 
+        <!-- Calories -->
+        <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--accent)]"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg> Calorie Count
+          </h2>
+          <p class="text-[11px] text-[var(--text-muted)]">Estimates use the time you spend working, your rest between sets, and your weight, height and age. Workouts you already logged keep their saved numbers.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="settings-cal-grid">
+            <button onclick="setCalorieMode('active')" id="cal-btn-active" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+              <span class="block font-semibold text-xs text-[var(--text-primary)]">Active calories</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Only what the exercise adds. Recommended</span>
+            </button>
+            <button onclick="setCalorieMode('total')" id="cal-btn-total" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+              <span class="block font-semibold text-xs text-[var(--text-primary)]">Include resting</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Also counts the energy you burn at rest</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Timers, Backup & System Storage -->
         <div class="space-y-6">
           <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-6">
@@ -1811,7 +1834,7 @@
     // Default application state
     const DEFAULT_DATA = {
       profile: { name: '', age: 0, weight: 0, height: 0, calGoal: 500, exGoal: 4, level: 'Beginner', goal: 'Muscle & Strength', weeklyWorkoutGoal: 4, dailyMinutesGoal: 30, targetWeight: 0, avatarUrl: '' },
-      settings: { theme: 'dark', accent: 'amber', fontSize: 'comfortable', showChart: true, restDefault: 60, soundOn: true, clock24h: false, navStyle: 'sidebar', perfMode: 'auto' },
+      settings: { theme: 'dark', accent: 'amber', fontSize: 'comfortable', showChart: true, restDefault: 60, soundOn: true, clock24h: false, navStyle: 'sidebar', perfMode: 'auto', calorieMode: 'active' },
       logs: {},
       plans: {},
       notes: [],
@@ -1845,24 +1868,24 @@
     }
 
     const EXERCISE_LIB = [
-      { id: 'push-ups', name: 'Push-ups', category: 'Push', met: 8.0, defaultSets: 3, defaultReps: 15, defaultMins: 5, description: 'Classic horizontal push targeting chest, anterior delts, and triceps.', difficulty: 'Beginner', progression: 'Incline -> Standard -> Diamond -> Archer -> One-Arm' },
-      { id: 'diamond-push-ups', name: 'Diamond Push-ups', category: 'Push', met: 9.0, defaultSets: 3, defaultReps: 12, defaultMins: 5, description: 'Hands together under chest; heavy emphasis on the triceps and inner chest.', difficulty: 'Intermediate', progression: 'Standard -> Diamond -> Archer' },
-      { id: 'dips', name: 'Parallel Bar Dips', category: 'Push', met: 8.0, defaultSets: 3, defaultReps: 10, defaultMins: 6, description: 'Vertical bodyweight push for lower pectoral development and triceps horsepower.', difficulty: 'Intermediate', progression: 'Bench Dips -> Banded Dips -> Bodyweight Dips -> Weighted' },
-      { id: 'pike-push-ups', name: 'Pike Push-ups', category: 'Push', met: 8.0, defaultSets: 3, defaultReps: 10, defaultMins: 5, description: 'Elevated hip push targeting the anterior deltoids and overhead pushing strength.', difficulty: 'Intermediate', progression: 'Pike -> Feet Elevated Pike -> Wall Handstand Push-up' },
-      { id: 'handstand-push-ups', name: 'Handstand Push-ups', category: 'Push', met: 10.0, defaultSets: 3, defaultReps: 5, defaultMins: 6, description: 'Elite vertical pressing movement demanding overhead balance and shoulder power.', difficulty: 'Advanced', progression: 'Wall Supported -> Freestanding Handstand Push-up' },
-      { id: 'pull-ups', name: 'Pull-ups', category: 'Pull', met: 9.0, defaultSets: 3, defaultReps: 8, defaultMins: 6, description: 'Pronated grip vertical pull building wide lats, rhomboids, and biceps.', difficulty: 'Intermediate', progression: 'Dead Hang -> Scapular Pulls -> Australian Rows -> Pull-up' },
-      { id: 'chin-ups', name: 'Chin-ups', category: 'Pull', met: 9.0, defaultSets: 3, defaultReps: 8, defaultMins: 6, description: 'Supinated grip vertical pull engaging the biceps brachii and lower lats deeply.', difficulty: 'Intermediate', progression: 'Negative Chin-ups -> Full Chin-up -> Weighted Chin-up' },
-      { id: 'inverted-rows', name: 'Inverted Rows (Australian)', category: 'Pull', met: 7.0, defaultSets: 3, defaultReps: 12, defaultMins: 6, description: 'Horizontal bodyweight pull focusing on middle back thickness and rear deltoids.', difficulty: 'Beginner', progression: 'High Angle -> Low Angle -> Feet Elevated Rows' },
-      { id: 'muscle-ups', name: 'Bar Muscle-ups', category: 'Pull', met: 11.0, defaultSets: 3, defaultReps: 4, defaultMins: 8, description: 'High explosive pull transitioning dynamically into an above-the-bar dip.', difficulty: 'Advanced', progression: 'Explosive Pull-up + Straight Bar Dip -> Kipping -> Strict Muscle-up' },
-      { id: 'squats', name: 'Bodyweight Squats', category: 'Legs', met: 6.0, defaultSets: 4, defaultReps: 20, defaultMins: 6, description: 'Fundamental lower body compound exercise for quadriceps, hamstrings, and glutes.', difficulty: 'Beginner', progression: 'Assisted Squat -> Air Squat -> Deep Tempo Squat' },
-      { id: 'lunges', name: 'Walking Lunges', category: 'Legs', met: 7.0, defaultSets: 3, defaultReps: 16, defaultMins: 6, description: 'Unilateral leg drive strengthening knees, hip stabilizers, and single-leg balance.', difficulty: 'Beginner', progression: 'Static Split Squat -> Walking Lunge -> Jumping Lunge' },
-      { id: 'pistol-squats', name: 'Pistol Squats', category: 'Legs', met: 9.0, defaultSets: 3, defaultReps: 6, defaultMins: 6, description: 'True single-leg squat testing balance, ankle dorsiflexion, and unilateral power.', difficulty: 'Advanced', progression: 'Box Step-down -> Counterbalance Pistol -> Full Freestanding Pistol' },
-      { id: 'calf-raises', name: 'Calf Raises', category: 'Legs', met: 4.0, defaultSets: 4, defaultReps: 25, defaultMins: 4, description: 'Controlled plantar flexion for gastrocnemius and soleus ankle stiffness.', difficulty: 'Beginner', progression: 'Two-leg Flat -> Single-leg Ledge Raised' },
-      { id: 'plank', name: 'Forearm Plank', category: 'Core', met: 4.0, defaultSets: 3, defaultReps: 1, defaultMins: 4, description: 'Isometric anti-extension core hold building foundational abdominal wall stability.', difficulty: 'Beginner', progression: 'Knees -> Standard -> Long-Lever Plank' },
-      { id: 'hollow-hold', name: 'Hollow Body Hold', category: 'Core', met: 5.0, defaultSets: 3, defaultReps: 1, defaultMins: 4, description: 'Gymnastic staple locking posterior pelvic tilt and total core tension.', difficulty: 'Intermediate', progression: 'Tuck Hold -> Single-Leg -> Full Hollow Body Hold' },
-      { id: 'leg-raises', name: 'Hanging Leg Raises', category: 'Core', met: 6.0, defaultSets: 3, defaultReps: 10, defaultMins: 5, description: 'Anti-extension and hip flexor/rectus abdominis flexion from a dead hang.', difficulty: 'Intermediate', progression: 'Hanging Knee Raises -> L-Raises -> Toes To Bar' },
-      { id: 'burpees', name: 'Burpees', category: 'Full Body', met: 12.0, defaultSets: 4, defaultReps: 15, defaultMins: 8, description: 'Explosive squat thrust with chest-to-floor drop and vertical jump.', difficulty: 'Intermediate', progression: 'No Push-up Burpee -> Standard Burpee -> Chest-to-Floor Tuck Jump Burpee' },
-      { id: 'mountain-climbers', name: 'Mountain Climbers', category: 'Full Body', met: 10.0, defaultSets: 3, defaultReps: 30, defaultMins: 5, description: 'Rapid alternating high knees in a push-up plank posture.', difficulty: 'Beginner', progression: 'Cross-body Climbers -> Standard Fast Climbers' }
+      { id: 'push-ups', name: 'Push-ups', category: 'Push', met: 8.0, tempo: 2.2, defaultSets: 3, defaultReps: 15, defaultMins: 5, description: 'Classic horizontal push targeting chest, anterior delts, and triceps.', difficulty: 'Beginner', progression: 'Incline -> Standard -> Diamond -> Archer -> One-Arm' },
+      { id: 'diamond-push-ups', name: 'Diamond Push-ups', category: 'Push', met: 8.5, tempo: 2.6, defaultSets: 3, defaultReps: 12, defaultMins: 5, description: 'Hands together under chest; heavy emphasis on the triceps and inner chest.', difficulty: 'Intermediate', progression: 'Standard -> Diamond -> Archer' },
+      { id: 'dips', name: 'Parallel Bar Dips', category: 'Push', met: 8.0, tempo: 2.8, defaultSets: 3, defaultReps: 10, defaultMins: 6, description: 'Vertical bodyweight push for lower pectoral development and triceps horsepower.', difficulty: 'Intermediate', progression: 'Bench Dips -> Banded Dips -> Bodyweight Dips -> Weighted' },
+      { id: 'pike-push-ups', name: 'Pike Push-ups', category: 'Push', met: 8.0, tempo: 2.8, defaultSets: 3, defaultReps: 10, defaultMins: 5, description: 'Elevated hip push targeting the anterior deltoids and overhead pushing strength.', difficulty: 'Intermediate', progression: 'Pike -> Feet Elevated Pike -> Wall Handstand Push-up' },
+      { id: 'handstand-push-ups', name: 'Handstand Push-ups', category: 'Push', met: 9.0, tempo: 4.0, defaultSets: 3, defaultReps: 5, defaultMins: 6, description: 'Elite vertical pressing movement demanding overhead balance and shoulder power.', difficulty: 'Advanced', progression: 'Wall Supported -> Freestanding Handstand Push-up' },
+      { id: 'pull-ups', name: 'Pull-ups', category: 'Pull', met: 8.0, tempo: 3.2, defaultSets: 3, defaultReps: 8, defaultMins: 6, description: 'Pronated grip vertical pull building wide lats, rhomboids, and biceps.', difficulty: 'Intermediate', progression: 'Dead Hang -> Scapular Pulls -> Australian Rows -> Pull-up' },
+      { id: 'chin-ups', name: 'Chin-ups', category: 'Pull', met: 8.0, tempo: 3.2, defaultSets: 3, defaultReps: 8, defaultMins: 6, description: 'Supinated grip vertical pull engaging the biceps brachii and lower lats deeply.', difficulty: 'Intermediate', progression: 'Negative Chin-ups -> Full Chin-up -> Weighted Chin-up' },
+      { id: 'inverted-rows', name: 'Inverted Rows (Australian)', category: 'Pull', met: 6.5, tempo: 2.8, defaultSets: 3, defaultReps: 12, defaultMins: 6, description: 'Horizontal bodyweight pull focusing on middle back thickness and rear deltoids.', difficulty: 'Beginner', progression: 'High Angle -> Low Angle -> Feet Elevated Rows' },
+      { id: 'muscle-ups', name: 'Bar Muscle-ups', category: 'Pull', met: 10.0, tempo: 5.0, defaultSets: 3, defaultReps: 4, defaultMins: 8, description: 'High explosive pull transitioning dynamically into an above-the-bar dip.', difficulty: 'Advanced', progression: 'Explosive Pull-up + Straight Bar Dip -> Kipping -> Strict Muscle-up' },
+      { id: 'squats', name: 'Bodyweight Squats', category: 'Legs', met: 5.5, tempo: 2.2, defaultSets: 4, defaultReps: 20, defaultMins: 6, description: 'Fundamental lower body compound exercise for quadriceps, hamstrings, and glutes.', difficulty: 'Beginner', progression: 'Assisted Squat -> Air Squat -> Deep Tempo Squat' },
+      { id: 'lunges', name: 'Walking Lunges', category: 'Legs', met: 6.0, tempo: 2.6, defaultSets: 3, defaultReps: 16, defaultMins: 6, description: 'Unilateral leg drive strengthening knees, hip stabilizers, and single-leg balance.', difficulty: 'Beginner', progression: 'Static Split Squat -> Walking Lunge -> Jumping Lunge' },
+      { id: 'pistol-squats', name: 'Pistol Squats', category: 'Legs', met: 8.0, tempo: 4.0, defaultSets: 3, defaultReps: 6, defaultMins: 6, description: 'True single-leg squat testing balance, ankle dorsiflexion, and unilateral power.', difficulty: 'Advanced', progression: 'Box Step-down -> Counterbalance Pistol -> Full Freestanding Pistol' },
+      { id: 'calf-raises', name: 'Calf Raises', category: 'Legs', met: 3.8, tempo: 1.8, defaultSets: 4, defaultReps: 25, defaultMins: 4, description: 'Controlled plantar flexion for gastrocnemius and soleus ankle stiffness.', difficulty: 'Beginner', progression: 'Two-leg Flat -> Single-leg Ledge Raised' },
+      { id: 'plank', name: 'Forearm Plank', category: 'Core', met: 3.5, tempo: 1.0, hold: true, defaultSets: 3, defaultReps: 40, defaultMins: 4, description: 'Isometric anti-extension core hold building foundational abdominal wall stability.', difficulty: 'Beginner', progression: 'Knees -> Standard -> Long-Lever Plank' },
+      { id: 'hollow-hold', name: 'Hollow Body Hold', category: 'Core', met: 4.0, tempo: 1.0, hold: true, defaultSets: 3, defaultReps: 25, defaultMins: 4, description: 'Gymnastic staple locking posterior pelvic tilt and total core tension.', difficulty: 'Intermediate', progression: 'Tuck Hold -> Single-Leg -> Full Hollow Body Hold' },
+      { id: 'leg-raises', name: 'Hanging Leg Raises', category: 'Core', met: 5.5, tempo: 3.0, defaultSets: 3, defaultReps: 10, defaultMins: 5, description: 'Anti-extension and hip flexor/rectus abdominis flexion from a dead hang.', difficulty: 'Intermediate', progression: 'Hanging Knee Raises -> L-Raises -> Toes To Bar' },
+      { id: 'burpees', name: 'Burpees', category: 'Full Body', met: 10.0, tempo: 3.6, defaultSets: 4, defaultReps: 15, defaultMins: 8, description: 'Explosive squat thrust with chest-to-floor drop and vertical jump.', difficulty: 'Intermediate', progression: 'No Push-up Burpee -> Standard Burpee -> Chest-to-Floor Tuck Jump Burpee' },
+      { id: 'mountain-climbers', name: 'Mountain Climbers', category: 'Full Body', met: 8.5, tempo: 0.8, defaultSets: 3, defaultReps: 30, defaultMins: 5, description: 'Rapid alternating high knees in a push-up plank posture.', difficulty: 'Beginner', progression: 'Cross-body Climbers -> Standard Fast Climbers' }
     ];
 
     let currentSelectedEx = EXERCISE_LIB[0];
@@ -2131,6 +2154,13 @@
       renderNav();
       renderSettingsTab();
     }
+    function setCalorieMode(m) {
+      appState.settings.calorieMode = m;
+      saveState();
+      renderSettingsTab();
+      if (typeof updateLiveCalorieMath === 'function' && document.getElementById('log-calc-cals')) updateLiveCalorieMath();
+      showToast(m === 'total' ? 'Calories now include resting energy' : 'Calories now count active energy only');
+    }
     function setPerfMode(m) {
       appState.settings.perfMode = m;
       applyAppearance();
@@ -2292,7 +2322,7 @@
           if (!dateRe.test(date) || !Array.isArray(data.logs[date])) return;
           const arr = data.logs[date].slice(0, 500).map(e => (e && typeof e === 'object' && e.id && e.name) ? {
             id: str(e.id, 60), name: str(e.name, 80), category: str(e.category, 30),
-            sets: num(e.sets), reps: num(e.reps), mins: num(e.mins), cal: num(e.cal), date: date
+            sets: num(e.sets), reps: num(e.reps), mins: num(e.mins), cal: num(e.cal), hold: e.hold === true, date: date
           } : null).filter(Boolean);
           if (arr.length) out.logs[date] = arr;
         });
@@ -3333,12 +3363,51 @@
       } catch (e) {}
     }
 
-    function calculateCalories(met, weightKg, mins, sets, reps) {
-      const w = weightKg > 0 ? weightKg : 70;
-      const base = (Math.max(0, mins) / 60) * met * w;
-      const vol = Math.max(0, sets) * Math.max(0, reps) * 0.08;
-      return Math.max(1, Math.round(base + vol));
+    /* Calorie estimate
+       - Time spent working is worked out from sets x reps x seconds per rep (timed holds use their seconds).
+       - The rest of the entered time is counted at a light rest intensity, not at full effort.
+       - By default only the extra energy beyond resting is counted ("active calories").
+       - Resting energy per kg is personalised from age, height and weight (Mifflin-St Jeor), within safe limits. */
+    const REST_MET = 2.0;      // light activity between sets
+    const SESSION_MET = 5.0;   // average intensity of a whole calisthenics session (moderate 3.8 to vigorous 7.5)
+    const TEMPO_BY_CAT = { 'Push': 2.6, 'Pull': 3.2, 'Legs': 2.4, 'Core': 3.0, 'Full Body': 3.4 };
+    function restingFactor() {
+      const pr = appState.profile || {};
+      const w = Number(pr.weight), h = Number(pr.height), a = Number(pr.age);
+      if (!(w > 0 && h > 0 && a > 0)) return 1.0;
+      const rmr = 10 * w + 6.25 * h - 5 * a - 78;       // kcal per day (average of the male and female constants)
+      return Math.min(1.15, Math.max(0.85, rmr / 24 / w)); // kcal per kg per hour at rest (the MET baseline is 1.0)
     }
+    function calorieBreakdown(met, weightKg, mins, sets, reps, opt) {
+      opt = opt || {};
+      const w = weightKg > 0 ? weightKg : 70;
+      const n = Math.max(0, sets) * Math.max(0, reps);
+      const activeSec = opt.hold ? n : n * (opt.tempo > 0 ? opt.tempo : 2.8);
+      const totalSec = Math.max(Math.max(0, mins) * 60, activeSec);
+      const restSec = totalSec - activeSec;
+      const net = (appState.settings.calorieMode || 'active') !== 'total';
+      const base = net ? 1 : 0;
+      const kcal = w * restingFactor() * (Math.max(0, met - base) * activeSec + Math.max(0, REST_MET - base) * restSec) / 3600;
+      return { kcal: Math.max(1, Math.round(kcal)), activeSec: Math.round(activeSec), restSec: Math.round(restSec), net };
+    }
+    function calculateCalories(met, weightKg, mins, sets, reps, opt) {
+      return calorieBreakdown(met, weightKg, mins, sets, reps, opt).kcal;
+    }
+    function sessionCalories(mins) {
+      const w = appState.profile.weight > 0 ? appState.profile.weight : 70;
+      const base = (appState.settings.calorieMode || 'active') !== 'total' ? 1 : 0;
+      return Math.max(0, Math.round(w * restingFactor() * (SESSION_MET - base) * Math.max(0, mins) / 60));
+    }
+    function fmtSecs(sec) {
+      const m = Math.floor(sec / 60), r = sec % 60;
+      return m > 0 ? (r ? `${m}m ${r}s` : `${m}m`) : `${r}s`;
+    }
+    function isHoldEntry(l) {
+      if (l && l.hold === true) return true;
+      const ex = l && EXERCISE_LIB.find(e => e.name === l.name);
+      return !!(ex && ex.hold);
+    }
+    function repsLabel(l) { return isHoldEntry(l) ? `${l.reps} s` : `${l.reps} reps`; }
 
     function calculateStreak() {
       const active = new Set(Object.keys(appState.logs).filter(d => (appState.logs[d] || []).length > 0));
@@ -3474,7 +3543,7 @@
                   <h4 class="font-semibold text-xs text-[var(--text-primary)]">${l.name}</h4>
                   <span class="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-input)] text-[var(--text-muted)]">${l.category}</span>
                 </div>
-                <div class="text-[11px] text-[var(--text-muted)] mt-0.5">${l.sets} sets × ${l.reps} reps • ${l.mins} mins</div>
+                <div class="text-[11px] text-[var(--text-muted)] mt-0.5">${l.sets} sets × ${repsLabel(l)} • ${l.mins} mins</div>
               </div>
             </div>
             <div class="flex items-center gap-3">
@@ -3707,6 +3776,7 @@
       document.getElementById('stepper-sets').value = currentSelectedEx.defaultSets;
       document.getElementById('stepper-reps').value = currentSelectedEx.defaultReps;
       document.getElementById('stepper-mins').value = currentSelectedEx.defaultMins;
+      updateRepsLabel();
 
       renderLogCategoryPills();
       renderExercisePicker();
@@ -3720,6 +3790,7 @@
       const input = document.getElementById('custom-name-field');
       if (initialName) input.value = initialName;
       input.focus();
+      updateRepsLabel();
       renderLogCategoryPills();
       renderExercisePicker();
       updateLiveCalorieMath();
@@ -3738,17 +3809,28 @@
       updateLiveCalorieMath();
     }
 
-    function updateLiveCalorieMath() {
-      let met = currentSelectedEx.met;
+    function currentCalcOptions() {
       if (isCustomMode) {
-        met = Number(document.getElementById('custom-met-field')?.value) || 8.0;
+        const cat = document.getElementById('custom-cat-field')?.value || 'Push';
+        return { met: Number(document.getElementById('custom-met-field')?.value) || 7.0, tempo: TEMPO_BY_CAT[cat] || 2.8, hold: document.getElementById('custom-type-field')?.value === 'hold' };
       }
+      return { met: currentSelectedEx.met, tempo: currentSelectedEx.tempo || 2.8, hold: !!currentSelectedEx.hold };
+    }
+    function updateRepsLabel() {
+      const hold = currentCalcOptions().hold;
+      const l = document.getElementById('reps-label'), h = document.getElementById('reps-help');
+      if (l) l.textContent = hold ? 'Hold per Set (seconds)' : 'Reps per Set';
+      if (h) h.textContent = hold ? 'How long you hold, in seconds' : 'Repetitions';
+    }
+    function updateLiveCalorieMath() {
+      const o = currentCalcOptions();
       const sets = Number(document.getElementById('stepper-sets')?.value) || 1;
       const reps = Number(document.getElementById('stepper-reps')?.value) || 1;
       const mins = Number(document.getElementById('stepper-mins')?.value) || 1;
-      const cals = calculateCalories(met, appState.profile.weight, mins, sets, reps);
-      document.getElementById('log-calc-cals').textContent = cals;
-      document.getElementById('log-calc-sub').textContent = `Based on MET ${met} × ${appState.profile.weight > 0 ? appState.profile.weight + 'kg' : '70kg baseline'}`;
+      const r = calorieBreakdown(o.met, appState.profile.weight, mins, sets, reps, { tempo: o.tempo, hold: o.hold });
+      document.getElementById('log-calc-cals').textContent = r.kcal;
+      const wt = appState.profile.weight > 0 ? appState.profile.weight + ' kg' : '70 kg baseline';
+      document.getElementById('log-calc-sub').textContent = `${r.net ? 'Active calories' : 'Total calories'} · MET ${o.met} · ${wt} · about ${fmtSecs(r.activeSec)} of work + ${fmtSecs(r.restSec)} rest`;
     }
 
     function handleLogDateChange() {
@@ -3778,13 +3860,14 @@
         }
         exName = customTyped;
         exCat = document.getElementById('custom-cat-field')?.value || 'Push';
-        met = Number(document.getElementById('custom-met-field')?.value) || 8.0;
+        met = Number(document.getElementById('custom-met-field')?.value) || 7.0;
       }
 
       const sets = Number(document.getElementById('stepper-sets').value) || 1;
       const reps = Number(document.getElementById('stepper-reps').value) || 1;
       const mins = Number(document.getElementById('stepper-mins').value) || 1;
-      const cal = calculateCalories(met, appState.profile.weight, mins, sets, reps);
+      const co = currentCalcOptions();
+      const cal = calculateCalories(co.met, appState.profile.weight, mins, sets, reps, { tempo: co.tempo, hold: co.hold });
 
       if (!appState.logs[dateKey]) appState.logs[dateKey] = [];
       appState.logs[dateKey].unshift({
@@ -3795,6 +3878,7 @@
         reps,
         mins,
         cal,
+        hold: co.hold,
         date: dateKey
       });
 
@@ -3834,7 +3918,7 @@
               <div class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-center justify-center text-xs font-bold text-[var(--accent-text)]">${l.sets}x</div>
               <div>
                 <h4 class="font-semibold text-xs text-[var(--text-primary)]">${l.name}</h4>
-                <span class="text-[11px] text-[var(--text-muted)]">${l.sets} sets × ${l.reps} reps • ${l.mins} mins • ${l.category}</span>
+                <span class="text-[11px] text-[var(--text-muted)]">${l.sets} sets × ${repsLabel(l)} • ${l.mins} mins • ${l.category}</span>
               </div>
             </div>
             <div class="flex items-center gap-3">
@@ -3968,7 +4052,7 @@
           <div class="p-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-center justify-between gap-2">
             <div>
               <span class="text-xs font-semibold text-[var(--text-primary)] block">${l.name}</span>
-              <span class="text-[10px] text-[var(--text-muted)]">${l.sets} sets × ${l.reps} reps • ${l.mins}m</span>
+              <span class="text-[10px] text-[var(--text-muted)]">${l.sets} sets × ${repsLabel(l)} • ${l.mins}m</span>
             </div>
             <div class="flex items-center gap-2">
               <span class="font-mono text-xs font-semibold text-amber-400">${l.cal} kcal</span>
@@ -4319,6 +4403,10 @@
       ['sidebar', 'bottom', 'dock', 'center', 'tabs', 'rail', 'fab'].forEach(k => {
         const b = document.getElementById('navstyle-btn-' + k);
         if (b) b.className = (k === (appState.settings.navStyle || 'sidebar') ? selCls : offCls) + ' flex items-center gap-3';
+      });
+      ['active', 'total'].forEach(k => {
+        const b = document.getElementById('cal-btn-' + k);
+        if (b) b.className = k === (appState.settings.calorieMode || 'active') ? selCls : offCls;
       });
       ['auto', 'on', 'off'].forEach(k => {
         const b = document.getElementById('perf-btn-' + k);
@@ -4723,7 +4811,7 @@
           l.date,
           l.name,
           l.category,
-          `${l.sets} sets × ${l.reps} reps`,
+          `${l.sets} sets × ${repsLabel(l)}`,
           `${l.mins}m`,
           `+${l.cal} kcal`
         ]);
@@ -5015,7 +5103,7 @@
           <td class="font-semibold py-2 px-2">${l.date}</td>
           <td class="font-bold py-2 px-2 text-slate-800">${l.name}</td>
           <td class="py-2 px-2 text-slate-600">${l.category}</td>
-          <td class="py-2 px-2 text-slate-700">${l.sets} sets × ${l.reps} reps</td>
+          <td class="py-2 px-2 text-slate-700">${l.sets} sets × ${repsLabel(l)}</td>
           <td class="py-2 px-2 text-center text-slate-600">${l.mins}m</td>
           <td class="py-2 px-2 text-right font-mono font-bold text-amber-600">+${l.cal} kcal</td>
         </tr>
@@ -5306,7 +5394,7 @@
           const m = Math.floor(currentTotal / 60);
           const s = currentTotal % 60;
           document.getElementById('session-time-display').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-          const cals = calculateCalories(6.0, appState.profile.weight, currentTotal / 60, 0, 0);
+          const cals = sessionCalories(currentTotal / 60);
           document.getElementById('session-burn-estimate').innerHTML = `~${cals} <span class="text-xs font-normal text-[var(--text-muted)]">kcal</span>`;
         }, 500);
       }

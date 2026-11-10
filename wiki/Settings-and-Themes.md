@@ -63,6 +63,13 @@ In every style your Profile is one tap away on the avatar in the header. The And
 - **Smooth mode**: always on.
 - **Full effects**: always off.
 
+## Calorie count
+
+- **Active calories** (default): counts only the energy the exercise adds on top of resting.
+- **Include resting**: also counts the energy you burn at rest during the exercise.
+
+Workouts you already logged keep their saved numbers. See [Calorie Calculation](Calorie-Calculation).
+
 ## Timer and clock
 
 - **Clock Display Format:** switch between 12-hour AM/PM and 24-hour.

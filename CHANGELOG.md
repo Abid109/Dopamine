@@ -4,6 +4,18 @@ All notable changes to Dopamine are listed here.
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-11-09
+
+### Changed
+- **More accurate calorie count.** The estimate now works out how long you actually work (sets x reps x seconds per rep), counts the rest between sets at a light intensity, and by default shows active calories only (without your resting burn). Weight, height and age personalise it. Earlier versions counted the whole duration at full effort and added a bonus per repetition, which overstated typical workouts by about two to three times.
+- Exercise intensities were revised to match the 2024 Compendium of Physical Activities range. The custom intensity options are now Moderate 5.0, Standard 7.0, Vigorous 8.5 and High Explosive 10.0.
+- The estimate on the Log screen shows how it was worked out (work and rest time). The session stopwatch uses the same method.
+
+### Added
+- Timed holds: the Forearm Plank and Hollow Body Hold now take seconds, and custom exercises can be counted in seconds.
+- **Calorie Count** setting: Active calories (default) or Include resting.
+- Workouts you logged earlier keep their saved numbers.
+
 ## [1.7.0] - 2026-11-09
 
 ### Added

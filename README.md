@@ -24,7 +24,7 @@
 | Area | What you get |
 | --- | --- |
 | **Dashboard** | Today's sets, calories burned, streak, active time, lifetime burn, daily goal progress and a weekly burn chart. |
-| **Log Workout** | A built-in library of 18 calisthenics movements, or add your own custom exercise. Calories are estimated from your bodyweight. |
+| **Log Workout** | A built-in library of 18 calisthenics movements, or add your own custom exercise. Calories are estimated from your work time, rest, weight, height and age. |
 | **Calendar Planner** | Monthly calendar showing logged and planned days, with ready-made routine templates. |
 | **Notes & Journal** | Tagged training notes for cues, routines and reflections. |
 | **Profile & Bio** | Name, photo, age, weight, height, BMI rating, level, objective and daily targets. |
