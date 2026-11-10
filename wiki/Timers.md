@@ -22,3 +22,13 @@ A stopwatch for a whole workout.
 Time is measured with timestamps, so it stays accurate when you switch tabs.
 
 Saved session time counts towards **Active Time** on the [Dashboard](Dashboard) and towards your streak when it is longer than one minute.
+
+## Notifications
+
+Dopamine can alert you even when the app is in the background or the screen is off.
+
+- **Rest timer:** a notification fires when your rest ends. Pausing or resetting the timer cancels it.
+- **Session timer:** an ongoing notification shows while the stopwatch runs. Tap it to return to the stopwatch.
+- **Calendar:** adding a routine sends a confirmation straight away. If you set a reminder time on the routine, you also get a reminder at that time on the planned day. Routines that arrive through sync or Share & Receive are announced too.
+
+Turn everything on or off in **Settings** under Timer & Clock Behaviors. Android asks for notification permission the first time.

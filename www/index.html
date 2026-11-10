@@ -1076,6 +1076,10 @@
                   <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1">Exercises (one per line)</label>
                   <textarea id="plan-input-items" rows="3" placeholder="Pull-ups (3x8)&#10;Dips (3x10)&#10;Plank (3x60s)" class="w-full px-3 py-1.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] resize-none"></textarea>
                 </div>
+                <div>
+                  <label class="text-[11px] font-medium text-[var(--text-muted)] block mb-1">Reminder time (leave empty for no reminder)</label>
+                  <input type="time" id="plan-input-time" value="08:00" class="w-full px-3 py-1.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]" />
+                </div>
                 <button onclick="saveRoutinePlan()" class="w-full py-2 rounded-lg bg-[var(--accent)] text-black font-semibold text-xs hover:brightness-110 active:scale-95">Save Routine Plan</button>
               </div>
 
@@ -1524,6 +1528,13 @@
               </label>
               <div class="grid grid-cols-5 gap-2" id="settings-rest-presets"></div>
             </div>
+            <div class="flex items-center justify-between p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)]">
+              <div class="pr-3">
+                <span class="text-xs font-semibold text-[var(--text-primary)]">Notifications</span>
+                <p id="notify-sub" class="text-[11px] text-[var(--text-muted)] mt-0.5">Rest timer, workout session and calendar reminders</p>
+              </div>
+              <button onclick="toggleNotifications()" id="notify-toggle-btn" class="px-3 py-1.5 rounded-lg border border-[var(--border-strong)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] active:scale-95">Turn off</button>
+            </div>
           </div>
 
           <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
@@ -1834,7 +1845,7 @@
     // Default application state
     const DEFAULT_DATA = {
       profile: { name: '', age: 0, weight: 0, height: 0, calGoal: 500, exGoal: 4, level: 'Beginner', goal: 'Muscle & Strength', weeklyWorkoutGoal: 4, dailyMinutesGoal: 30, targetWeight: 0, avatarUrl: '' },
-      settings: { theme: 'dark', accent: 'amber', fontSize: 'comfortable', showChart: true, restDefault: 60, soundOn: true, clock24h: false, navStyle: 'sidebar', perfMode: 'auto', calorieMode: 'active' },
+      settings: { theme: 'dark', accent: 'amber', fontSize: 'comfortable', showChart: true, restDefault: 60, soundOn: true, clock24h: false, navStyle: 'sidebar', perfMode: 'auto', calorieMode: 'active', notifyOn: true },
       logs: {},
       plans: {},
       notes: [],
@@ -2332,7 +2343,8 @@
         Object.keys(data.plans).forEach(date => {
           if (!dateRe.test(date) || !Array.isArray(data.plans[date])) return;
           const arr = data.plans[date].slice(0, 100).map(p => (p && typeof p === 'object' && p.id && p.name) ? {
-            id: str(p.id, 60), name: str(p.name, 100), items: str(p.items, 4000), completed: !!p.completed
+            id: str(p.id, 60), name: str(p.name, 100), items: str(p.items, 4000), completed: !!p.completed,
+            time: /^([01]\d|2[0-3]):[0-5]\d$/.test(p.time || '') ? p.time : ''
           } : null).filter(Boolean);
           if (arr.length) out.plans[date] = arr;
         });
@@ -2768,6 +2780,7 @@
       if (added.notes) bits.push(added.notes + ' notes');
       if (added.other) bits.push('other items');
       showToast('Imported ' + bits.join(', '), 3500);
+      if (added.plans) { notifyPlansAdded(added.plans); syncPlanReminders(); }
       renderShareTab();
       updateSidebarBadges();
     }
@@ -3204,6 +3217,7 @@
     }
     function acctApplyMerged(m) {
       const before = DopSync.stable(localSyncView());
+      const planIdsBefore = new Set(); Object.values(appState.plans || {}).forEach(a => (a || []).forEach(p => planIdsBefore.add(p.id)));
       acct.applying = true;
       try {
         appState.profile = Object.assign({}, DEFAULT_DATA.profile, m.profile);
@@ -3212,6 +3226,9 @@
         appState.sessionTimes = m.sessionTimes; appState.deleted = m.deleted;
         saveState();
       } finally { acct.applying = false; }
+      let newPlans = 0; Object.values(appState.plans || {}).forEach(a => (a || []).forEach(p => { if (!planIdsBefore.has(p.id)) newPlans++; }));
+      if (newPlans && planIdsBefore.size) notifyPlansAdded(newPlans);
+      syncPlanReminders();
       if (DopSync.stable(localSyncView()) !== before) acctRefreshViews();
     }
     async function syncNow(manual) {
@@ -4025,7 +4042,7 @@
             <div class="flex items-center justify-between">
               <button onclick="togglePlanCheck('${calSelectedDateKey}', '${p.id}')" class="flex items-center gap-2 text-left">
                 <i data-lucide="${p.completed ? 'check-circle-2' : 'circle'}" class="w-4 h-4 ${p.completed ? 'text-emerald-400' : 'text-[var(--text-muted)]'}"></i>
-                <span class="text-xs font-bold ${p.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">${p.name}</span>
+                <span class="text-xs font-bold ${p.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">${p.name}${p.time ? ' <span class="font-mono font-normal text-[10px] text-[var(--text-muted)]">· ' + p.time + '</span>' : ''}</span>
               </button>
               <button onclick="deleteRoutinePlan('${calSelectedDateKey}', '${p.id}')" class="text-[var(--text-dim)] hover:text-red-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
             </div>
@@ -4088,8 +4105,13 @@
       const items = (document.getElementById('plan-input-items')?.value || '').trim();
       if (!name) { showToast('Please enter a routine name.'); return; }
       if (!appState.plans[calSelectedDateKey]) appState.plans[calSelectedDateKey] = [];
-      appState.plans[calSelectedDateKey].push({ id: 'plan-' + Date.now(), name, items, completed: false });
+      const timeEl = document.getElementById('plan-input-time');
+      const time = /^([01]\d|2[0-3]):[0-5]\d$/.test(timeEl ? timeEl.value : '') ? timeEl.value : '';
+      const newPlan = { id: 'plan-' + Date.now(), name, items, completed: false, time };
+      appState.plans[calSelectedDateKey].push(newPlan);
       saveState();
+      notifyPlanAdded(calSelectedDateKey, newPlan);
+      syncPlanReminders();
       document.getElementById('plan-input-name').value = '';
       document.getElementById('plan-input-items').value = '';
       document.getElementById('cal-plan-form-box').classList.add('hidden');
@@ -4101,6 +4123,7 @@
       if (!appState.plans[dateKey]) return;
       appState.plans[dateKey] = appState.plans[dateKey].map(p => p.id === planId ? { ...p, completed: !p.completed, u: Date.now() } : p);
       saveState();
+      syncPlanReminders();
       renderCalendarTab();
     }
 
@@ -4109,6 +4132,7 @@
       markDeleted(planId);
       appState.plans[dateKey] = appState.plans[dateKey].filter(p => p.id !== planId);
       saveState();
+      syncPlanReminders();
       renderCalendarTab();
       showToast('Scheduled routine removed.');
     }
@@ -4388,6 +4412,7 @@
       `).join('');
       document.getElementById('clock-format-sub').textContent = `Currently: ${appState.settings.clock24h ? '24-Hour (14:30)' : '12-Hour AM/PM (2:30 PM)'}`;
       document.getElementById('clock-toggle-btn').textContent = `Switch to ${appState.settings.clock24h ? '12h' : '24h'}`;
+      updateNotifyUi();
 
       const curTheme = appState.settings.theme || 'dark';
       const curAccent = appState.settings.accent || 'amber';
@@ -5296,6 +5321,185 @@
       }
     }
 
+
+    // ==========================================
+    // NOTIFICATIONS (Capacitor Local Notifications)
+    // ==========================================
+    const NOTIF_ID = { rest: 1001, session: 1002, info: 1003 };
+    const PLAN_ID_BASE = 100000;
+    let notifReady = null;
+
+    function notifPlugin() {
+      try { return isNativeApp() && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications || null; } catch (e) { return null; }
+    }
+    function notifEnabled() { return appState.settings.notifyOn !== false; }
+
+    // Sets up channels and permission once. Resolves true when notifications may be shown.
+    function notifInit(askPermission) {
+      const LN = notifPlugin();
+      if (!LN) return Promise.resolve(false);
+      if (notifReady && !askPermission) return notifReady;
+      notifReady = (async () => {
+        try {
+          await LN.createChannel({ id: 'timers', name: 'Timers', description: 'Rest timer alerts', importance: 5, visibility: 1, vibration: true });
+          await LN.createChannel({ id: 'session', name: 'Workout session', description: 'Shown while the session stopwatch runs', importance: 2, visibility: 1, vibration: false });
+          await LN.createChannel({ id: 'calendar', name: 'Calendar', description: 'Routine reminders and new calendar entries', importance: 4, visibility: 1, vibration: true });
+        } catch (e) { }
+        try {
+          let perm = await LN.checkPermissions();
+          if (perm.display !== 'granted' && askPermission !== false) perm = await LN.requestPermissions();
+          return perm.display === 'granted';
+        } catch (e) { return false; }
+      })();
+      return notifReady;
+    }
+
+    function notifIdForPlan(planId) {
+      let h = 5381;
+      const str = String(planId);
+      for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+      return PLAN_ID_BASE + (Math.abs(h) % 2000000000);
+    }
+
+    async function notifyAt(id, channelId, title, body, at, extra) {
+      if (!notifEnabled()) return;
+      const LN = notifPlugin(); if (!LN) return;
+      if (!(await notifInit())) return;
+      try {
+        await LN.cancel({ notifications: [{ id }] });
+        await LN.schedule({ notifications: [{ id, title, body, channelId, extra: extra || {}, schedule: { at, allowWhileIdle: true } }] });
+      } catch (e) { console.warn('notify schedule failed', e); }
+    }
+    async function notifyNow(id, channelId, title, body, extra, ongoing) {
+      if (!notifEnabled()) return;
+      const LN = notifPlugin(); if (!LN) return;
+      if (!(await notifInit())) return;
+      try {
+        await LN.schedule({ notifications: [{ id, title, body, channelId, extra: extra || {}, ongoing: !!ongoing, autoCancel: !ongoing }] });
+      } catch (e) { console.warn('notify failed', e); }
+    }
+    async function notifyCancel(id) {
+      const LN = notifPlugin(); if (!LN) return;
+      try { await LN.cancel({ notifications: [{ id }] }); } catch (e) { }
+    }
+    async function notifyCancelAll() {
+      const LN = notifPlugin(); if (!LN) return;
+      try {
+        const pending = await LN.getPending();
+        if (pending.notifications && pending.notifications.length) await LN.cancel({ notifications: pending.notifications.map(n => ({ id: n.id })) });
+        await LN.removeAllDeliveredNotifications();
+      } catch (e) { }
+    }
+
+    function planWhen(dateKey, time) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(time || '')) return null;
+      const [y, m, d] = dateKey.split('-').map(Number);
+      const [hh, mm] = time.split(':').map(Number);
+      return new Date(y, m - 1, d, hh, mm, 0, 0);
+    }
+
+    // Tells the user right away that something was added to the calendar
+    function notifyPlanAdded(dateKey, plan) {
+      const when = plan.time ? ` at ${plan.time}` : '';
+      const reminder = planWhen(dateKey, plan.time) && planWhen(dateKey, plan.time) > new Date() ? ' We will remind you.' : '';
+      notifyNow(NOTIF_ID.info + 10 + (Date.now() % 1000), 'calendar', 'Added to your calendar', `${plan.name} on ${dateKey}${when}.${reminder}`, { open: 'calendar', date: dateKey });
+    }
+    function notifyPlansAdded(count) {
+      notifyNow(NOTIF_ID.info, 'calendar', 'Calendar updated', `${count} new routine${count === 1 ? '' : 's'} added to your calendar.`, { open: 'calendar' });
+    }
+
+    // Makes the scheduled reminders match the plans stored on the phone
+    let planRemindTimer = null;
+    function syncPlanReminders() {
+      if (planRemindTimer) clearTimeout(planRemindTimer);
+      planRemindTimer = setTimeout(async () => {
+        planRemindTimer = null;
+        const LN = notifPlugin(); if (!LN) return;
+        try {
+          const pending = await LN.getPending();
+          const old = (pending.notifications || []).filter(n => n.id >= PLAN_ID_BASE).map(n => ({ id: n.id }));
+          if (old.length) await LN.cancel({ notifications: old });
+          if (!notifEnabled()) return;
+          const now = Date.now(), list = [];
+          Object.keys(appState.plans || {}).forEach(dateKey => {
+            (appState.plans[dateKey] || []).forEach(p => {
+              if (!p || p.completed) return;
+              const at = planWhen(dateKey, p.time);
+              if (!at || at.getTime() <= now + 5000) return;
+              const lines = String(p.items || '').split('\n').map(x => x.trim()).filter(Boolean);
+              list.push({
+                id: notifIdForPlan(p.id), channelId: 'calendar',
+                title: `Time to train: ${p.name}`,
+                body: lines.length ? lines.slice(0, 4).join(', ') + (lines.length > 4 ? '...' : '') : 'Your planned routine is ready.',
+                extra: { open: 'calendar', date: dateKey },
+                schedule: { at, allowWhileIdle: true }
+              });
+            });
+          });
+          if (list.length && (await notifInit())) await LN.schedule({ notifications: list.slice(0, 60) });
+        } catch (e) { console.warn('plan reminders failed', e); }
+      }, 400);
+    }
+
+    function updateNotifyUi() {
+      const btn = document.getElementById('notify-toggle-btn'), sub = document.getElementById('notify-sub');
+      if (!btn || !sub) return;
+      const on = notifEnabled();
+      btn.textContent = on ? 'Turn off' : 'Turn on';
+      sub.textContent = !isNativeApp() ? 'Available in the Android app'
+        : on ? 'On: rest timer, workout session and calendar reminders' : 'Off: no alerts will be shown';
+    }
+    async function toggleNotifications() {
+      if (notifEnabled()) {
+        appState.settings.notifyOn = false;
+        saveState();
+        await notifyCancelAll();
+        updateNotifyUi();
+        showToast('Notifications turned off');
+        return;
+      }
+      appState.settings.notifyOn = true;
+      saveState();
+      updateNotifyUi();
+      if (!isNativeApp()) { showToast('Notifications work in the Android app'); return; }
+      const ok = await notifInit(true);
+      if (!ok) {
+        appState.settings.notifyOn = false; saveState(); updateNotifyUi();
+        showToast('Allow notifications for Dopamine in Android settings', 4000);
+        return;
+      }
+      syncPlanReminders();
+      showToast('Notifications turned on');
+    }
+
+    function handleNotificationTap(extra) {
+      extra = extra || {};
+      if (extra.open === 'rest') { navigate('dashboard', false); openRestModal(); }
+      else if (extra.open === 'session') { navigate('dashboard', false); openSessionModal(); }
+      else if (extra.open === 'calendar') {
+        navigate('calendar');
+        if (extra.date && /^\d{4}-\d{2}-\d{2}$/.test(extra.date)) { try { calSelectedDateKey = extra.date; renderCalendarTab(); } catch (e) { } }
+      }
+    }
+    function setupNotifications() {
+      const LN = notifPlugin();
+      if (!LN) { updateNotifyUi(); return; }
+      try { LN.addListener('localNotificationActionPerformed', ev => handleNotificationTap(ev && ev.notification && ev.notification.extra)); } catch (e) { }
+      if (notifEnabled()) notifInit(true).then(ok => { if (ok) syncPlanReminders(); });
+      updateNotifyUi();
+    }
+
+    // The WebView is paused in the background, so catch up the moment the app returns
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) return;
+      restTick();
+      if (sessionRunning && sessionStartTime) {
+        const t = sessionAccumulatedSec + Math.floor((Date.now() - sessionStartTime) / 1000);
+        const el = document.getElementById('session-time-display');
+        if (el) el.textContent = `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+      }
+    });
+
     // REST COUNTDOWN TIMER
     let restInterval = null;
     let restTotalSec = 60;
@@ -5311,39 +5515,56 @@
     function setRestDuration(sec) {
       restTotalSec = sec;
       restRemainingSec = sec;
+      if (restRunning) { restEndAt = Date.now() + sec * 1000; notifyAt(NOTIF_ID.rest, 'timers', 'Rest is over', 'Time for your next set.', new Date(restEndAt), { open: 'rest' }); }
       updateRestUi();
     }
     function stepRestSec(delta) {
+      if (restRunning) restTick();
       restRemainingSec = Math.max(5, restRemainingSec + delta);
       if (restRemainingSec > restTotalSec) restTotalSec = restRemainingSec;
+      if (restRunning) { restEndAt = Date.now() + restRemainingSec * 1000; notifyAt(NOTIF_ID.rest, 'timers', 'Rest is over', 'Time for your next set.', new Date(restEndAt), { open: 'rest' }); }
       updateRestUi();
+    }
+    let restEndAt = 0;
+    function restTick() {
+      if (!restRunning) return;
+      restRemainingSec = Math.max(0, Math.ceil((restEndAt - Date.now()) / 1000));
+      updateRestUi();
+      if (restRemainingSec <= 0) restFinish();
+    }
+    function restFinish() {
+      clearInterval(restInterval);
+      restRunning = false;
+      restRemainingSec = 0;
+      updateRestUi();
+      if (!document.hidden) { notifyCancel(NOTIF_ID.rest); playRestChime(); }
+      document.getElementById('rest-countdown-sub').textContent = 'Rest Complete!';
+      document.getElementById('rest-play-btn').querySelector('span').textContent = 'Restart';
     }
     function toggleRestCountdown() {
       if (restRunning) {
+        restTick();
+        if (!restRunning) return;
         clearInterval(restInterval);
         restRunning = false;
+        notifyCancel(NOTIF_ID.rest);
         document.getElementById('rest-play-btn').querySelector('span').textContent = 'Resume';
         document.getElementById('rest-countdown-sub').textContent = 'Paused';
       } else {
+        if (restRemainingSec <= 0) restRemainingSec = restTotalSec;
         restRunning = true;
+        restEndAt = Date.now() + restRemainingSec * 1000;
         document.getElementById('rest-play-btn').querySelector('span').textContent = 'Pause';
         document.getElementById('rest-countdown-sub').textContent = 'Resting...';
-        restInterval = setInterval(() => {
-          restRemainingSec--;
-          updateRestUi();
-          if (restRemainingSec <= 0) {
-            clearInterval(restInterval);
-            restRunning = false;
-            playRestChime();
-            document.getElementById('rest-countdown-sub').textContent = 'Rest Complete!';
-            document.getElementById('rest-play-btn').querySelector('span').textContent = 'Restart';
-          }
-        }, 1000);
+        notifyAt(NOTIF_ID.rest, 'timers', 'Rest is over', 'Time for your next set.', new Date(restEndAt), { open: 'rest' });
+        restInterval = setInterval(restTick, 250);
+        updateRestUi();
       }
     }
     function resetRestCountdown() {
       clearInterval(restInterval);
       restRunning = false;
+      notifyCancel(NOTIF_ID.rest);
       restRemainingSec = restTotalSec;
       document.getElementById('rest-play-btn').querySelector('span').textContent = 'Start';
       document.getElementById('rest-countdown-sub').textContent = 'Ready';
@@ -5380,12 +5601,14 @@
           sessionAccumulatedSec += Math.floor((Date.now() - sessionStartTime) / 1000);
           sessionStartTime = null;
         }
+        notifyCancel(NOTIF_ID.session);
         document.getElementById('session-action-btn').querySelector('span').textContent = 'Resume';
         document.getElementById('session-status-text').textContent = 'Paused';
         document.getElementById('session-dot').className = 'w-2 h-2 rounded-full bg-amber-400';
       } else {
         sessionRunning = true;
         sessionStartTime = Date.now();
+        notifyNow(NOTIF_ID.session, 'session', 'Workout session running', 'Started at ' + new Date(sessionStartTime - sessionAccumulatedSec * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '. Tap to open the stopwatch.', { open: 'session' }, true);
         document.getElementById('session-action-btn').querySelector('span').textContent = 'Pause';
         document.getElementById('session-status-text').textContent = 'Active Recording';
         document.getElementById('session-dot').className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
@@ -5401,6 +5624,7 @@
     }
     function resetSessionTimer() {
       clearInterval(sessionInterval);
+      notifyCancel(NOTIF_ID.session);
       sessionRunning = false;
       sessionAccumulatedSec = 0;
       sessionStartTime = null;
@@ -5466,6 +5690,7 @@
 
       navigate(validTab, false);
       setupNativeBackButton();
+      setupNotifications();
       acctInit();
     });
   </script>
