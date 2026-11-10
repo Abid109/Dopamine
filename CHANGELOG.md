@@ -4,6 +4,16 @@ All notable changes to Dopamine are listed here.
 
 ## [Unreleased]
 
+### Changed
+- **Silent notifications.** All alerts (rest timer, workout session, calendar) now arrive quietly: low priority, no sound, no vibration. Older loud channels are removed on first launch.
+- Notifications show the Dopamine icon (status bar glyph and large icon).
+- The floating dock is now the default navigation style for new installs. Your saved choice is kept.
+- Settings are grouped into tabs: Visual & Style, Timers & Alerts, Backup & Data and Privacy.
+
+### Added
+- **Full-screen reminders.** Reminders set in Calendar and Planning open a full screen (also over the lock screen) with a Dismiss button. Android 14 and later may ask you to allow full-screen alerts in Settings. Native code is in `android-native/` and is added by the build workflow.
+- **Privacy details** section in Settings that explains what is stored, what leaves the phone, permissions and how to delete data.
+
 ## [1.8.0] - 2026-11-09
 
 ### Changed

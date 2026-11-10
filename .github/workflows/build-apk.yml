@@ -79,6 +79,30 @@ jobs:
           sed -i 's|<application|<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />\n    <uses-permission android:name="android.permission.WAKE_LOCK" />\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />\n    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />\n    <application|' $MF
           grep -n "NOTIFICATIONS\|EXACT_ALARM" $MF
 
+      - name: Add full-screen reminder (native)
+        run: |
+          APP=android/app/src/main
+          PKG=$APP/java/com/dopamine/fitness
+          MF=$APP/AndroidManifest.xml
+          cp android-native/java/*.java $PKG/
+          cat > $PKG/MainActivity.java <<'JAVA'
+          package com.dopamine.fitness;
+
+          import android.os.Bundle;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  registerPlugin(DopamineReminderPlugin.class);
+                  super.onCreate(savedInstanceState);
+              }
+          }
+          JAVA
+          sed -i 's|<application|<uses-permission android:name=\"android.permission.USE_FULL_SCREEN_INTENT\" />\n    <application|' $MF
+          sed -i 's|</application>|    <activity android:name=\".ReminderActivity\" android:exported=\"false\" android:showWhenLocked=\"true\" android:turnScreenOn=\"true\" android:excludeFromRecents=\"true\" android:launchMode=\"singleTask\" android:taskAffinity=\"\" />\n        <receiver android:name=\".ReminderReceiver\" android:exported=\"false\" />\n        <receiver android:name=\".ReminderDismissReceiver\" android:exported=\"false\" />\n    </application>|' $MF
+          grep -n "FULL_SCREEN\|Reminder" $MF
+
       - name: Sign with the permanent key
         run: |
           cat >> android/app/build.gradle <<EOF

@@ -22,7 +22,7 @@
         _h.setAttribute('data-theme', _p.theme || 'dark');
         _h.setAttribute('data-accent', _p.accent || 'amber');
         _h.setAttribute('data-font-size', _p.fontSize || 'comfortable');
-        _h.setAttribute('data-nav', _p.navStyle || 'sidebar');
+        _h.setAttribute('data-nav', _p.navStyle || 'dock');
         var _low = ((navigator.deviceMemory || 4) <= 3) || ((navigator.hardwareConcurrency || 4) <= 4);
         _h.setAttribute('data-perf', (_p.perfMode === 'on' || (_p.perfMode !== 'off' && _low)) ? 'on' : 'off');
       }
@@ -1339,9 +1339,16 @@
         </div>
       </div>
 
+      <div id="settings-tabbar" class="flex gap-2 overflow-x-auto pb-1" role="tablist">
+        <button onclick="setSettingsTab('visual')" id="stab-btn-visual" role="tab" class="px-4 py-2 rounded-xl border text-xs font-semibold whitespace-nowrap">Visual &amp; Style</button>
+        <button onclick="setSettingsTab('alerts')" id="stab-btn-alerts" role="tab" class="px-4 py-2 rounded-xl border text-xs font-semibold whitespace-nowrap">Timers &amp; Alerts</button>
+        <button onclick="setSettingsTab('data')" id="stab-btn-data" role="tab" class="px-4 py-2 rounded-xl border text-xs font-semibold whitespace-nowrap">Backup &amp; Data</button>
+        <button onclick="setSettingsTab('privacy')" id="stab-btn-privacy" role="tab" class="px-4 py-2 rounded-xl border text-xs font-semibold whitespace-nowrap">Privacy</button>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Visual Styling -->
-        <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-6">
+        <div data-stab="visual" class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-6">
           <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--accent)]"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"></path><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle></svg> Visual Styling
           </h2>
@@ -1438,7 +1445,7 @@
         </div>
 
         <!-- Navigation & Performance -->
-        <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-6">
+        <div data-stab="visual" class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-6">
           <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--accent)]"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg> Navigation &amp; Speed
           </h2>
@@ -1493,7 +1500,7 @@
         </div>
 
         <!-- Calories -->
-        <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3">
+        <div data-stab="alerts" class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3">
           <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--accent)]"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg> Calorie Count
           </h2>
@@ -1509,8 +1516,8 @@
         </div>
 
         <!-- Timers, Backup & System Storage -->
-        <div class="space-y-6">
-          <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-6">
+        <div class="contents">
+          <div data-stab="alerts" class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-6">
             <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--accent)]"><path d="M12 6v6l4 2"></path><circle cx="12" cy="12" r="10"></circle></svg> Timer & Clock Behaviors
             </h2>
@@ -1535,9 +1542,16 @@
               </div>
               <button onclick="toggleNotifications()" id="notify-toggle-btn" class="px-3 py-1.5 rounded-lg border border-[var(--border-strong)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] active:scale-95">Turn off</button>
             </div>
+            <div id="fs-perm-row" class="hidden flex items-center justify-between p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)]">
+              <div class="pr-3">
+                <span class="text-xs font-semibold text-[var(--text-primary)]">Full-screen reminders</span>
+                <p id="fs-perm-sub" class="text-[11px] text-[var(--text-muted)] mt-0.5">Planner and calendar reminders open a full screen with a Dismiss button</p>
+              </div>
+              <button onclick="allowFullScreenReminders()" id="fs-perm-btn" class="px-3 py-1.5 rounded-lg border border-[var(--border-strong)] text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] active:scale-95">Allow</button>
+            </div>
           </div>
 
-          <div class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
+          <div data-stab="data" class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4">
             <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--accent)]"><line x1="22" x2="2" y1="12" y2="12"></line><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path><line x1="6" x2="6.01" y1="16" y2="16"></line><line x1="10" x2="10.01" y1="16" y2="16"></line></svg> Local Data & Export
             </h2>
@@ -1564,6 +1578,31 @@
               </button>
             </div>
           </div>
+        </div>
+        <div data-stab="privacy" class="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-3 md:col-span-2">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)]">Privacy details</h2>
+          <p class="text-[11px] text-[var(--text-muted)]">Tap a topic to see exactly what the app does with your data. Dopamine keeps your fitness data on your phone.</p>
+          <details class="rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] p-3">
+            <summary class="text-xs font-semibold text-[var(--text-primary)] cursor-pointer">What the app stores</summary>
+            <div class="text-[11px] leading-relaxed text-[var(--text-muted)] mt-2 space-y-1.5"><p>Your profile, workout logs, plans, notes, timers and settings are saved in the app storage on your phone, including an optional profile photo.</p></div>
+          </details>
+          <details class="rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] p-3">
+            <summary class="text-xs font-semibold text-[var(--text-primary)] cursor-pointer">What the app does not do</summary>
+            <div class="text-[11px] leading-relaxed text-[var(--text-muted)] mt-2 space-y-1.5"><p>No analytics, advertising or tracking. No account is required. The developer does not read your data.</p></div>
+          </details>
+          <details class="rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] p-3">
+            <summary class="text-xs font-semibold text-[var(--text-primary)] cursor-pointer">When data leaves your phone</summary>
+            <div class="text-[11px] leading-relaxed text-[var(--text-muted)] mt-2 space-y-1.5"><p><b>Sign in and sync (optional):</b> if you sign in with an email on the Profile page, a copy of your profile, settings, workout logs, plans, notes and workout time is stored in a private cloud database (Supabase) so your devices stay in sync. Each user can only read and change their own row. A very large profile photo stays on the device. Signing out stops syncing.</p><p><b>Share &amp; Receive:</b> you choose what to include and how to send it. <b>PDF report and JSON backup:</b> created on your phone and shared only by you.</p></div>
+          </details>
+          <details class="rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] p-3">
+            <summary class="text-xs font-semibold text-[var(--text-primary)] cursor-pointer">Permissions</summary>
+            <div class="text-[11px] leading-relaxed text-[var(--text-muted)] mt-2 space-y-1.5"><p><b>Camera:</b> only on the QR scanning screen while it is open. Images are never saved or sent.</p><p><b>Notifications and full-screen reminders:</b> used only to show your timers and the reminders you set in Calendar and Planning. They are created on your phone.</p><p><b>Internet:</b> used for page styling, fonts, the PDF library and optional sign in and sync. No personal data is included in styling requests.</p></div>
+          </details>
+          <details class="rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] p-3">
+            <summary class="text-xs font-semibold text-[var(--text-primary)] cursor-pointer">Deleting your data</summary>
+            <div class="text-[11px] leading-relaxed text-[var(--text-muted)] mt-2 space-y-1.5"><p>Delete your cloud backup from <b>Profile</b>, then <b>Delete my cloud backup</b>. Use <b>Backup &amp; Data, Reset All Data</b> to erase everything the app stores. Uninstalling the app removes all stored data.</p></div>
+          </details>
+          <a href="https://github.com/Abid109/Dopamine/blob/main/PRIVACY.md" target="_blank" rel="noopener" class="inline-block text-xs font-semibold text-[var(--accent-text)] hover:underline pt-1">Read the full privacy policy</a>
         </div>
       </div>
     </div>
@@ -1845,7 +1884,7 @@
     // Default application state
     const DEFAULT_DATA = {
       profile: { name: '', age: 0, weight: 0, height: 0, calGoal: 500, exGoal: 4, level: 'Beginner', goal: 'Muscle & Strength', weeklyWorkoutGoal: 4, dailyMinutesGoal: 30, targetWeight: 0, avatarUrl: '' },
-      settings: { theme: 'dark', accent: 'amber', fontSize: 'comfortable', showChart: true, restDefault: 60, soundOn: true, clock24h: false, navStyle: 'sidebar', perfMode: 'auto', calorieMode: 'active', notifyOn: true },
+      settings: { theme: 'dark', accent: 'amber', fontSize: 'comfortable', showChart: true, restDefault: 60, soundOn: true, clock24h: false, navStyle: 'dock', perfMode: 'auto', calorieMode: 'active', notifyOn: true },
       logs: {},
       plans: {},
       notes: [],
@@ -2116,7 +2155,7 @@
     }
     function renderNav() {
       navEnsure();
-      const style = (appState.settings && appState.settings.navStyle) || 'sidebar';
+      const style = (appState.settings && appState.settings.navStyle) || 'dock';
       const $ = id => document.getElementById(id);
       ['nav-bottom', 'nav-tabs', 'nav-rail', 'nav-fab'].forEach(id => { $(id).innerHTML = ''; });
       navCloseSheet();
@@ -4404,7 +4443,21 @@
     }
 
     // SETTINGS TAB RENDERING & ACTIONS
+    let settingsTabKey = 'visual';
+    function setSettingsTab(k) { settingsTabKey = k; applySettingsTab(); }
+    function applySettingsTab() {
+      document.querySelectorAll('#tab-settings [data-stab]').forEach(el => el.classList.toggle('hidden', el.getAttribute('data-stab') !== settingsTabKey));
+      ['visual', 'alerts', 'data', 'privacy'].forEach(k => {
+        const b = document.getElementById('stab-btn-' + k); if (!b) return;
+        const on = k === settingsTabKey;
+        b.className = 'px-4 py-2 rounded-xl border text-xs font-semibold whitespace-nowrap ' + (on
+          ? 'bg-[var(--accent-glow)] border-[var(--accent)] text-[var(--text-primary)] ring-1 ring-[var(--accent)]'
+          : 'bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]');
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+    }
     function renderSettingsTab() {
+      applySettingsTab();
       const presets = [30, 45, 60, 90, 120];
       document.getElementById('settings-rest-readout').textContent = `${appState.settings.restDefault}s`;
       document.getElementById('settings-rest-presets').innerHTML = presets.map(s => `
@@ -4413,6 +4466,7 @@
       document.getElementById('clock-format-sub').textContent = `Currently: ${appState.settings.clock24h ? '24-Hour (14:30)' : '12-Hour AM/PM (2:30 PM)'}`;
       document.getElementById('clock-toggle-btn').textContent = `Switch to ${appState.settings.clock24h ? '12h' : '24h'}`;
       updateNotifyUi();
+      updateFullScreenUi();
 
       const curTheme = appState.settings.theme || 'dark';
       const curAccent = appState.settings.accent || 'amber';
@@ -4427,7 +4481,7 @@
       const offCls = 'p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]';
       ['sidebar', 'bottom', 'dock', 'center', 'tabs', 'rail', 'fab'].forEach(k => {
         const b = document.getElementById('navstyle-btn-' + k);
-        if (b) b.className = (k === (appState.settings.navStyle || 'sidebar') ? selCls : offCls) + ' flex items-center gap-3';
+        if (b) b.className = (k === (appState.settings.navStyle || 'dock') ? selCls : offCls) + ' flex items-center gap-3';
       });
       ['active', 'total'].forEach(k => {
         const b = document.getElementById('cal-btn-' + k);
@@ -4457,7 +4511,7 @@
       h.setAttribute('data-theme', st.theme || 'dark');
       h.setAttribute('data-accent', st.accent || 'amber');
       h.setAttribute('data-font-size', st.fontSize || 'comfortable');
-      h.setAttribute('data-nav', st.navStyle || 'sidebar');
+      h.setAttribute('data-nav', st.navStyle || 'dock');
       h.setAttribute('data-perf', resolvePerf(st.perfMode || 'auto'));
     }
     function setAppTheme(t) {
@@ -5329,8 +5383,30 @@
     const PLAN_ID_BASE = 100000;
     let notifReady = null;
 
+    // Every notification is silent and shows the app icon
+    const NOTIF_ICON = { smallIcon: 'ic_stat_icon', largeIcon: 'ic_notif_large', iconColor: '#F59E0B' };
+    function chId(c) { return String(c).replace(/_silent$/, '') + '_silent'; }
     function notifPlugin() {
       try { return isNativeApp() && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications || null; } catch (e) { return null; }
+    }
+    // Native full-screen reminder plugin (see android-native/). Null in the browser or when missing.
+    function fsPlugin() {
+      try { return isNativeApp() && window.Capacitor.Plugins && window.Capacitor.Plugins.DopamineReminder || null; } catch (e) { return null; }
+    }
+    async function updateFullScreenUi() {
+      const row = document.getElementById('fs-perm-row'); if (!row) return;
+      const P = fsPlugin();
+      if (!P) { row.classList.add('hidden'); return; }
+      row.classList.remove('hidden');
+      let ok = true;
+      try { ok = (await P.canFullScreen()).value !== false; } catch (e) { }
+      const btn = document.getElementById('fs-perm-btn'), sub = document.getElementById('fs-perm-sub');
+      if (btn) btn.classList.toggle('hidden', ok);
+      if (sub) sub.textContent = ok ? 'On: calendar and planner reminders open a full screen with a Dismiss button' : 'Off: allow it so reminders can open over your screen';
+    }
+    async function allowFullScreenReminders() {
+      const P = fsPlugin(); if (!P) return;
+      try { await P.openFullScreenSettings(); } catch (e) { }
     }
     function notifEnabled() { return appState.settings.notifyOn !== false; }
 
@@ -5341,9 +5417,11 @@
       if (notifReady && !askPermission) return notifReady;
       notifReady = (async () => {
         try {
-          await LN.createChannel({ id: 'timers', name: 'Timers', description: 'Rest timer alerts', importance: 5, visibility: 1, vibration: true });
-          await LN.createChannel({ id: 'session', name: 'Workout session', description: 'Shown while the session stopwatch runs', importance: 2, visibility: 1, vibration: false });
-          await LN.createChannel({ id: 'calendar', name: 'Calendar', description: 'Routine reminders and new calendar entries', importance: 4, visibility: 1, vibration: true });
+          // Older channels were loud (sound and vibration). Android cannot edit a channel, so replace them with silent ones.
+          for (const old of ['timers', 'session', 'calendar']) { try { await LN.deleteChannel({ id: old }); } catch (e) { } }
+          await LN.createChannel({ id: 'timers_silent', name: 'Timers', description: 'Rest timer alerts (silent)', importance: 2, visibility: 1, vibration: false });
+          await LN.createChannel({ id: 'session_silent', name: 'Workout session', description: 'Shown while the session stopwatch runs (silent)', importance: 2, visibility: 1, vibration: false });
+          await LN.createChannel({ id: 'calendar_silent', name: 'Calendar', description: 'Routine reminders and new calendar entries (silent)', importance: 2, visibility: 1, vibration: false });
         } catch (e) { }
         try {
           let perm = await LN.checkPermissions();
@@ -5367,7 +5445,7 @@
       if (!(await notifInit())) return;
       try {
         await LN.cancel({ notifications: [{ id }] });
-        await LN.schedule({ notifications: [{ id, title, body, channelId, extra: extra || {}, schedule: { at, allowWhileIdle: true } }] });
+        await LN.schedule({ notifications: [Object.assign({ id, title, body, channelId: chId(channelId), extra: extra || {}, schedule: { at, allowWhileIdle: true } }, NOTIF_ICON)] });
       } catch (e) { console.warn('notify schedule failed', e); }
     }
     async function notifyNow(id, channelId, title, body, extra, ongoing) {
@@ -5375,7 +5453,7 @@
       const LN = notifPlugin(); if (!LN) return;
       if (!(await notifInit())) return;
       try {
-        await LN.schedule({ notifications: [{ id, title, body, channelId, extra: extra || {}, ongoing: !!ongoing, autoCancel: !ongoing }] });
+        await LN.schedule({ notifications: [Object.assign({ id, title, body, channelId: chId(channelId), extra: extra || {}, ongoing: !!ongoing, autoCancel: !ongoing }, NOTIF_ICON)] });
       } catch (e) { console.warn('notify failed', e); }
     }
     async function notifyCancel(id) {
@@ -5428,7 +5506,7 @@
               if (!at || at.getTime() <= now + 5000) return;
               const lines = String(p.items || '').split('\n').map(x => x.trim()).filter(Boolean);
               list.push({
-                id: notifIdForPlan(p.id), channelId: 'calendar',
+                id: notifIdForPlan(p.id), channelId: chId('calendar'),
                 title: `Time to train: ${p.name}`,
                 body: lines.length ? lines.slice(0, 4).join(', ') + (lines.length > 4 ? '...' : '') : 'Your planned routine is ready.',
                 extra: { open: 'calendar', date: dateKey },
@@ -5436,7 +5514,14 @@
               });
             });
           });
-          if (list.length && (await notifInit())) await LN.schedule({ notifications: list.slice(0, 60) });
+          const FS = fsPlugin();
+          if (FS) {
+            // Full-screen reminders (silent, with a Dismiss button) replace the plain notification for plans
+            try { await FS.cancelAll(); } catch (e) { }
+            await FS.scheduleMany({ items: list.slice(0, 60).map(n => ({ id: n.id, title: n.title, body: n.body, at: n.schedule.at.getTime(), date: (n.extra && n.extra.date) || '' })) });
+          } else if (list.length && (await notifInit())) {
+            await LN.schedule({ notifications: list.slice(0, 60).map(n => Object.assign(n, NOTIF_ICON)) });
+          }
         } catch (e) { console.warn('plan reminders failed', e); }
       }, 400);
     }
@@ -5454,6 +5539,7 @@
         appState.settings.notifyOn = false;
         saveState();
         await notifyCancelAll();
+        try { const FS = fsPlugin(); if (FS) await FS.cancelAll(); } catch (e) { }
         updateNotifyUi();
         showToast('Notifications turned off');
         return;
