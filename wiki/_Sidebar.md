@@ -13,6 +13,7 @@
 - [Calendar Planner](Calendar-Planner)
 - [Notes and Journal](Notes-and-Journal)
 - [Profile and Biometrics](Profile-and-Biometrics)
+- [Run and Walk Tracking](Run-and-Walk-Tracking)
 - [Timers](Timers)
 - [Sign In and Sync](Account-and-Sync)
 - [Updating the App](App-Updates)

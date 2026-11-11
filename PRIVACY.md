@@ -25,7 +25,10 @@ Only when you decide:
 ## Permissions
 
 - **Camera:** used only on the QR scanning screen, only while it is open. Images are never saved or sent anywhere.
-- **Internet:** used to load page styling, fonts and the PDF library from public content networks (Tailwind CSS, Google Fonts, cdnjs), and for the optional sign in and sync. No personal data is included in the styling requests.
+- **Location (GPS):** used only while you record a run or walk in the Run tab. While recording, Android shows a notification so you know GPS is on. Routes, times and distances are stored on the phone only. They are not included in sign in and sync, Share & Receive or reports, and are removed by deleting the activity, **Reset All Data** or uninstalling.
+- **Notifications:** used for timers, reminders, the tracking notification and goal alerts. They are created on the phone.
+- **Battery optimization:** the app asks to be exempt so Android does not stop GPS tracking in the background. It does not read any battery data.
+- **Internet:** the map shows pictures (tiles) loaded from OpenStreetMap. Those requests reveal the map area you are viewing to that service. Also used to load page styling, fonts and the PDF library from public content networks (Tailwind CSS, Google Fonts, cdnjs), and for the optional sign in and sync. No personal data is included in the styling requests.
 
 ## Deleting your data
 

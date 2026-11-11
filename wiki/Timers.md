@@ -31,4 +31,4 @@ Dopamine can alert you even when the app is in the background or the screen is o
 - **Session timer:** an ongoing notification shows while the stopwatch runs. Tap it to return to the stopwatch.
 - **Calendar:** adding a routine sends a confirmation straight away. If you set a reminder time on the routine, you also get a reminder at that time on the planned day. Routines that arrive through sync or Share & Receive are announced too.
 
-Turn everything on or off in **Settings** under Timer & Clock Behaviors. Android asks for notification permission the first time.
+Notifications arrive as normal alerts with sound, vibration and the Dopamine icon. Turn everything on or off in **Settings**, Timers & Alerts. Android asks for notification permission the first time. If you changed the sound or importance in Android settings, use the Dopamine entries under App notifications.

@@ -79,6 +79,14 @@ jobs:
           sed -i 's|<application|<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.VIBRATE" />\n    <uses-permission android:name="android.permission.WAKE_LOCK" />\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />\n    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />\n    <application|' $MF
           grep -n "NOTIFICATIONS\|EXACT_ALARM" $MF
 
+      - name: Add battery optimisation permission
+        run: |
+          MF=android/app/src/main/AndroidManifest.xml
+          # Location and foreground-service permissions come from the background-geolocation plugin's own manifest.
+          # This one lets the user exempt the app from battery optimisation so GPS tracking is not stopped.
+          sed -i 's|<application|<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />\n    <application|' $MF
+          grep -n "BATTERY" $MF
+
       - name: Add full-screen reminder (native)
         run: |
           APP=android/app/src/main
