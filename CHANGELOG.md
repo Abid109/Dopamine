@@ -8,7 +8,7 @@ All notable changes to Dopamine are listed here.
 - **Normal notifications again.** Alerts (rest timer, workout session, calendar, goals) now arrive as regular notifications with sound, vibration and a pop-up banner. The older silent channels are removed on first launch and replaced by new ones.
 - Reminder notifications (full screen) also make sound and vibrate.
 - Notifications show the Dopamine icon (status bar glyph and large icon).
-- **Floating card settings.** Settings sections are now rounded cards that float above the background, and Timers & Alerts uses grouped rows inside each card.
+- **Settings menu with floating cards.** Settings opens as a list of rounded cards with an icon, label and arrow on each row (Appearance & style, Timers & alerts, Run & walk tracking, Backup & data, Privacy). Tapping a row opens that page with a back arrow, and the phone's back gesture returns to the menu.
 - The floating dock is now the default navigation style for new installs. Your saved choice is kept.
 - Settings are grouped into tabs: Visual & Style, Timers & Alerts, Backup & Data and Privacy.
 
