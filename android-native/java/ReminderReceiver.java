@@ -1,6 +1,8 @@
 package com.dopamine.fitness;
 
 import android.app.Notification;
+import android.media.AudioAttributes;
+import android.media.RingtoneManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,9 +12,10 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 
-/** Posts a silent notification that opens the full-screen reminder. */
+/** Posts a normal (sound + vibration) notification that opens the full-screen reminder. */
 public class ReminderReceiver extends BroadcastReceiver {
-    static final String CHANNEL = "reminder_fullscreen_silent";
+    static final String CHANNEL = "reminder_fullscreen_v2";
+    static final String OLD_SILENT_CHANNEL = "reminder_fullscreen_silent";
 
     @Override
     public void onReceive(Context c, Intent in) {
@@ -23,10 +26,18 @@ public class ReminderReceiver extends BroadcastReceiver {
 
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= 26) {
+            // The old silent channel cannot be edited, so it is replaced by a new one that makes sound.
+            try { nm.deleteNotificationChannel(OLD_SILENT_CHANNEL); } catch (Exception ignored) { }
             NotificationChannel ch = new NotificationChannel(CHANNEL, "Reminders", NotificationManager.IMPORTANCE_HIGH);
-            ch.setSound(null, null);
-            ch.enableVibration(false);
-            ch.setDescription("Silent full-screen reminders from your calendar and planner");
+            ch.setDescription("Full-screen reminders from your calendar and planner");
+            ch.enableVibration(true);
+            ch.setVibrationPattern(new long[]{0, 300, 200, 300});
+            ch.enableLights(true);
+            ch.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            AudioAttributes aa = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build();
+            ch.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION), aa);
             nm.createNotificationChannel(ch);
         }
 
@@ -51,7 +62,7 @@ public class ReminderReceiver extends BroadcastReceiver {
                 .setFullScreenIntent(fullPi, true)
                 .addAction(new Notification.Action.Builder(null, "Dismiss", dismissPi).build());
         if (large != 0) b.setLargeIcon(BitmapFactory.decodeResource(c.getResources(), large));
-        if (Build.VERSION.SDK_INT < 26) { b.setSound(null); b.setPriority(Notification.PRIORITY_HIGH); }
+        if (Build.VERSION.SDK_INT < 26) { b.setDefaults(Notification.DEFAULT_ALL); b.setPriority(Notification.PRIORITY_HIGH); }
         nm.notify(id, b.build());
     }
 }

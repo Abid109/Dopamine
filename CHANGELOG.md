@@ -5,12 +5,17 @@ All notable changes to Dopamine are listed here.
 ## [Unreleased]
 
 ### Changed
-- **Silent notifications.** All alerts (rest timer, workout session, calendar) now arrive quietly: low priority, no sound, no vibration. Older loud channels are removed on first launch.
+- **Normal notifications again.** Alerts (rest timer, workout session, calendar, goals) now arrive as regular notifications with sound, vibration and a pop-up banner. The older silent channels are removed on first launch and replaced by new ones.
+- Reminder notifications (full screen) also make sound and vibrate.
 - Notifications show the Dopamine icon (status bar glyph and large icon).
+- **Floating card settings.** Settings sections are now rounded cards that float above the background, and Timers & Alerts uses grouped rows inside each card.
 - The floating dock is now the default navigation style for new installs. Your saved choice is kept.
 - Settings are grouped into tabs: Visual & Style, Timers & Alerts, Backup & Data and Privacy.
 
 ### Added
+- **Run & Walk tracking.** A new Run tab records a walk or run with the phone GPS, even with the screen off or while you use another app. It shows a live map, time, distance, pace and calories, with pause and resume, and keeps a history of routes. Uses a foreground service so Android keeps it alive. If the app is closed mid-activity, the route so far is recovered.
+- **Goals.** Set a distance goal, a time goal, or drop a flag on the map. You get a notification when you reach it.
+- **Permissions screen.** Settings, Timers & Alerts (and the Run tab) ask for notifications, location and battery optimization, and show which are allowed.
 - **Full-screen reminders.** Reminders set in Calendar and Planning open a full screen (also over the lock screen) with a Dismiss button. Android 14 and later may ask you to allow full-screen alerts in Settings. Native code is in `android-native/` and is added by the build workflow.
 - **Privacy details** section in Settings that explains what is stored, what leaves the phone, permissions and how to delete data.
 

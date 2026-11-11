@@ -28,7 +28,10 @@ The release named **Dopamine APK** with the tag `latest` is replaced every time 
 | Permission | Why |
 | --- | --- |
 | Camera | Only to scan QR codes in [Share and Receive](Share-and-Receive). Asked the first time you scan. |
-| Internet | To load styling, fonts and the PDF library. |
+| Location | Only to record a run or walk in [Run and Walk Tracking](Run-and-Walk-Tracking). Asked when you first press Start. |
+| Notifications | Timer alerts, reminders, the tracking notification and goal alerts. |
+| Battery optimization | Lets tracking keep running with the screen off. |
+| Internet | To load styling, fonts, the PDF library and map pictures. |
 
 ## Problems?
 

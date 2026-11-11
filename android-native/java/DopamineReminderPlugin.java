@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PowerManager;
 import android.provider.Settings;
 
 import com.getcapacitor.JSArray;
@@ -22,7 +23,7 @@ import org.json.JSONObject;
 import java.util.HashSet;
 import java.util.Set;
 
-/** Schedules silent full-screen reminders (shown over the lock screen with a Dismiss button). */
+/** Schedules full-screen reminders (shown over the lock screen with a Dismiss button) and helps with battery settings. */
 @CapacitorPlugin(name = "DopamineReminder")
 public class DopamineReminderPlugin extends Plugin {
     static final String PREFS = "dopamine_reminders";
@@ -104,6 +105,39 @@ public class DopamineReminderPlugin extends Plugin {
             call.resolve();
         } catch (Exception e) {
             call.reject("cannot open settings");
+        }
+    }
+
+    /** True when Android will not put the app to sleep to save battery (needed for long GPS tracking). */
+    @PluginMethod
+    public void isIgnoringBatteryOptimizations(PluginCall call) {
+        boolean ok = true;
+        if (Build.VERSION.SDK_INT >= 23) {
+            PowerManager pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
+            ok = pm != null && pm.isIgnoringBatteryOptimizations(getContext().getPackageName());
+        }
+        JSObject r = new JSObject();
+        r.put("value", ok);
+        call.resolve(r);
+    }
+
+    /** Asks the user to let Dopamine run without battery restrictions. Falls back to the system list. */
+    @PluginMethod
+    public void requestIgnoreBatteryOptimizations(PluginCall call) {
+        try {
+            Intent i = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:" + getContext().getPackageName()));
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(i);
+            call.resolve();
+        } catch (Exception e) {
+            try {
+                Intent i = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getContext().startActivity(i);
+                call.resolve();
+            } catch (Exception e2) {
+                call.reject("cannot open battery settings");
+            }
         }
     }
 }
