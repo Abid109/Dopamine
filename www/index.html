@@ -613,6 +613,8 @@
     }
     .fc-stack { display: flex; flex-direction: column; gap: 22px; }
     .fc-span { grid-column: 1 / -1; }
+    /* my display rules must never beat the app's .hidden helper */
+    .fc-stack.hidden, .st-head.hidden, .fc-group.hidden, .fc-block.hidden, .fc-row.hidden, .fc-nav.hidden { display: none !important; }
     .fc-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 16px 10px; font-size: 14px; font-weight: 500; color: var(--text-muted); }
     .fc-group { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 28px; overflow: hidden; box-shadow: var(--fc-shadow); }
     .fc-row { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 20px; }
