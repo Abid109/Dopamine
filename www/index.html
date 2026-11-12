@@ -467,6 +467,8 @@
     :is(:root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) header .tracking-tight { color: var(--on-base) !important; }
     :is(:root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) .theme-hero { display: none; }
     :is(:root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) .theme-hero + div { margin-top: 1.5rem !important; position: static; z-index: auto; }
+    :is(:root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) :is(.st-home-title, .fc-label, .st-head h1, .st-head button) { color: var(--on-base); }
+    :is(:root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) .fc-label { opacity: .88; }
     .theme-poster { display: none; }
     :is(:root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) .theme-poster { display: block; position: relative; width: 100%; max-width: 540px; margin: 0 auto; border-radius: 1.4rem; overflow: hidden; background-size: cover; background-position: center; box-shadow: 0 10px 24px -12px var(--card-shadow); user-select: none; }
     :is(:root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) .theme-poster::after { position: absolute; font-family: var(--font-sans); font-weight: 800; line-height: 1.05; letter-spacing: -.01em; text-shadow: 0 2px 10px rgba(0,0,0,.35); }
@@ -4733,7 +4735,7 @@
       if (sd) sd.classList.toggle('hidden', home);
       const tt = document.getElementById('settings-detail-title'); if (tt && !home) tt.textContent = SETTINGS_TITLES[settingsPage] || '';
       const tv = document.getElementById('sh-theme-val');
-      if (tv) { const th = String((appState.settings && appState.settings.theme) || 'dark'); tv.textContent = th.charAt(0).toUpperCase() + th.slice(1); }
+      if (tv) { const th = String((appState.settings && appState.settings.theme) || 'dark'); tv.textContent = ({ aimhigh: 'Aim High', norisk: 'No Risk' })[th] || (th.charAt(0).toUpperCase() + th.slice(1)); }
       ['visual', 'alerts', 'data', 'privacy'].forEach(k => {
         const b = document.getElementById('stab-btn-' + k); if (!b) return;
         const on = k === settingsTabKey;
