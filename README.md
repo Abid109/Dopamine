@@ -35,7 +35,7 @@
 | **Timers** | Rest timer with presets and a session stopwatch that keeps accurate time when you switch tabs. |
 | **Reports & Backup** | PDF fitness report that opens in your PDF viewer, plus JSON export and import. |
 | **Navigation styles** | Choose how you move around: sidebar, bottom bar, floating dock, center button, top tabs, side rail or floating menu. |
-| **Themes** | 12 colour themes (including 5 soft, serif pastel themes), 6 accent colours, 2 font scales and a 12/24-hour clock. |
+| **Themes** | 15 colour themes (including 8 soft, serif themes, three of them with poster banners), 6 accent colours, 2 font scales and a 12/24-hour clock. |
 
 ## Install
 

@@ -412,33 +412,70 @@
       --blob: #c4b5ea; --card-shadow: rgba(90,60,160,.20);
       --font-sans: 'Newsreader', 'Georgia', 'Times New Roman', serif;
     }
-    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) { color-scheme: light; }
-    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) body {
+    /* ===== Poster themes (from the Dream, Aim High and No Risk posters) ===== */
+    :root[data-theme="dream"] {
+      --bg-base: #0a2f4a; --bg-surface: #fbf0d4; --bg-card: #f9ebc8; --bg-card-hover: #f2dfae; --bg-input: #efdcaa;
+      --border-subtle: #dcc58f; --border-strong: #c4a964;
+      --text-primary: #0a1d2e; --text-muted: #56626a; --text-dim: #8a8f8f;
+      --blob: #123f60; --card-shadow: rgba(0,10,30,.45); --on-base: #f9e4b7;
+      --font-sans: 'Newsreader', 'Georgia', 'Times New Roman', serif;
+    }
+    :root[data-theme="aimhigh"] {
+      --bg-base: #bf2326; --bg-surface: #fdf1ec; --bg-card: #fbefe9; --bg-card-hover: #f5e0d8; --bg-input: #f3dcd3;
+      --border-subtle: #e3bdb2; --border-strong: #c99486;
+      --text-primary: #1d1214; --text-muted: #6d4c4c; --text-dim: #9c8080;
+      --blob: #a91d20; --card-shadow: rgba(60,0,5,.4); --on-base: #ffffff;
+      --font-sans: 'Newsreader', 'Georgia', 'Times New Roman', serif;
+    }
+    :root[data-theme="norisk"] {
+      --bg-base: #1199d1; --bg-surface: #f3faff; --bg-card: #eef8ff; --bg-card-hover: #dff0fb; --bg-input: #d6eaf8;
+      --border-subtle: #b3d5ea; --border-strong: #86b7d6;
+      --text-primary: #08243a; --text-muted: #44677f; --text-dim: #7896ab;
+      --blob: #0c86bb; --card-shadow: rgba(0,50,90,.35); --on-base: #04243b;
+      --font-sans: 'Newsreader', 'Georgia', 'Times New Roman', serif;
+    }
+    :root[data-theme="dream"][data-accent="amber"] { --accent: #e9b64a; --accent-hover: #d9a437; --accent-glow: #f0d596; --accent-border: rgba(190,140,30,.55); --accent-text: #7a5300; }
+    :root[data-theme="aimhigh"][data-accent="amber"] { --accent: #ef5b5b; --accent-hover: #de4545; --accent-glow: #f6c6c0; --accent-border: rgba(190,40,45,.55); --accent-text: #9b1217; }
+    :root[data-theme="norisk"][data-accent="amber"] { --accent: #6fcf8d; --accent-hover: #58bb78; --accent-glow: #c6ead3; --accent-border: rgba(40,140,80,.55); --accent-text: #19653a; }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) { color-scheme: light; }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) body {
       background-color: transparent;
       font-family: var(--font-sans);
     }
-    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) body::before {
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) body::before {
       content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
       background-image:
         radial-gradient(circle 200px at -50px 30%, var(--blob) 99%, transparent 100%),
         radial-gradient(circle 240px at calc(100% + 70px) 62%, var(--blob) 99%, transparent 100%),
         radial-gradient(circle 170px at 18% 108%, var(--blob) 99%, transparent 100%);
     }
-    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) button, :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) input, :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) select, :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) textarea { font-family: var(--font-sans); }
-    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) .font-mono { font-family: var(--font-sans); font-variant-numeric: tabular-nums; }
-    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) header { background: var(--bg-base) !important; border-color: transparent !important; backdrop-filter: none !important; }
-    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) [class*="rounded-2xl"][class*="bg-[var(--bg-card)]"] {
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) button, :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) input, :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) select, :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) textarea { font-family: var(--font-sans); }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) .font-mono { font-family: var(--font-sans); font-variant-numeric: tabular-nums; }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) header { background: var(--bg-base) !important; border-color: transparent !important; backdrop-filter: none !important; }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) [class*="rounded-2xl"][class*="bg-[var(--bg-card)]"] {
       border-color: transparent; border-radius: 1.4rem; box-shadow: 0 10px 24px -12px var(--card-shadow);
     }
-    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) #sidebar-panel { box-shadow: 8px 0 30px -18px var(--card-shadow); }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) #sidebar-panel { box-shadow: 8px 0 30px -18px var(--card-shadow); }
     html[data-signed-in="1"] #mobile-avatar, html[data-signed-in="1"] #sidebar-avatar { position: relative; }
     html[data-signed-in="1"] #mobile-avatar::after, html[data-signed-in="1"] #sidebar-avatar::after {
       content: ""; position: absolute; right: 0; bottom: 0; width: 9px; height: 9px; border-radius: 50%;
       background: #34d399; border: 2px solid var(--bg-card);
     }
     .theme-hero { display: none; }
-    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) .theme-hero { display: block; width: 100%; max-width: 540px; margin: 0 auto; pointer-events: none; user-select: none; }
-    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"]) .theme-hero + div { margin-top: -8px !important; position: relative; z-index: 1; }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) .theme-hero { display: block; width: 100%; max-width: 540px; margin: 0 auto; pointer-events: none; user-select: none; }
+    :is(:root[data-theme="sunrise"], :root[data-theme="blush"], :root[data-theme="mint"], :root[data-theme="sky"], :root[data-theme="lilac"], :root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) .theme-hero + div { margin-top: -8px !important; position: relative; z-index: 1; }
+    :is(:root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) header .tracking-tight { color: var(--on-base) !important; }
+    :is(:root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) .theme-hero { display: none; }
+    :is(:root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) .theme-hero + div { margin-top: 1.5rem !important; position: static; z-index: auto; }
+    .theme-poster { display: none; }
+    :is(:root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) .theme-poster { display: block; position: relative; width: 100%; max-width: 540px; margin: 0 auto; border-radius: 1.4rem; overflow: hidden; background-size: cover; background-position: center; box-shadow: 0 10px 24px -12px var(--card-shadow); user-select: none; }
+    :is(:root[data-theme="dream"], :root[data-theme="aimhigh"], :root[data-theme="norisk"]) .theme-poster::after { position: absolute; font-family: var(--font-sans); font-weight: 800; line-height: 1.05; letter-spacing: -.01em; text-shadow: 0 2px 10px rgba(0,0,0,.35); }
+    :root[data-theme="dream"] .theme-poster { aspect-ratio: 494 / 310; background-image: url(assets/poster-dream.webp); }
+    :root[data-theme="dream"] .theme-poster::after { content: "Dream the impossible dream."; left: 5%; bottom: 8%; max-width: 44%; font-size: clamp(15px, 4.6vw, 24px); color: #f9e4b7; }
+    :root[data-theme="aimhigh"] .theme-poster { aspect-ratio: 736 / 482; background-image: url(assets/poster-aimhigh.webp); }
+    :root[data-theme="aimhigh"] .theme-poster::after { content: "aim high."; left: 6%; top: 9%; font-size: clamp(22px, 7vw, 38px); color: #fff; }
+    :root[data-theme="norisk"] .theme-poster { aspect-ratio: 736 / 318; background-image: url(assets/poster-norisk.webp); }
+    :root[data-theme="norisk"] .theme-poster::after { content: "No risk. No story."; right: 5%; bottom: 14%; font-size: clamp(18px, 6vw, 32px); color: #fff; text-align: right; }
     /* "Amber Gold" (the default accent) takes on the colour of the soft themes; other accents are unchanged */
     :root[data-theme="sunrise"][data-accent="amber"] { --accent: #f9b556; --accent-hover: #e9a03c; --accent-glow: rgba(249,181,86,.26); --accent-border: rgba(214,140,30,.55); --accent-text: #8f5200; }
     :root[data-theme="blush"][data-accent="amber"] { --accent: #f2909f; --accent-hover: #e27789; --accent-glow: rgba(242,144,159,.26); --accent-border: rgba(205,90,110,.55); --accent-text: #a3304a; }
@@ -748,6 +785,7 @@
   <main class="flex-1 w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-16 overflow-y-auto">
     <!-- DASHBOARD TAB -->
     <div id="tab-dashboard" class="space-y-6">
+      <div class="theme-poster" role="img" aria-label="Poster artwork"></div>
       <img class="theme-hero" src="assets/hero-athletes.webp" alt="" width="688" height="257" decoding="async" draggable="false">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] shadow-xs">
         <div>
@@ -1577,6 +1615,18 @@
               <button onclick="setAppTheme('lilac')" id="theme-btn-lilac" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
                 <div class="flex items-center gap-2 font-semibold text-xs text-[var(--text-primary)]"><span class="inline-block w-4 h-4 rounded-full shrink-0" style="background:linear-gradient(135deg,#d5c9f2 50%,#f6f2ff 50%);border:1px solid rgba(0,0,0,.18)"></span>Lilac</div>
                 <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Soft Lavender</span>
+              </button>
+              <button onclick="setAppTheme('dream')" id="theme-btn-dream" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <div class="flex items-center gap-2 font-semibold text-xs text-[var(--text-primary)]"><span class="inline-block w-4 h-4 rounded-full shrink-0" style="background:linear-gradient(135deg,#0a2f4a 50%,#f9ebc8 50%);border:1px solid rgba(0,0,0,.18)"></span>Dream</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Impossible Dream</span>
+              </button>
+              <button onclick="setAppTheme('aimhigh')" id="theme-btn-aimhigh" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <div class="flex items-center gap-2 font-semibold text-xs text-[var(--text-primary)]"><span class="inline-block w-4 h-4 rounded-full shrink-0" style="background:linear-gradient(135deg,#bf2326 50%,#fbefe9 50%);border:1px solid rgba(0,0,0,.18)"></span>Aim High</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Summit Red</span>
+              </button>
+              <button onclick="setAppTheme('norisk')" id="theme-btn-norisk" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)]">
+                <div class="flex items-center gap-2 font-semibold text-xs text-[var(--text-primary)]"><span class="inline-block w-4 h-4 rounded-full shrink-0" style="background:linear-gradient(135deg,#1199d1 50%,#eef8ff 50%);border:1px solid rgba(0,0,0,.18)"></span>No Risk</div>
+                <span class="text-[10px] text-[var(--text-dim)] mt-1 block">Open Sky</span>
               </button>
             </div>
           </div>
@@ -4708,7 +4758,7 @@
 
       const curTheme = appState.settings.theme || 'dark';
       const curAccent = appState.settings.accent || 'amber';
-      const ALL_THEMES = ['dark', 'charcoal', 'midnight', 'cyberpunk', 'forest', 'light', 'nordic', 'sunrise', 'blush', 'mint', 'sky', 'lilac'];
+      const ALL_THEMES = ['dark', 'charcoal', 'midnight', 'cyberpunk', 'forest', 'light', 'nordic', 'sunrise', 'blush', 'mint', 'sky', 'lilac', 'dream', 'aimhigh', 'norisk'];
       ALL_THEMES.forEach(k => {
         const btn = document.getElementById('theme-btn-' + k);
         if (btn) {

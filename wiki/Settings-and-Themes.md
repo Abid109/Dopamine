@@ -16,7 +16,7 @@ Open **Settings** from the menu.
 
 ### Soft & serif themes
 
-Warm pastel backgrounds with cream cards, rounded corners and a serif typeface. On the Dashboard they also show an illustration of athletes across the top.
+Warm pastel backgrounds with cream cards, rounded corners and a serif typeface. On the Dashboard the first five show an illustration of athletes across the top. **Dream**, **Aim High** and **No Risk** are inspired by motivational posters: each shows a poster picture and caption in a banner at the top of the Dashboard (a chess pawn for Dream, a snowy summit for Aim High, a climber on a rope for No Risk).
 
 | Theme | Style |
 | --- | --- |
@@ -25,6 +25,9 @@ Warm pastel backgrounds with cream cards, rounded corners and a serif typeface. 
 | Mint | Garden Mint |
 | Sky | Clear Morning |
 | Lilac | Soft Lavender |
+| Dream | Impossible Dream: deep navy and cream |
+| Aim High | Summit Red: bold red |
+| No Risk | Open Sky: bright blue and green |
 
 The serif font loads from the internet. Without a connection the app uses the phone's own serif font.
 

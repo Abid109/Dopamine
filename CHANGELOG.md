@@ -18,6 +18,7 @@ All notable changes to Dopamine are listed here.
 - **Permissions screen.** Settings, Timers & Alerts (and the Run tab) ask for notifications, location and battery optimization, and show which are allowed.
 - **Full-screen reminders.** Reminders set in Calendar and Planning open a full screen (also over the lock screen) with a Dismiss button. Android 14 and later may ask you to allow full-screen alerts in Settings. Native code is in `android-native/` and is added by the build workflow.
 - **Privacy details** section in Settings that explains what is stored, what leaves the phone, permissions and how to delete data.
+- Three poster themes in Settings under "Soft & serif": **Dream** (navy and cream), **Aim High** (red) and **No Risk** (blue and green). Each has a poster banner with a caption at the top of the Dashboard, serif type and cream cards, and the colours are taken from the posters.
 
 ## [1.8.0] - 2026-11-09
 
