@@ -5,7 +5,7 @@
 <h1 align="center">Dopamine</h1>
 
 <p align="center">
-  A calisthenics workout tracker for Android. Log your sets, plan routines, track calories and streaks,
+  A calisthenics workout tracker for Android, the web and desktop. Log your sets, plan routines, track calories and streaks,
   and share your progress phone to phone, all stored privately on your device.
 </p>
 
@@ -46,6 +46,26 @@
 4. Google Play Protect may show a prompt because the app does not come from the Play Store. Choose **Install anyway**.
 
 Every release is a normal tagged release (for example `v1.9.42`) with the APK under the same file name, `Dopamine.apk`. The release notes list the file's SHA-256 and the signing certificate fingerprint so you can check it.
+
+### Windows, macOS and Linux (desktop app)
+
+The desktop app lives in `desktop/` and wraps the same web code in `www/`. It has its own version number and its own release tags (`desktop-v0.1.0`), separate from the phone app. Downloads are on the [Releases page](https://github.com/Abid109/Dopamine/releases) under releases named "Dopamine desktop", and on the [download page](https://abid109.github.io/Dopamine/download/).
+
+| System | File | Notes |
+| --- | --- | --- |
+| Windows | `.exe` installer | Not signed with a paid certificate, so SmartScreen warns: choose More info, then Run anyway. |
+| macOS | `.dmg` (Intel and Apple silicon) | Not notarized: right-click the app, then Open. |
+| Linux | `.AppImage`, `.deb`, `.rpm` | Make the AppImage executable and run it. |
+
+Check a download against `SHA256SUMS.txt` on the release. The desktop app has no GPS, so the Run tab is hidden. Your data is stored on the computer and kept across updates; use Backup & data to export or import a JSON backup. Framework choice: **Electron**, because it bundles the same Chromium everywhere, so the app behaves identically on all three systems.
+
+### iPhone, desktop and any browser (web app)
+
+Dopamine also runs as a web app (PWA) published from the `www/` folder to GitHub Pages: **https://abid109.github.io/Dopamine/**. A download page with the APK, checksums and install steps is at `/download/`.
+
+- **iPhone:** open the site in Safari, tap Share, then **Add to Home Screen**.
+- **Chrome or Edge:** use the install icon in the address bar.
+- It works offline after the first load. Limits: alerts only fire while the app is open, GPS tracking only records while the screen is on and the app is in front, and browsers can clear web-app data, so export a JSON backup now and then.
 
 ### Install and update with Obtainium
 
@@ -100,7 +120,9 @@ Details are in [Building from Source](https://github.com/Abid109/Dopamine/wiki/B
 ## Project layout
 
 ```
-www/                 The app (index.html, fonts/ and vendor/ libraries)
+www/                 The app (index.html, fonts/ and vendor/ libraries), shared by all platforms
+desktop/             Desktop app (Electron) for Windows, macOS and Linux
+site/                Download page published with the web app on GitHub Pages
 supabase/            Database setup for the optional cloud backup
 android-res/         Launcher icons applied during the Android build
 .github/workflows/   APK build and wiki sync

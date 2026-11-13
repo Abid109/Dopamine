@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!--
+  SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Dopamine-Commercial
+  Copyright (c) 2026 Abid109. Licensed under the GNU AGPL-3.0 (see LICENSE) or, by separate written
+  agreement, a commercial license (see COMMERCIAL-LICENSE.md). All other rights reserved.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Download Dopamine</title>
+  <meta name="description" content="Download the Dopamine calisthenics tracker for Android, or use it in your browser on any device." />
+  <meta name="theme-color" content="#0a0a0d" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png" />
+  <link rel="stylesheet" href="../fonts/fonts.css" />
+  <style>
+    :root { --bg: #0a0a0d; --card: #15161b; --line: #262830; --text: #f4f4f5; --muted: #a1a1aa; --accent: #f59e0b; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 'Inter', system-ui, sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+    header { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+    header img { width: 56px; height: 56px; border-radius: 14px; background: #fff; }
+    h1 { font-size: 28px; margin: 0; letter-spacing: -.01em; }
+    h2 { font-size: 18px; margin: 0 0 10px; }
+    p { margin: 0 0 10px; color: var(--muted); }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; margin-top: 16px; }
+    .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    a.btn { display: inline-block; padding: 12px 18px; border-radius: 12px; border: 1px solid var(--line); color: var(--text); text-decoration: none; font-weight: 600; }
+    a.btn.primary { background: var(--accent); border-color: var(--accent); color: #000; }
+    a { color: var(--accent); }
+    code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; word-break: break-all; background: #0d0e12; padding: 2px 6px; border-radius: 6px; color: var(--text); }
+    dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; }
+    dt { color: var(--muted); } dd { margin: 0; min-width: 0; }
+    ol, ul { margin: 0 0 10px; padding-left: 22px; color: var(--muted); } li { margin-bottom: 6px; }
+    .hero { width: 100%; border-radius: 12px; margin-top: 16px; display: block; }
+    footer { margin-top: 28px; font-size: 14px; color: var(--muted); }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="../icons/icon-192.png" alt="Dopamine icon" width="56" height="56" />
+    <div><h1>Dopamine</h1><p style="margin:0">Calisthenics workout tracker. Your data stays on your device.</p></div>
+  </header>
+
+  <img class="hero" src="../assets/hero-athletes.webp" alt="Dopamine app artwork" width="760" height="380" loading="lazy" />
+
+  <section class="card" id="android">
+    <h2>Android</h2>
+    <p>Latest version: <strong id="ver">loading...</strong></p>
+    <div class="btns">
+      <a class="btn primary" href="https://github.com/Abid109/Dopamine/releases/latest/download/Dopamine.apk">Download the APK</a>
+      <a class="btn" href="obtainium://add/https://github.com/Abid109/Dopamine">Add to Obtainium</a>
+      <a class="btn" href="https://github.com/Abid109/Dopamine/releases">All releases</a>
+    </div>
+    <h2 style="margin-top:18px">Check the file</h2>
+    <dl>
+      <dt>SHA-256 of the APK</dt><dd><code id="sha">shown on the release page</code></dd>
+      <dt>Signing certificate SHA-256</dt><dd><code>53:B5:65:08:97:1C:3B:30:78:75:BC:E7:30:8A:A3:93:BA:C4:6D:AD:87:DF:BE:93:B2:C7:7A:5D:99:F0:25:BB</code></dd>
+    </dl>
+    <h2 style="margin-top:18px">Install</h2>
+    <ol>
+      <li>Download <b>Dopamine.apk</b> and open it.</li>
+      <li>If Android asks, allow <b>Install unknown apps</b> for your browser or file manager.</li>
+      <li>Google Play Protect may warn about an app from outside the Play Store. Choose <b>Install anyway</b>.</li>
+      <li>Later updates install over the old app from <b>Settings, App updates</b>, or through Obtainium. Your data is kept.</li>
+    </ol>
+  </section>
+
+  <section class="card" id="web">
+    <h2>iPhone, desktop and any browser</h2>
+    <p>The web app works offline once opened and can be installed like an app.</p>
+    <div class="btns"><a class="btn primary" href="../">Open the web app</a></div>
+    <ul style="margin-top:12px">
+      <li><b>iPhone:</b> open it in Safari, tap Share, then <b>Add to Home Screen</b>.</li>
+      <li><b>Chrome or Edge:</b> use the install icon in the address bar.</li>
+    </ul>
+    <p>Limits of the web version: alerts only fire while the app is open, there is no background GPS, and browsers can clear stored data, so export a backup now and then.</p>
+  </section>
+
+  <footer>
+    <a href="https://github.com/Abid109/Dopamine/blob/main/PRIVACY.md">Privacy policy</a> ·
+    <a href="https://github.com/Abid109/Dopamine/blob/main/LICENSE">Licence (AGPL-3.0, or a separate commercial licence)</a> ·
+    <a href="https://github.com/Abid109/Dopamine">Source code</a> ·
+    <a href="https://github.com/Abid109/Dopamine/issues">Report a bug</a>
+  </footer>
+</main>
+<script>
+  // Shows the newest version and checksum from the file every Android build publishes.
+  fetch('https://raw.githubusercontent.com/Abid109/Dopamine/update-feed/update.json', { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(function (j) {
+      document.getElementById('ver').textContent = j.name || ('build ' + j.build);
+      if (j.sha256) document.getElementById('sha').textContent = j.sha256;
+    })
+    .catch(function () { document.getElementById('ver').textContent = 'see the releases page'; });
+</script>
+</body>
+</html>

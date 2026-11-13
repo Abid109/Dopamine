@@ -2,6 +2,18 @@
 
 All notable changes to Dopamine are listed here.
 
+## Desktop app [0.1.0] (tag `desktop-v0.1.0`)
+
+The desktop app has its own version and release tags, separate from the Android app.
+
+### Added
+- Windows, macOS and Linux app built with Electron (`desktop/`). It loads the same `www/` code from local files only, with a desktop layout (sidebar by default), desktop notifications while the app is open, normal save dialogs and downloads for backups and PDF reports, and links that open in the default browser.
+- Hidden on desktop: the Run tab, the phone navigation styles, the in-app updater, full-screen reminders and battery optimization.
+- Security: node integration off, context isolation and sandbox on, a content security policy, only local files, camera and notifications permissions only.
+- The app checks a small feed for new desktop versions and opens the download page; it never installs by itself. Store builds skip this check.
+- CI builds on Windows, macOS and Ubuntu and publishes installers and `SHA256SUMS.txt` to a `desktop-v*` release that is never marked Latest.
+- Linux packaging files for Flathub in `desktop/linux/` (desktop file and AppStream metainfo).
+
 ## [Unreleased]
 
 ### Added
@@ -20,6 +32,9 @@ All notable changes to Dopamine are listed here.
 - **Version numbers are now one scheme.** `package.json` is `1.9.0`; every build is `<major>.<minor>.<run number>` (for example `1.9.42`) and the Android `versionCode` is the run number.
 - **Tagged releases.** Each build publishes a normal release tagged `v<version>` (marked Latest) with `Dopamine.apk` under the same name every time, and the SHA-256 and signing certificate fingerprint in the notes. A pre-release tagged `latest` is still refreshed so apps installed before this change can update. The in-app updater now reads the Latest release.
 - **Fixed: "GitHub is limiting requests" in App updates.** The app now reads a small `update.json` from the `update-feed` branch (published by every build) instead of the GitHub API, which limits requests per IP address and often blocks phones on shared mobile networks. The API is only a fallback. Install this build by hand once; later updates use the new method.
+- **Web app (PWA).** Dopamine can be installed from a browser (Add to Home Screen on iPhone, Install in Chrome and Edge) and works offline. New: web manifest and icons (including a maskable icon), a service worker that caches the whole app, iPhone home-screen tags, and a `platform.js` helper that tells the code whether it runs in the Android app, a desktop app or a browser.
+- On the web, notifications use the browser's own alerts (while the app is open), files save as downloads, and the Android-only parts (updater, full-screen reminders, battery optimization) are hidden. Notices explain the limits (no background timers or GPS on iPhone, foreground-only run tracking) and remind you to back up because browsers can clear web-app data. The app asks the browser to keep its storage.
+- **Website deployment.** A new workflow publishes the web app and a download page to GitHub Pages.
 - **Obtainium** install and update steps are in the README.
 - **Fonts and the PDF library are bundled.** Inter, Newsreader and JetBrains Mono (`www/fonts/`) and jsPDF with AutoTable (`www/vendor/`) are inside the app, so nothing is loaded from Google Fonts or cdnjs and the app works fully offline.
 - `PRIVACY.md` and `THIRD-PARTY-NOTICES.md` list what the app really loads and every bundled library and font with its license.

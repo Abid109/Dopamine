@@ -33,3 +33,18 @@ updates:
         update-types: ["minor", "patch"]
     commit-message:
       prefix: "deps"
+
+  - package-ecosystem: npm
+    directory: /desktop
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    # Electron majors change the bundled Chromium: update by hand and test on each system.
+    ignore:
+      - dependency-name: "electron"
+        update-types: ["version-update:semver-major"]
+    groups:
+      desktop-minor-and-patch:
+        update-types: ["minor", "patch"]
+    commit-message:
+      prefix: "deps(desktop)"

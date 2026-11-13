@@ -11,6 +11,10 @@ on:
       - '.github/ISSUE_TEMPLATE/**'
       - '.github/pull_request_template.md'
       - '.github/workflows/sync-wiki.yml'
+      - '.github/workflows/build-desktop.yml'
+      - '.github/workflows/pages.yml'
+      - 'desktop/**'
+      - 'site/**'
   workflow_dispatch:
 
 permissions:

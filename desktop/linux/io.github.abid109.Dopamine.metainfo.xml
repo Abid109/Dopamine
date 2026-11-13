@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.abid109.Dopamine</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>AGPL-3.0-only</project_license>
+  <name>Dopamine</name>
+  <summary>Calisthenics workout tracker</summary>
+  <developer id="io.github.abid109"><name>Abid109</name></developer>
+  <description>
+    <p>Dopamine is a calisthenics workout tracker. Log your sets, plan routines on a calendar, track calories and streaks, keep training notes and use rest and session timers.</p>
+    <p>Your data is stored on your own computer. An optional email sign in can back it up and sync it with your phone.</p>
+  </description>
+  <launchable type="desktop-id">io.github.abid109.Dopamine.desktop</launchable>
+  <url type="homepage">https://github.com/Abid109/Dopamine</url>
+  <url type="bugtracker">https://github.com/Abid109/Dopamine/issues</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/Abid109/Dopamine/main/docs/assets/desktop-dashboard.png</image>
+      <caption>The dashboard</caption>
+    </screenshot>
+  </screenshots>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.0" date="2026-11-13">
+      <description><p>First desktop release.</p></description>
+    </release>
+  </releases>
+</component>
