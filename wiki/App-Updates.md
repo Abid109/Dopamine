@@ -2,7 +2,20 @@
 
 Install a new version **over the old app**. You do not need to uninstall, and your data stays: workouts, notes, plans, profile and settings.
 
-## Steps
+## Update inside the app
+
+1. Open **Settings, App updates**. The app also shows a prompt when a new version is found.
+2. Tap **Download and install**.
+3. The first time, Android asks you to allow Dopamine to **install unknown apps**. Allow it, come back, and tap the button again.
+4. Tap **Update** when Android asks you to confirm.
+
+The new version installs over the old one and your data stays. The app only accepts a download that is Dopamine signed with the same key, so a wrong or tampered file is rejected before Android opens it.
+
+The app checks for a new version at most every six hours, and when you open App updates. Tapping **Later** on the prompt hides it for a day.
+
+You need to install the first build that contains this feature by hand (see below). After that, updates can be done inside the app.
+
+## Update by hand
 
 1. Open the [Releases page](https://github.com/Abid109/Dopamine/releases/tag/latest) on your phone.
 2. Download the newest **Dopamine.apk**.
@@ -23,7 +36,7 @@ After this one-time switch, every update installs over the old app.
 
 ## Which version do I have?
 
-Each build has a higher version number than the one before. Look at the date on the APK in the Releases page to see how new it is. See the [Changelog](https://github.com/Abid109/Dopamine/blob/main/CHANGELOG.md) for what changed.
+**Settings, App updates** shows the installed version and the newest one. Each build has a higher version number than the one before. See the [Changelog](https://github.com/Abid109/Dopamine/blob/main/CHANGELOG.md) for what changed.
 
 ## For developers
 
@@ -44,3 +57,7 @@ The build stops with a clear message if the secret is missing, so an APK signed 
 ### Version numbers
 
 The workflow sets the Android `versionCode` to the run number and `versionName` to `1.0.<run number>`, so every build is a valid upgrade.
+
+### How in-app updates find a build
+
+Every build recreates the GitHub release tagged `latest` with `Dopamine.apk` and notes containing `build:<run number>` and `changes:<one line>`. The app reads `api.github.com/repos/Abid109/Dopamine/releases/tags/latest`, compares `build:` with its own `versionCode`, and downloads the APK. Keep those two note lines and the asset name ending in `.apk`, or the app will not find updates. The repository must stay public.

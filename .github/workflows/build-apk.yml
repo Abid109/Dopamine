@@ -87,6 +87,15 @@ jobs:
           sed -i 's|<application|<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />\n    <application|' $MF
           grep -n "BATTERY" $MF
 
+      - name: Add in-app update support
+        run: |
+          MF=android/app/src/main/AndroidManifest.xml
+          # Lets the app open Android's installer for a downloaded update (the user still confirms there).
+          sed -i 's|<application|<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />\n    <application|' $MF
+          # UpdateFileProvider (copied with the other native files) shares the downloaded APK with the installer.
+          sed -i 's|</application>|    <provider android:name=".UpdateFileProvider" android:authorities="${applicationId}.updates" android:exported="false" android:grantUriPermissions="true"><meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/update_paths" /></provider>\n    </application>|' $MF
+          grep -n "INSTALL_PACKAGES\|UpdateFileProvider" $MF
+
       - name: Add full-screen reminder (native)
         run: |
           APP=android/app/src/main
@@ -180,5 +189,10 @@ jobs:
         run: |
           N=${{ github.run_number }}
           printf 'Latest build of the Dopamine fitness app.\n\nbuild:%s\n' "$N" > notes.txt
+          # One-line summary of what changed, shown by the app's update prompt (merge commits keep the PR title in the body).
+          MSG=$(git log -1 --pretty=%b | head -1)
+          [ -z "$MSG" ] && MSG=$(git log -1 --pretty=%s)
+          MSG=$(printf '%s' "$MSG" | tr -d '\r' | cut -c1-120)
+          printf 'changes:%s\n' "$MSG" >> notes.txt
           gh release delete latest --yes --cleanup-tag || true
           gh release create latest Dopamine.apk --title "Dopamine APK" --notes-file notes.txt --target ${{ github.sha }}

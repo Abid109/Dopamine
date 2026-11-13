@@ -6,10 +6,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
+
+import androidx.core.content.FileProvider;
 
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
@@ -20,10 +23,11 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-/** Schedules full-screen reminders (shown over the lock screen with a Dismiss button) and helps with battery settings. */
+/** Schedules full-screen reminders (shown over the lock screen with a Dismiss button), helps with battery settings and installs app updates. */
 @CapacitorPlugin(name = "DopamineReminder")
 public class DopamineReminderPlugin extends Plugin {
     static final String PREFS = "dopamine_reminders";
@@ -139,5 +143,85 @@ public class DopamineReminderPlugin extends Plugin {
                 call.reject("cannot open battery settings");
             }
         }
+    }
+
+    // ---------- in-app updates ----------
+
+    @PluginMethod
+    public void getAppVersion(PluginCall call) {
+        try {
+            Context c = getContext();
+            PackageInfo info = c.getPackageManager().getPackageInfo(c.getPackageName(), 0);
+            JSObject r = new JSObject();
+            r.put("versionCode", UpdateHelper.versionCodeOf(info));
+            r.put("versionName", info.versionName);
+            call.resolve(r);
+        } catch (Exception e) {
+            call.reject("cannot read version");
+        }
+    }
+
+    /** True when the user has allowed Dopamine to install apps (needed on Android 8 and newer). */
+    @PluginMethod
+    public void canInstallPackages(PluginCall call) {
+        boolean ok = Build.VERSION.SDK_INT < 26 || getContext().getPackageManager().canRequestPackageInstalls();
+        JSObject r = new JSObject();
+        r.put("value", ok);
+        call.resolve(r);
+    }
+
+    @PluginMethod
+    public void openInstallSettings(PluginCall call) {
+        try {
+            Intent i = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getContext().getPackageName()));
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(i);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("cannot open settings");
+        }
+    }
+
+    @PluginMethod
+    public void startUpdateDownload(PluginCall call) {
+        String url = call.getString("url");
+        Long size = call.getLong("size", 0L);
+        if (!UpdateHelper.allowedUrl(url)) { call.reject("update address is not allowed"); return; }
+        UpdateHelper.start(getContext().getApplicationContext(), url, size == null ? 0L : size);
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void getUpdateStatus(PluginCall call) {
+        JSObject r = new JSObject();
+        r.put("state", UpdateHelper.state);
+        r.put("percent", UpdateHelper.percent);
+        r.put("error", UpdateHelper.error);
+        call.resolve(r);
+    }
+
+    /** Opens Android's installer for the downloaded update (the user still taps Update there). */
+    @PluginMethod
+    public void installUpdate(PluginCall call) {
+        try {
+            Context c = getContext();
+            File apk = UpdateHelper.apkFile(c);
+            if (!"ready".equals(UpdateHelper.state) || !apk.exists()) { call.reject("update is not downloaded"); return; }
+            if (Build.VERSION.SDK_INT >= 26 && !c.getPackageManager().canRequestPackageInstalls()) { call.reject("install permission needed"); return; }
+            Uri uri = FileProvider.getUriForFile(c, c.getPackageName() + ".updates", apk);
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setDataAndType(uri, "application/vnd.android.package-archive");
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+            c.startActivity(i);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("cannot open installer: " + e.getMessage());
+        }
+    }
+
+    @PluginMethod
+    public void resetUpdate(PluginCall call) {
+        if (!"downloading".equals(UpdateHelper.state)) { UpdateHelper.state = "idle"; UpdateHelper.percent = 0; UpdateHelper.error = ""; }
+        call.resolve();
     }
 }

@@ -31,6 +31,7 @@
 | **Sign in & Sync** | Optional, modern email sign in on the Profile page that backs up your data and keeps all your devices in sync. The app works fully without it. |
 | **Easy updates** | Install a new APK straight over the old app. No uninstalling, all your data stays. |
 | **Share & Receive** | Send data to another phone with QR codes or a file. The receiving phone chooses exactly which changes to import. |
+| **In-app updates** | Check for and install new versions from Settings, with no trip to GitHub. |
 | **Run & Walk tracking** | GPS tracking that keeps recording with the screen off, a live map, goals (distance, time or a flag on the map), pace, calories and a route history. |
 | **Timers** | Rest timer with presets and a session stopwatch that keeps accurate time when you switch tabs. |
 | **Reports & Backup** | PDF fitness report that opens in your PDF viewer, plus JSON export and import. |
