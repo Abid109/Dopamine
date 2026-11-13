@@ -29,6 +29,10 @@ Open an issue with the **Feature request** form and describe the problem you wan
 - **Match the existing style:** the same colour variables, card layout and button styles.
 - Write short, clear commit messages, for example `Fix rest timer reset on tab switch`.
 
+## Security
+
+Report vulnerabilities privately (see [SECURITY.md](SECURITY.md)). Pull requests are scanned with CodeQL. Do not add network calls that send user data, do not turn Android backup or debugging back on, and keep every GitHub Action pinned to a commit.
+
 ## Licensing of contributions
 
 Dopamine is dual-licensed: AGPL-3.0 for everyone, plus a commercial license available from the maintainer (see [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md)). To keep that possible, by submitting a pull request you confirm that:

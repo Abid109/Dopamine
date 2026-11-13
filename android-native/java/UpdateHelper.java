@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.MessageDigest;
 import java.util.Arrays;
+import java.util.Locale;
 
 /** Downloads a new Dopamine APK from the project's GitHub release and checks it before it is installed. */
 final class UpdateHelper {
@@ -45,8 +47,20 @@ final class UpdateHelper {
         return url != null && url.startsWith(ALLOWED_PREFIX);
     }
 
-    static synchronized void start(final Context c, final String url, final long expectedSize) {
+    /** A SHA-256 as 64 hex characters. */
+    static boolean validSha256(String s) {
+        return s != null && s.matches("[0-9a-fA-F]{64}");
+    }
+
+    private static String toHex(byte[] b) {
+        StringBuilder sb = new StringBuilder(b.length * 2);
+        for (byte x : b) sb.append(String.format(Locale.ROOT, "%02x", x));
+        return sb.toString();
+    }
+
+    static synchronized void start(final Context c, final String url, final long expectedSize, final String expectedSha256) {
         if ("downloading".equals(state)) return;
+        if (!validSha256(expectedSha256)) { state = "error"; error = "the release has no checksum"; return; }
         state = "downloading";
         percent = 0;
         error = "";
@@ -81,6 +95,7 @@ final class UpdateHelper {
                     if (total <= 0) total = expectedSize;
                     InputStream in = conn.getInputStream();
                     FileOutputStream fo = new FileOutputStream(out);
+                    MessageDigest md = MessageDigest.getInstance("SHA-256");
                     byte[] buf = new byte[32768];
                     long got = 0;
                     int n;
@@ -88,6 +103,7 @@ final class UpdateHelper {
                     try {
                         while ((n = in.read(buf)) > 0) {
                             fo.write(buf, 0, n);
+                            md.update(buf, 0, n);
                             got += n;
                             if (total > 0) {
                                 int p = (int) Math.min(99, got * 100 / total);
@@ -100,6 +116,12 @@ final class UpdateHelper {
                         try { in.close(); } catch (IOException ignored) { }
                     }
                     if (expectedSize > 0 && got != expectedSize) throw new IOException("download was incomplete");
+                    // The file must be exactly the one the release published.
+                    String actual = toHex(md.digest());
+                    String wanted = expectedSha256.toLowerCase(Locale.ROOT);
+                    if (!MessageDigest.isEqual(actual.getBytes("UTF-8"), wanted.getBytes("UTF-8"))) {
+                        throw new IOException("the file does not match its checksum");
+                    }
                     String problem = verify(c, out);
                     if (problem != null) {
                         //noinspection ResultOfMethodCallIgnored
@@ -109,6 +131,9 @@ final class UpdateHelper {
                     percent = 100;
                     state = "ready";
                 } catch (Exception e) {
+                    try { //noinspection ResultOfMethodCallIgnored
+                        apkFile(c).delete();
+                    } catch (Exception ignored) { }
                     error = e.getMessage() == null ? "download failed" : e.getMessage();
                     state = "error";
                 } finally {

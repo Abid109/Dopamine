@@ -1,0 +1,5 @@
+name: Dopamine CodeQL config
+# Third-party and generated files are not our code, so they are not scanned.
+paths-ignore:
+  - www/vendor
+  - www/tailwind.css

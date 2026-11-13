@@ -9,7 +9,7 @@ Install a new version **over the old app**. You do not need to uninstall, and yo
 3. The first time, Android asks you to allow Dopamine to **install unknown apps**. Allow it, come back, and tap the button again.
 4. Tap **Update** when Android asks you to confirm.
 
-The new version installs over the old one and your data stays. The app only accepts a download that is Dopamine signed with the same key, so a wrong or tampered file is rejected before Android opens it.
+The new version installs over the old one and your data stays. The app checks the download before Android opens it: its SHA-256 checksum must match the one published with the release, and it must be Dopamine with a newer version signed with the same key. A wrong, damaged or tampered file is rejected and deleted.
 
 The app checks for a new version at most every six hours, and when you open App updates. Tapping **Later** on the prompt hides it for a day.
 
@@ -50,7 +50,7 @@ Android only installs an update over an existing app if both are signed with the
    ```
 2. Encode it: `base64 -w0 debug.keystore`
 3. In the repository, go to **Settings, Secrets and variables, Actions, New repository secret**. Name it `ANDROID_KEYSTORE_B64` and paste the encoded text.
-4. Keep a private copy of `debug.keystore`. If it is lost, new builds can no longer be installed over existing installs.
+4. Keep a private copy of `debug.keystore` (the name is historical: this key signs the published release build). If it is lost, new builds can no longer be installed over existing installs.
 
 The build stops with a clear message if the secret is missing, so an APK signed with a random key is never published.
 
@@ -60,4 +60,4 @@ The workflow sets the Android `versionCode` to the run number and `versionName` 
 
 ### How in-app updates find a build
 
-Every build recreates the GitHub release tagged `latest` with `Dopamine.apk` and notes containing `build:<run number>` and `changes:<one line>`. The app reads `api.github.com/repos/Abid109/Dopamine/releases/tags/latest`, compares `build:` with its own `versionCode`, and downloads the APK. Keep those two note lines and the asset name ending in `.apk`, or the app will not find updates. The repository must stay public.
+Every build recreates the GitHub release tagged `latest` with `Dopamine.apk` and notes containing `build:<run number>`, `changes:<one line>` and `sha256:<checksum>`. The app reads `api.github.com/repos/Abid109/Dopamine/releases/tags/latest`, compares `build:` with its own `versionCode`, downloads the APK and checks it against `sha256:`. Keep those three note lines and the asset name ending in `.apk`, or the app will not find or install updates. The repository must stay public.

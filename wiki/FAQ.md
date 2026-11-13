@@ -48,6 +48,12 @@ The route is still recorded without internet, but the map pictures need a connec
 **Are the notifications silent?**
 No. They arrive as normal alerts with sound, vibration and the Dopamine icon. You can change the sound per notification type in Android settings. See [Notifications and Permissions](Notifications-and-Permissions).
 
+**Will Android restore my data when I reinstall or get a new phone?**
+No. Android's own backup of the app's data is turned off on purpose, so nobody can copy your data out of the app. Keep a backup with **Settings**, **Backup & data**, **Export JSON**, sign in on the **Profile** page for cloud sync, or use [Share and Receive](Share-and-Receive).
+
+**Can the app be inspected over USB debugging?**
+No. The published app is a release build that is not debuggable.
+
 **Can I use miles?**
 Not yet. Distances and pace are in kilometres.
 

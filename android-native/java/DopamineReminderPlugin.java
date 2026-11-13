@@ -190,8 +190,10 @@ public class DopamineReminderPlugin extends Plugin {
     public void startUpdateDownload(PluginCall call) {
         String url = call.getString("url");
         Long size = call.getLong("size", 0L);
+        String sha = call.getString("sha256");
         if (!UpdateHelper.allowedUrl(url)) { call.reject("update address is not allowed"); return; }
-        UpdateHelper.start(getContext().getApplicationContext(), url, size == null ? 0L : size);
+        if (!UpdateHelper.validSha256(sha)) { call.reject("the release has no checksum"); return; }
+        UpdateHelper.start(getContext().getApplicationContext(), url, size == null ? 0L : size, sha);
         call.resolve();
     }
 

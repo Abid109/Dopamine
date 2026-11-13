@@ -13,7 +13,8 @@ android-native/java/  Native Android code added by the build (reminders, updates
 android-res/          Launcher icons, notification icons, colours, strings and file paths
 capacitor.config.json App id and name
 wiki/                 These wiki pages (published by a workflow)
-.github/workflows/    APK build and wiki sync
+.github/workflows/    APK build, wiki sync and CodeQL scan
+.github/dependabot.yml Automatic library and Action update pull requests
 ```
 
 The app id is `com.dopamine.fitness`.
@@ -130,9 +131,9 @@ Settings is a menu (`#settings-home`) of floating cards (`.fc-group` with `.fc-r
 
 `www/updater.js` and `android-native/java/UpdateHelper.java` work together:
 
-1. The page reads `https://api.github.com/repos/Abid109/Dopamine/releases/tags/latest`. The release notes contain `build:<number>` and `changes:<line>`, and the release has one `.apk` asset.
+1. The page reads `https://api.github.com/repos/Abid109/Dopamine/releases/tags/latest`. The release notes contain `build:<number>`, `changes:<line>` and `sha256:<64 hex characters>`, and the release has one `.apk` asset. Without a checksum the page refuses to install.
 2. If `build` is higher than the app's `versionCode` (read by `getAppVersion`), the Settings page and a prompt offer the update.
-3. `startUpdateDownload` downloads the asset in a background thread. Only URLs under `https://github.com/Abid109/Dopamine/releases/` are accepted, redirects must stay on https, and the size must match.
+3. `startUpdateDownload` downloads the asset in a background thread. Only URLs under `https://github.com/Abid109/Dopamine/releases/` are accepted, redirects must stay on https, the size must match and the SHA-256 computed while downloading must equal the checksum from the notes. Any failure deletes the file.
 4. `UpdateHelper.verify` checks that the file is `com.dopamine.fitness`, has a higher version code and the same signing certificate as the installed app.
 5. `installUpdate` opens Android's installer through a `FileProvider` (`UpdateFileProvider`, authority `<app id>.updates`, path `cache/updates`). The user confirms there.
 

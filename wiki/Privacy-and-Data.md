@@ -4,6 +4,7 @@
 - Accounts are **optional**. If you never log in, nothing is sent to any server.
 - There is no tracking or advertising.
 - Data only leaves your phone when you share it ([Share and Receive](Share-and-Receive)), export a backup, create a PDF, or turn on cloud backup by logging in ([Sign In and Sync](Account-and-Sync)).
+- Android's own backup of the app's data is turned off, and the app is not debuggable, so the data cannot be copied out through backups or USB debugging. Keep your own backup with **Export JSON** or by signing in.
 - The camera is used only on the QR scanning screen and nothing is recorded.
 - **Location** is used only while you record a run or walk. Routes are saved on the phone only and are never synced, shared or uploaded.
 - The app contacts public networks only to load styling, fonts and the PDF library, to show map pictures from OpenStreetMap, and to look for app updates on GitHub. No personal data is included in those requests.

@@ -86,6 +86,10 @@ Data lives inside the app. It is lost if the app is uninstalled or if you used *
 
 **"The update is not signed with the Dopamine key".** The new file was built with a different signing key than your installed app, so Android would refuse it. Back up your data (sign in, or **Export JSON**), uninstall once, and install the newest APK by hand. See [Updating the App](App-Updates).
 
+**"The file does not match its checksum".** The download was changed or damaged, so it was thrown away. Try again on a different network. If it keeps happening, update by hand from the Releases page and [report it](https://github.com/Abid109/Dopamine/security/advisories/new).
+
+**"This release has no checksum".** The app only installs releases that publish a checksum. Update by hand from the Releases page.
+
 **"You already have this version" or "download was incomplete".** Tap the button again. The file is checked before Android opens it, so a broken download is thrown away safely.
 
 **The first update has to be done by hand.** The app can update itself only after you have installed a version that includes in-app updates. See [Updating the App](App-Updates).

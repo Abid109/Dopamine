@@ -16,6 +16,13 @@ All notable changes to Dopamine are listed here.
 - **Licensing.** Dopamine is now dual-licensed: the GNU AGPL-3.0 for everyone, plus a separate commercial license from the copyright holder (`LICENSE`, `COMMERCIAL-LICENSE.md`). The name, logo, icons and artwork are not licensed. Third-party libraries are listed in `THIRD-PARTY-NOTICES.md`. Earlier versions stay available under the MIT License. Contributions are accepted under the AGPL-3.0 with the right for the maintainer to also license them commercially.
 - A full wiki: new pages for notifications and permissions and for what is new, and every page brought up to date.
 
+### Security
+- **Release build.** The published APK is now a signed release build instead of a debug build, so it is not debuggable. The workflow checks the signature, the signing key and the debuggable flag before publishing.
+- **No Android backups.** Android's cloud backup and `adb backup` of the app's data are turned off. Data is not restored automatically on a new phone any more: use Export JSON, sign in, or Share and Receive.
+- **Checksum for updates.** Release notes now contain the APK's SHA-256. The app checks it while downloading and refuses a release without one.
+- **Dependabot** for npm libraries and GitHub Actions, **CodeQL** scanning, GitHub Actions pinned to exact commits, read-only workflow permissions and one release build at a time.
+- `SECURITY.md` explains how updates are protected and lists the repository settings to turn on.
+
 ### Changed
 - **Normal notifications again.** Alerts (rest timer, workout session, calendar, goals) now arrive as regular notifications with sound, vibration and a pop-up banner. The older silent channels are removed on first launch and replaced by new ones.
 - Reminder notifications (full screen) also make sound and vibrate.
