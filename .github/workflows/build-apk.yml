@@ -215,3 +215,32 @@ jobs:
           # everyone has updated to a build that reads the Latest release.
           gh release delete latest --yes --cleanup-tag || true
           gh release create latest Dopamine.apk --title "Dopamine APK (compatibility)" --notes-file notes.txt --target ${{ github.sha }} --prerelease --latest=false
+
+      - name: Publish the update feed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_NUMBER: ${{ github.run_number }}
+          REPO: ${{ github.repository }}
+        run: |
+          # A one-file branch the app reads to find the newest version without calling the GitHub API.
+          export SIZE=$(stat -c %s Dopamine.apk)
+          CH=$(git log -1 --pretty=%b | head -1)
+          [ -z "$CH" ] && CH=$(git log -1 --pretty=%s)
+          export CHANGES=$(printf '%s' "$CH" | tr -d '\r' | cut -c1-120)
+          mkdir "$RUNNER_TEMP/feed" && cd "$RUNNER_TEMP/feed"
+          node -e '
+            const e = process.env;
+            const feed = {
+              build: Number(e.RUN_NUMBER), name: e.APP_VERSION, tag: "v" + e.APP_VERSION,
+              url: "https://github.com/" + e.REPO + "/releases/download/v" + e.APP_VERSION + "/Dopamine.apk",
+              size: Number(e.SIZE), sha256: e.APK_SHA256, date: new Date().toISOString(), changes: e.CHANGES
+            };
+            require("fs").writeFileSync("update.json", JSON.stringify(feed, null, 2) + "\n");
+          '
+          git init -q -b update-feed
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add update.json
+          git commit -q -m "Update feed for ${APP_VERSION}"
+          AUTH=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          git -c http.extraHeader="Authorization: Basic ${AUTH}" push -f "https://github.com/${REPO}.git" update-feed

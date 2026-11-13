@@ -19,6 +19,7 @@ All notable changes to Dopamine are listed here.
 ### Release and packaging
 - **Version numbers are now one scheme.** `package.json` is `1.9.0`; every build is `<major>.<minor>.<run number>` (for example `1.9.42`) and the Android `versionCode` is the run number.
 - **Tagged releases.** Each build publishes a normal release tagged `v<version>` (marked Latest) with `Dopamine.apk` under the same name every time, and the SHA-256 and signing certificate fingerprint in the notes. A pre-release tagged `latest` is still refreshed so apps installed before this change can update. The in-app updater now reads the Latest release.
+- **Fixed: "GitHub is limiting requests" in App updates.** The app now reads a small `update.json` from the `update-feed` branch (published by every build) instead of the GitHub API, which limits requests per IP address and often blocks phones on shared mobile networks. The API is only a fallback. Install this build by hand once; later updates use the new method.
 - **Obtainium** install and update steps are in the README.
 - **Fonts and the PDF library are bundled.** Inter, Newsreader and JetBrains Mono (`www/fonts/`) and jsPDF with AutoTable (`www/vendor/`) are inside the app, so nothing is loaded from Google Fonts or cdnjs and the app works fully offline.
 - `PRIVACY.md` and `THIRD-PARTY-NOTICES.md` list what the app really loads and every bundled library and font with its license.
