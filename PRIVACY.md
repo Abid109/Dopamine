@@ -35,6 +35,10 @@ Only when you decide:
   - **Optional sign in and sync (Supabase):** see Sign in and sync above.
   No personal data is included in any of these requests, apart from what is stated for sign in and sync.
 
+## Web version
+
+If you use Dopamine in a browser (the website or an installed web app) the same rules apply, with these differences. Your data is stored in that browser on your device, and the browser, not Dopamine, decides when it can be cleared, so export a backup now and then. The website is hosted on GitHub Pages, so GitHub sees your IP address when you open it, like any website visit. There are no cookies set by Dopamine and no analytics. Location is used only while a run or walk is recording, only if you allow it in the browser. Notifications use the browser's own permission and only appear while the app is open.
+
 ## Deleting your data
 
 - Delete your cloud backup from the **Profile** page, then **Delete my cloud backup**.

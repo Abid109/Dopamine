@@ -37,3 +37,8 @@ The release named **Dopamine APK** with the tag `latest` is replaced every time 
 ## Problems?
 
 See [Troubleshooting](Troubleshooting).
+
+
+## Web app (iPhone and any browser)
+
+Open https://abid109.github.io/Dopamine/ . On an iPhone use Safari, tap Share, then **Add to Home Screen**. In Chrome or Edge use the install icon in the address bar. It works offline after the first load. On the web, alerts only fire while the app is open, GPS tracking needs the app in front with the screen on, and your data lives in the browser, so export a backup now and then.

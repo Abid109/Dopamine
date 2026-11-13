@@ -47,6 +47,14 @@
 
 Every release is a normal tagged release (for example `v1.9.42`) with the APK under the same file name, `Dopamine.apk`. The release notes list the file's SHA-256 and the signing certificate fingerprint so you can check it.
 
+### iPhone, desktop and any browser (web app)
+
+Dopamine also runs as a web app (PWA) published from the `www/` folder to GitHub Pages: **https://abid109.github.io/Dopamine/**. A download page with the APK, checksums and install steps is at `/download/`.
+
+- **iPhone:** open the site in Safari, tap Share, then **Add to Home Screen**.
+- **Chrome or Edge:** use the install icon in the address bar.
+- It works offline after the first load. Limits: alerts only fire while the app is open, GPS tracking only records while the screen is on and the app is in front, and browsers can clear web-app data, so export a JSON backup now and then.
+
 ### Install and update with Obtainium
 
 [Obtainium](https://obtainium.imranr.dev) installs apps straight from GitHub releases and tells you when a new version is out.

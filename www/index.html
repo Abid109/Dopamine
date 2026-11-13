@@ -9,6 +9,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Dopamine Fit — Calisthenics Workout Tracker</title>
+  <script src="platform.js"></script>
+  <meta name="theme-color" content="#0a0a0d" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Dopamine" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="description" content="Offline-first calisthenics workout tracker, routine calendar planner, calorie tracker, and timers." />
   <meta property="og:title" content="Dopamine Fit — Calisthenics Workout Tracker" />
   <meta property="og:description" content="Offline-first calisthenics workout tracker, routine calendar planner, calorie tracker, and timers." />
@@ -31,6 +40,13 @@
     } catch (e) { }
   </script>
   <link rel="stylesheet" href="tailwind.css">
+  <style>
+    /* Show or hide parts of the page by platform (see platform.js) */
+    html:not([data-platform="capacitor"]) .native-only { display: none !important; }
+    html[data-platform="capacitor"] .web-only { display: none !important; }
+    html:not([data-platform="desktop"]) .desktop-only { display: none !important; }
+    html[data-platform="desktop"] .phone-only { display: none !important; }
+  </style>
   <script>
 /* Dopamine cloud sync: merge logic (pure functions, no network) */
 (function (g) {
@@ -1203,6 +1219,7 @@
 
         <div>
           <div class="fc-label"><span>Run &amp; walk</span><span id="trk-state" class="trk-state">Ready</span></div>
+          <p class="web-only fc-sub px-2 pb-2">In a browser, tracking only records while this screen stays open and awake. Phones pause web apps in the background, so use the Android app for tracking with the screen off. On an iPhone, GPS needs Dopamine to stay in the foreground.</p>
           <div class="fc-group">
             <div class="fc-block">
               <div class="trk-seg" role="tablist" aria-label="Activity type">
@@ -1274,11 +1291,11 @@
               <div class="fc-text"><div class="fc-title">Notifications</div><p id="tperm-notif-sub" class="fc-sub"></p></div>
               <button id="tperm-notif-btn" class="fc-btn" onclick="trkAskPermission('notif')">Allow</button>
             </div>
-            <div class="fc-row">
+            <div class="fc-row native-only">
               <div class="fc-text"><div class="fc-title">Battery optimization</div><p id="tperm-batt-sub" class="fc-sub"></p></div>
               <button id="tperm-batt-btn" class="fc-btn" onclick="trkAskPermission('batt')">Allow</button>
             </div>
-            <div class="fc-row">
+            <div class="fc-row native-only">
               <div class="fc-text"><p class="fc-sub">On some phones (Xiaomi, Huawei, Samsung) also set Battery to Unrestricted in the app info page.</p></div>
               <button class="fc-btn" onclick="trkOpenAppSettings()">App info</button>
             </div>
@@ -1557,7 +1574,7 @@
           <button class="fc-row fc-nav" onclick="openSettingsPage('privacy')"><svg class="fc-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path></svg><span class="fc-title">Privacy</span><svg class="fc-chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
           </div>
         </div>
-        <div>
+        <div class="native-only">
           <div class="fc-label">About</div>
           <div class="fc-group">
           <button class="fc-row fc-nav" onclick="openSettingsPage('updates')"><svg class="fc-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg><span class="fc-title">App updates</span><span id="sh-upd-val" class="fc-val"></span><svg class="fc-chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
@@ -1776,6 +1793,7 @@
 
             <div>
               <div class="fc-label">Notifications</div>
+              <p class="web-only fc-sub px-2 pb-2">On the web, timers and reminders only alert you while Dopamine is open. Closed web apps cannot wake up, and iPhone has no background timers for web apps. The Android app keeps reminders even when it is closed.</p>
               <div class="fc-group">
                 <div class="fc-row">
                   <div class="fc-text">
@@ -1784,7 +1802,7 @@
                   </div>
                   <button onclick="toggleNotifications()" id="notify-toggle-btn" class="fc-btn">Turn off</button>
                 </div>
-                <div id="fs-perm-row" class="fc-row hidden">
+                <div id="fs-perm-row" class="fc-row hidden native-only">
                   <div class="fc-text">
                     <div class="fc-title">Full-screen reminders</div>
                     <p id="fs-perm-sub" class="fc-sub">Planner and calendar reminders open a full screen with a Dismiss button</p>
@@ -1811,7 +1829,7 @@
                   </div>
                   <button onclick="trkAskPermission('loc')" id="perm-loc-btn" class="fc-btn">Allow</button>
                 </div>
-                <div class="fc-row">
+                <div class="fc-row native-only">
                   <div class="fc-text">
                     <div class="fc-title">Battery optimization</div>
                     <p id="perm-batt-sub" class="fc-sub"><span class="fc-dot"></span>Checking...</p>
@@ -1848,6 +1866,7 @@
             <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[var(--accent)]"><line x1="22" x2="2" y1="12" y2="12"></line><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path><line x1="6" x2="6.01" y1="16" y2="16"></line><line x1="10" x2="10.01" y1="16" y2="16"></line></svg> Local Data & Export
             </h2>
+            <p class="web-only text-[11px] leading-relaxed text-[var(--text-muted)]">Your data is stored in this browser. Browsers (especially Safari) can clear it if you do not use the site for a while or storage runs low. Export a JSON backup now and then.</p>
             <div class="space-y-2">
               <button onclick="downloadPdfReport()" id="btn-download-pdf" class="w-full p-3 rounded-xl bg-[var(--accent)] text-black font-bold text-xs hover:brightness-110 flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.98]">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M12 18v-6"></path><path d="m9 15 3 3 3-3"></path></svg> Download Fitness Report (PDF)
@@ -4878,8 +4897,9 @@
     // ========================================================
 
     // ===== Native Android (Capacitor) file export: write to cache, then open in a viewer / share sheet =====
+    // True only inside the Android (Capacitor) app. Other code asks Platform (platform.js); this name stays for existing callers.
     function isNativeApp() {
-      try { return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); } catch (e) { return false; }
+      try { return window.Platform ? window.Platform.isCapacitor() : !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); } catch (e) { return false; }
     }
     function blobToBase64(blob) {
       return new Promise((resolve, reject) => {
@@ -5709,7 +5729,60 @@
     const NOTIF_ICON = { smallIcon: 'ic_stat_icon', largeIcon: 'ic_notif_large', iconColor: '#F59E0B' };
     function chId(c) { return String(c).replace(/_(silent|v2)$/, '') + '_v2'; }
     function notifPlugin() {
-      try { return isNativeApp() && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications || null; } catch (e) { return null; }
+      try {
+        if (isNativeApp()) return window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications || null;
+        return webNotifPlugin();
+      } catch (e) { return null; }
+    }
+    // Web fallback with the same small API as the Capacitor plugin. Alerts are shown by the browser and are
+    // timed by this page, so they only fire while the app is open (browsers have no background timers for web apps).
+    let webNotifSingleton = null;
+    function webNotifPlugin() {
+      if (typeof Notification === 'undefined') return null;
+      if (webNotifSingleton) return webNotifSingleton;
+      const timers = new Map(), listeners = [];
+      const permNow = () => Notification.permission === 'granted' ? 'granted' : (Notification.permission === 'denied' ? 'denied' : 'prompt');
+      const fire = (extra) => listeners.forEach(fn => { try { fn({ notification: { extra: extra || {} } }); } catch (e) { } });
+      async function show(n) {
+        if (Notification.permission !== 'granted') return;
+        const opts = { body: n.body || '', icon: 'icons/icon-192.png', badge: 'icons/favicon-32.png', tag: 'dopamine-' + n.id, data: n.extra || {} };
+        try {
+          const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+          if (reg && reg.showNotification) { await reg.showNotification(n.title || 'Dopamine', opts); return; }
+        } catch (e) { }
+        try {
+          const x = new Notification(n.title || 'Dopamine', opts);
+          x.onclick = () => { try { window.focus(); } catch (e) { } fire(n.extra); x.close(); };
+        } catch (e) { }
+      }
+      if (navigator.serviceWorker) {
+        try { navigator.serviceWorker.addEventListener('message', ev => { if (ev.data && ev.data.type === 'dopamine-notification') fire(ev.data.extra); }); } catch (e) { }
+      }
+      webNotifSingleton = {
+        createChannel: async () => { }, deleteChannel: async () => { },
+        checkPermissions: async () => ({ display: permNow() }),
+        requestPermissions: async () => {
+          try { const r = await Notification.requestPermission(); return { display: r === 'granted' ? 'granted' : (r === 'denied' ? 'denied' : 'prompt') }; }
+          catch (e) { return { display: permNow() }; }
+        },
+        schedule: async (o) => {
+          (o.notifications || []).forEach(n => {
+            const old = timers.get(n.id); if (old) { clearTimeout(old.timer); timers.delete(n.id); }
+            const at = n.schedule && n.schedule.at ? new Date(n.schedule.at).getTime() : 0;
+            const ms = at - Date.now();
+            if (!at || ms <= 0) { show(n); return; }
+            if (ms > 2147483000) return; // longer than a browser timer can wait; the app re-schedules when it opens
+            timers.set(n.id, { n, timer: setTimeout(() => { timers.delete(n.id); show(n); }, ms) });
+          });
+        },
+        cancel: async (o) => { (o.notifications || []).forEach(n => { const t = timers.get(n.id); if (t) { clearTimeout(t.timer); timers.delete(n.id); } }); },
+        getPending: async () => ({ notifications: Array.from(timers.values()).map(v => ({ id: v.n.id })) }),
+        removeAllDeliveredNotifications: async () => {
+          try { const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration(); if (reg) (await reg.getNotifications()).forEach(x => x.close()); } catch (e) { }
+        },
+        addListener: (name, fn) => { if (name === 'localNotificationActionPerformed') listeners.push(fn); return { remove: () => { const i = listeners.indexOf(fn); if (i >= 0) listeners.splice(i, 1); } }; }
+      };
+      return webNotifSingleton;
     }
     // Native full-screen reminder plugin (see android-native/). Null in the browser or when missing.
     function fsPlugin() {
@@ -5731,6 +5804,12 @@
       try { await P.openFullScreenSettings(); } catch (e) { }
     }
     function notifEnabled() { return appState.settings.notifyOn !== false; }
+    // On the web the browser must also have allowed notifications; in the app Android handles that.
+    function notifActive() {
+      if (!notifEnabled()) return false;
+      if (isNativeApp()) return true;
+      return typeof Notification !== 'undefined' && Notification.permission === 'granted';
+    }
 
     // Sets up channels and permission once. Resolves true when notifications may be shown.
     function notifInit(askPermission) {
@@ -5852,13 +5931,20 @@
     function updateNotifyUi() {
       const btn = document.getElementById('notify-toggle-btn'), sub = document.getElementById('notify-sub');
       if (!btn || !sub) return;
-      const on = notifEnabled();
+      const on = notifActive();
       btn.textContent = on ? 'Turn off' : 'Turn on';
-      sub.textContent = !isNativeApp() ? 'Available in the Android app'
-        : on ? 'On: rest timer, workout session and calendar reminders' : 'Off: no alerts will be shown';
+      if (!isNativeApp() && !notifPlugin()) {
+        sub.textContent = Platform.isIOS() ? 'On iPhone, add Dopamine to your Home Screen first (Share, Add to Home Screen)' : 'This browser does not support notifications';
+        btn.classList.add('hidden');
+        return;
+      }
+      btn.classList.remove('hidden');
+      sub.textContent = isNativeApp()
+        ? (on ? 'On: rest timer, workout session and calendar reminders' : 'Off: no alerts will be shown')
+        : (on ? 'On: alerts show while Dopamine is open' : 'Off: tap Turn on and allow notifications in your browser');
     }
     async function toggleNotifications() {
-      if (notifEnabled()) {
+      if (notifActive()) {
         appState.settings.notifyOn = false;
         saveState();
         await notifyCancelAll();
@@ -5870,11 +5956,11 @@
       appState.settings.notifyOn = true;
       saveState();
       updateNotifyUi();
-      if (!isNativeApp()) { showToast('Notifications work in the Android app'); return; }
+      if (!notifPlugin()) { appState.settings.notifyOn = false; saveState(); updateNotifyUi(); showToast('This browser does not support notifications'); return; }
       const ok = await notifInit(true);
       if (!ok) {
         appState.settings.notifyOn = false; saveState(); updateNotifyUi();
-        showToast('Allow notifications for Dopamine in Android settings', 4000);
+        showToast(isNativeApp() ? 'Allow notifications for Dopamine in Android settings' : 'Allow notifications for this site in your browser settings', 4000);
         return;
       }
       syncPlanReminders();
@@ -5895,7 +5981,8 @@
       const LN = notifPlugin();
       if (!LN) { updateNotifyUi(); return; }
       try { LN.addListener('localNotificationActionPerformed', ev => handleNotificationTap(ev && ev.notification && ev.notification.extra)); } catch (e) { }
-      if (notifEnabled()) notifInit(true).then(ok => { if (ok) syncPlanReminders(); });
+      // The app asks for permission at launch; a browser only after the person taps Turn on (browsers block unrequested prompts).
+      if (notifEnabled()) notifInit(isNativeApp()).then(ok => { if (ok) syncPlanReminders(); });
       updateNotifyUi();
     }
 
@@ -6102,7 +6189,17 @@
       setupNativeBackButton();
       setupNotifications();
       acctInit();
+      setupWebApp();
     });
+
+    // Website / PWA only: offline support, and a request that the browser keep the data
+    function setupWebApp() {
+      if (!Platform.isBrowser()) return;
+      try {
+        if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => { });
+      } catch (e) { }
+      try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => { }); } catch (e) { }
+    }
   </script>
   <script src="tracker.js"></script>
   <script src="updater.js"></script>
