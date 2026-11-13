@@ -49,11 +49,8 @@ jobs:
         working-directory: desktop
         run: npm run check
 
-      - name: Install rpm tools (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y rpm
-
-      - name: Build installers
+      - name: Build installers (Windows and macOS)
+        if: runner.os != 'Linux'
         working-directory: desktop
         shell: bash
         run: |
@@ -62,6 +59,22 @@ jobs:
           else
             npx electron-builder --publish never
           fi
+
+      - name: Build installers (Linux AppImage and deb)
+        if: runner.os == 'Linux'
+        working-directory: desktop
+        run: npx electron-builder --publish never --linux AppImage deb
+
+      # The rpm needs the rpm tools. It is built in its own step so a problem with it
+      # cannot stop the AppImage and deb from being published.
+      - name: Build rpm (Linux, optional)
+        if: runner.os == 'Linux'
+        continue-on-error: true
+        working-directory: desktop
+        run: |
+          sudo apt-get update || true
+          sudo apt-get install -y rpm
+          npx electron-builder --publish never --linux rpm
 
       - name: Collect installers
         shell: bash
