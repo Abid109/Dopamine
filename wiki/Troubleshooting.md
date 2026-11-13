@@ -58,6 +58,38 @@ Data lives inside the app. It is lost if the app is uninstalled or if you used *
 - Install the new APK **over** the old app. Do not uninstall first.
 - If Android says the app conflicts with the existing one, the old app was installed from a build made before the fixed signing key. Back up your data (sign in on the **Profile** page so it syncs, or use **Export JSON**), uninstall once, and install the new APK. Every update after that installs over the old app. See [Updating the App](App-Updates).
 
+## Run and walk tracking
+
+**Start says location is needed or blocked.** Allow location when Android asks. If you chose "Don't allow" before, tap **Settings** on the Run tab's permission card (or **App info**) and allow Location for Dopamine.
+
+**The distance is too low or the route is jumpy.** Start outdoors and wait for the GPS accuracy on the Run tab to drop below about 20 m. Fixes worse than about 35 m, tiny movements while standing still and impossible jumps are ignored on purpose. Keep the phone in a pocket or armband, not deep in a bag.
+
+**Tracking stopped when the screen turned off.** Allow **Battery optimization** for Dopamine ([Notifications and Permissions](Notifications-and-Permissions)). On Xiaomi, Huawei, Samsung and some other phones also open the app info page and set Battery to **Unrestricted**, and allow notifications so the tracking notification can stay visible.
+
+**The map is blank or grey.** The map pictures need internet. Your route is still recorded and drawn. Connect and reopen the Run tab.
+
+**The app was closed during a run.** Reopen the Run tab. The route so far is kept, and you can **Resume**, **Save** or **Discard** it.
+
+## Notifications
+
+**No sound or pop-up.** Open Android **Settings**, **Apps**, **Dopamine**, **Notifications** and check the type's sound and importance. Check that Do Not Disturb and silent mode are off. If you upgraded from an older version, reopen the app once so the new alert channels are created.
+
+**No notifications at all.** Turn on **Notifications** in **Settings**, **Timers & alerts**, and allow the notification permission in Android settings.
+
+**Full-screen reminders do not open.** Tap **Allow** on the Full-screen reminders row in **Settings**, **Timers & alerts**. On Android 14 and later this is a separate permission page.
+
+## In-app updates
+
+**The button says Check for updates and nothing is found.** You already have the newest version, or the phone is offline. GitHub also limits how often it answers one network, so try again later.
+
+**It asks me to allow installing unknown apps.** Allow "Install unknown apps" for Dopamine on the page that opens, go back and tap **Download and install** again. Android always asks you to confirm the install itself.
+
+**"The update is not signed with the Dopamine key".** The new file was built with a different signing key than your installed app, so Android would refuse it. Back up your data (sign in, or **Export JSON**), uninstall once, and install the newest APK by hand. See [Updating the App](App-Updates).
+
+**"You already have this version" or "download was incomplete".** Tap the button again. The file is checked before Android opens it, so a broken download is thrown away safely.
+
+**The first update has to be done by hand.** The app can update itself only after you have installed a version that includes in-app updates. See [Updating the App](App-Updates).
+
 ## Something else
 
 [Report a bug](https://github.com/Abid109/Dopamine/issues/new/choose) with your phone model and Android version.

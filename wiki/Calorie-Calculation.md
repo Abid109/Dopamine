@@ -61,6 +61,10 @@ For custom exercises you choose **Counted in** (repetitions or seconds) and an i
 
 Earlier versions counted the whole duration at full effort and then added a bonus for every repetition. For normal sets with rests, that overstated the burn by roughly two to three times. Workouts you logged before keep their saved numbers. New workouts use this method.
 
+## Run and walk
+
+The Run tab estimates calories from your distance, time and weight with standard walking and running equations. It uses the weight in your [Profile](Profile-and-Biometrics) (70 kg if none is set) and follows your **Calorie Count** setting: active calories only, or including resting. These calories are shown on the Run tab and in the route history. They are separate from the workout calories on the [Dashboard](Dashboard).
+
 ## Not counted
 
 The extra energy burned for some hours after hard training (the afterburn effect) is not included.

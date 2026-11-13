@@ -1,6 +1,7 @@
 **Dopamine**
 
 - [Home](Home)
+- [What's New](Whats-New)
 - [Installation](Installation)
 - [Getting Started](Getting-Started)
 
@@ -10,16 +11,17 @@
 - [Logging Workouts](Logging-Workouts)
 - [Exercise Library](Exercise-Library)
 - [Calorie Calculation](Calorie-Calculation)
+- [Run and Walk Tracking](Run-and-Walk-Tracking)
 - [Calendar Planner](Calendar-Planner)
 - [Notes and Journal](Notes-and-Journal)
 - [Profile and Biometrics](Profile-and-Biometrics)
-- [Run and Walk Tracking](Run-and-Walk-Tracking)
 - [Timers](Timers)
+- [Notifications and Permissions](Notifications-and-Permissions)
 - [Sign In and Sync](Account-and-Sync)
-- [Updating the App](App-Updates)
 - [Share and Receive](Share-and-Receive)
 - [PDF Reports and Backup](PDF-Reports-and-Backup)
 - [Settings and Themes](Settings-and-Themes)
+- [Updating the App](App-Updates)
 
 **Help**
 
