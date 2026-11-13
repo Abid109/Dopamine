@@ -17,9 +17,6 @@ on:
     - cron: '23 4 * * 1'   # every Monday
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
@@ -34,18 +31,16 @@ jobs:
           - language: javascript-typescript   # the app (index.html, tracker.js, updater.js)
           - language: java-kotlin             # android-native/java
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-        with:
-          persist-credentials: false
+      - uses: actions/checkout@v4
 
       - name: Start CodeQL
-        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: none
           config-file: ./.github/codeql/codeql-config.yml
 
       - name: Analyze
-        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{ matrix.language }}"

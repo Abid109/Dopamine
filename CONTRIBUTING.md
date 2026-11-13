@@ -31,7 +31,7 @@ Open an issue with the **Feature request** form and describe the problem you wan
 
 ## Security
 
-Report vulnerabilities privately (see [SECURITY.md](SECURITY.md)). Pull requests are scanned with CodeQL. Do not add network calls that send user data, do not turn Android backup or debugging back on, and keep every GitHub Action pinned to a commit.
+Report vulnerabilities privately (see [SECURITY.md](SECURITY.md)). Pull requests are scanned with CodeQL, and Dependabot opens pull requests for library and GitHub Action updates.
 
 ## Licensing of contributions
 

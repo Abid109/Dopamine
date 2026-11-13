@@ -9,7 +9,7 @@ Every push to `main` runs the **Build Dopamine APK** workflow, which:
 1. Installs Node and Java 17
 2. Adds the Android platform with Capacitor
 3. Applies the launcher icons, app name and a version number that goes up with every build, adds the camera, notification, battery optimization and install permissions, and adds the native files from `android-native/` (full-screen reminders and in-app updates)
-4. Turns off Android backup in the manifest, then builds a signed **release** APK with Gradle (with retries and a mirror fallback)
+4. Builds a debug APK with Gradle (with retries and a mirror fallback)
 5. Publishes `Dopamine.apk` to the **latest** release
 
 The build signs the APK with a permanent key stored in the `ANDROID_KEYSTORE_B64` repository secret. See [Updating the App](App-Updates) for the one-time setup.
@@ -33,7 +33,7 @@ cd android
 ./gradlew assembleDebug
 ```
 
-The APK is created at `android/app/build/outputs/apk/debug/app-debug.apk`. This local debug build is debuggable and is only for your own testing. The published app is a release build made by the workflow.
+The APK is created at `android/app/build/outputs/apk/debug/app-debug.apk`.
 
 ## Capacitor plugins
 
@@ -60,16 +60,12 @@ The QR libraries and Leaflet are included in the app so they work without downlo
 
 ## Releases and in-app updates
 
-Every build deletes and recreates the GitHub release tagged `latest` with `Dopamine.apk`. The release notes contain three lines the app reads: `build:<run number>`, `changes:<one line from the merge commit>` and `sha256:<checksum of the APK>`. Do not rename them or the asset, and keep the repository public, or in-app updates stop working. The app refuses to install a release that has no checksum. See [Updating the App](App-Updates) and [Architecture](Architecture).
+Every build deletes and recreates the GitHub release tagged `latest` with `Dopamine.apk`. The release notes contain two lines the app reads: `build:<run number>` and `changes:<one line from the merge commit>`. Do not rename them or the asset, and keep the repository public, or in-app updates stop working. See [Updating the App](App-Updates) and [Architecture](Architecture).
 
-## Build security
+## Automatic checks
 
-- **Release build, not debuggable.** The workflow builds `assembleRelease` signed with the permanent key. Before publishing it checks the APK signature with `apksigner`, that the signer matches the Dopamine key, and that the APK is not debuggable. Any failed check stops the release and the previous release stays.
-- **Android backup off.** The build sets `android:allowBackup="false"`, so Android's cloud backup and `adb backup` cannot copy the app's data. To allow Android backups again, remove the **Harden the app manifest** step.
-- **Pinned actions.** Every GitHub Action is pinned to an exact commit (the version is in a comment). Dependabot proposes updates to them.
-- **Least privilege.** Workflows are read-only by default. Only the build job can write, to publish the release.
-- **Dependabot** (`.github/dependabot.yml`) proposes npm and Action updates weekly. Capacitor and Tailwind major versions are skipped on purpose. Libraries in `www/vendor/` are not covered: check them by hand now and then.
-- **CodeQL** (`.github/workflows/codeql.yml`) scans the JavaScript and Java code on every change and every Monday. Results are under the repository's **Security** tab.
+- **Dependabot** (`.github/dependabot.yml`) proposes npm and GitHub Action updates weekly. Capacitor and Tailwind major versions are skipped on purpose, because a new major needs a code change and a test on a phone. Libraries in `www/vendor/` are not covered: check them by hand now and then.
+- **CodeQL** (`.github/workflows/codeql.yml`) scans the JavaScript and Java code on every change and every Monday. Results are under the repository's **Security** tab. If you turn on CodeQL's "default setup" in the repository settings, remove this workflow to avoid running it twice.
 
 ## Wiki
 

@@ -10,7 +10,7 @@ Please keep user data private, keep saved data compatible, and test on a real An
 
 ## Security checks
 
-Pull requests run a CodeQL scan. Dependabot opens pull requests for library and GitHub Action updates; review them like any other change and test on a phone when they touch Capacitor. Libraries in `www/vendor/` are updated by hand. See [Building from Source](Building-from-Source) for how the build is secured, and report vulnerabilities privately as described in [SECURITY.md](https://github.com/Abid109/Dopamine/blob/main/SECURITY.md).
+Pull requests run a CodeQL scan. Dependabot opens pull requests for library and GitHub Action updates; review them like any other change and test on a phone when they touch Capacitor. Libraries in `www/vendor/` are updated by hand. Report vulnerabilities privately as described in [SECURITY.md](https://github.com/Abid109/Dopamine/blob/main/SECURITY.md). See [Building from Source](Building-from-Source).
 
 ## Licensing
 

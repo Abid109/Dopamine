@@ -17,11 +17,9 @@ All notable changes to Dopamine are listed here.
 - A full wiki: new pages for notifications and permissions and for what is new, and every page brought up to date.
 
 ### Security
-- **Release build.** The published APK is now a signed release build instead of a debug build, so it is not debuggable. The workflow checks the signature, the signing key and the debuggable flag before publishing.
-- **No Android backups.** Android's cloud backup and `adb backup` of the app's data are turned off. Data is not restored automatically on a new phone any more: use Export JSON, sign in, or Share and Receive.
-- **Checksum for updates.** Release notes now contain the APK's SHA-256. The app checks it while downloading and refuses a release without one.
-- **Dependabot** for npm libraries and GitHub Actions, **CodeQL** scanning, GitHub Actions pinned to exact commits, read-only workflow permissions and one release build at a time.
-- `SECURITY.md` explains how updates are protected and lists the repository settings to turn on.
+- **Dependabot** opens pull requests for npm library and GitHub Action updates.
+- **CodeQL** scans the JavaScript and Java code on every change and every Monday.
+- `SECURITY.md` lists the automated checks and the repository settings to turn on.
 
 ### Changed
 - **Normal notifications again.** Alerts (rest timer, workout session, calendar, goals) now arrive as regular notifications with sound, vibration and a pop-up banner. The older silent channels are removed on first launch and replaced by new ones.

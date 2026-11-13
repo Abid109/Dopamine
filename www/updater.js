@@ -56,8 +56,7 @@
         var asset = (j.assets || []).filter(function (a) { return /\.apk$/i.test(a.name || ''); })[0];
         if (!m || !asset || String(asset.browser_download_url || '').indexOf(URL_PREFIX) !== 0) throw new Error('The release has no usable app file.');
         var ch = /changes:\s*(.+)/.exec(j.body || '');
-        var sh = /sha256:\s*([0-9a-fA-F]{64})(?![0-9a-fA-F])/.exec(j.body || '');
-        return { build: parseInt(m[1], 10), url: asset.browser_download_url, size: asset.size || 0, date: j.published_at || asset.updated_at || '', changes: ch ? ch[1].trim() : '', sha256: sh ? sh[1].toLowerCase() : '' };
+        return { build: parseInt(m[1], 10), url: asset.browser_download_url, size: asset.size || 0, date: j.published_at || asset.updated_at || '', changes: ch ? ch[1].trim() : '' };
       });
   }
 
@@ -140,10 +139,6 @@
 
   function install() {
     if (busy || !available()) return Promise.resolve();
-    if (!remote.sha256) {
-      setStatus('This release has no checksum, so the app will not install it. Update by hand from the Releases page.');
-      return Promise.resolve();
-    }
     busy = true; progress = null; setStatus('Getting ready...');
     return call('canInstallPackages').then(function (r) {
       if (!r.value) {
@@ -155,7 +150,7 @@
         if (st.state === 'ready' && S.downloadedBuild === remote.build) return null;
         return call('resetUpdate').then(function () {
           progress = 0; setStatus('Downloading... 0%');
-          return call('startUpdateDownload', { url: remote.url, size: remote.size, sha256: remote.sha256 });
+          return call('startUpdateDownload', { url: remote.url, size: remote.size });
         }).then(pollDownload).then(function () { S.downloadedBuild = remote.build; save(); });
       });
     }).then(function (stop) {
