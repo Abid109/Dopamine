@@ -120,8 +120,33 @@ jobs:
             echo
             echo "Check a download against SHA256SUMS.txt."
           } > notes.txt
-          # Never mark this as Latest: the Android app and Obtainium read the Latest release.
-          gh release create "$GITHUB_REF_NAME" out/* --title "Dopamine desktop ${VERSION}" --notes-file notes.txt --latest=false
+          # Never mark these as Latest, and mark them pre-release: the Android app and Obtainium read the Latest
+          # (non-pre-release) release, so they must never pick a desktop release.
+          gh release create "$GITHUB_REF_NAME" out/* --title "Dopamine desktop ${VERSION}" --notes-file notes.txt --latest=false --prerelease
+
+          # One-click links: a release tagged desktop-latest always holds the newest build under file names
+          # without a version number, so the README and the download page can link to them directly,
+          # e.g. https://github.com/<repo>/releases/download/desktop-latest/Dopamine-win-x64.exe
+          mkdir stable
+          for f in out/*; do
+            n=$(basename "$f")
+            cp "$f" "stable/${n/-${VERSION}/}"
+          done
+          (cd stable && sha256sum $(ls | grep -v '^SHA256SUMS.txt$') > SHA256SUMS.txt)
+          ls -la stable
+          {
+            echo "The newest Dopamine desktop build (version ${VERSION}) under fixed file names, so download links never change."
+            echo "The same files are also kept under the release tagged ${GITHUB_REF_NAME}."
+            echo
+            echo "Windows: Dopamine-win-x64.exe"
+            echo "macOS (Apple silicon): Dopamine-mac-arm64.dmg"
+            echo "macOS (Intel): Dopamine-mac-x64.dmg"
+            echo "Linux: Dopamine-linux-x86_64.AppImage, Dopamine-linux-amd64.deb, Dopamine-linux-x86_64.rpm"
+            echo
+            echo "Not signed with a paid certificate: Windows SmartScreen and macOS Gatekeeper may warn on first launch. Check files against SHA256SUMS.txt."
+          } > notes-latest.txt
+          gh release delete desktop-latest --yes --cleanup-tag || true
+          gh release create desktop-latest stable/* --title "Dopamine desktop (newest)" --notes-file notes-latest.txt --latest=false --prerelease --target "$GITHUB_SHA"
 
       - name: Publish the desktop update feed
         env:
