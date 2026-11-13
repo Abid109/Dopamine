@@ -62,6 +62,11 @@ The QR libraries and Leaflet are included in the app so they work without downlo
 
 Every build deletes and recreates the GitHub release tagged `latest` with `Dopamine.apk`. The release notes contain two lines the app reads: `build:<run number>` and `changes:<one line from the merge commit>`. Do not rename them or the asset, and keep the repository public, or in-app updates stop working. See [Updating the App](App-Updates) and [Architecture](Architecture).
 
+## Automatic checks
+
+- **Dependabot** (`.github/dependabot.yml`) proposes npm and GitHub Action updates weekly. Capacitor and Tailwind major versions are skipped on purpose, because a new major needs a code change and a test on a phone. Libraries in `www/vendor/` are not covered: check them by hand now and then.
+- **CodeQL** (`.github/workflows/codeql.yml`) scans the JavaScript and Java code on every change and every Monday. Results are under the repository's **Security** tab. If you turn on CodeQL's "default setup" in the repository settings, remove this workflow to avoid running it twice.
+
 ## Wiki
 
 The pages in `wiki/` are copied to the GitHub wiki by the **Sync wiki** workflow whenever they change on `main`. GitHub only creates the wiki repository after one page is saved in the browser, so do that once: open the **Wiki** tab, click **Create the first page**, save, then run **Sync wiki** from the **Actions** tab. See [Contributing](Contributing).

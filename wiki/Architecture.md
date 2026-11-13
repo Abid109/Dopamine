@@ -13,7 +13,8 @@ android-native/java/  Native Android code added by the build (reminders, updates
 android-res/          Launcher icons, notification icons, colours, strings and file paths
 capacitor.config.json App id and name
 wiki/                 These wiki pages (published by a workflow)
-.github/workflows/    APK build and wiki sync
+.github/workflows/    APK build, wiki sync and CodeQL scan
+.github/dependabot.yml Automatic library and Action update pull requests
 ```
 
 The app id is `com.dopamine.fitness`.

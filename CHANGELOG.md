@@ -16,6 +16,11 @@ All notable changes to Dopamine are listed here.
 - **Licensing.** Dopamine is now dual-licensed: the GNU AGPL-3.0 for everyone, plus a separate commercial license from the copyright holder (`LICENSE`, `COMMERCIAL-LICENSE.md`). The name, logo, icons and artwork are not licensed. Third-party libraries are listed in `THIRD-PARTY-NOTICES.md`. Earlier versions stay available under the MIT License. Contributions are accepted under the AGPL-3.0 with the right for the maintainer to also license them commercially.
 - A full wiki: new pages for notifications and permissions and for what is new, and every page brought up to date.
 
+### Security
+- **Dependabot** opens pull requests for npm library and GitHub Action updates.
+- **CodeQL** scans the JavaScript and Java code on every change and every Monday.
+- `SECURITY.md` lists the automated checks and the repository settings to turn on.
+
 ### Changed
 - **Normal notifications again.** Alerts (rest timer, workout session, calendar, goals) now arrive as regular notifications with sound, vibration and a pop-up banner. The older silent channels are removed on first launch and replaced by new ones.
 - Reminder notifications (full screen) also make sound and vibrate.
