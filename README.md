@@ -10,7 +10,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Abid109/Dopamine/releases/latest/download/Dopamine.apk"><b>Download the APK</b></a>
+  <a href="https://github.com/Abid109/Dopamine/releases/latest/download/Dopamine.apk"><b>Download for Android</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/Abid109/Dopamine/releases/download/desktop-latest/Dopamine-win-x64.exe"><b>Windows</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/Abid109/Dopamine/releases/download/desktop-latest/Dopamine-mac-arm64.dmg"><b>macOS</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/Abid109/Dopamine/releases/download/desktop-latest/Dopamine-linux-x86_64.AppImage"><b>Linux</b></a>
   &nbsp;·&nbsp;
   <a href="https://github.com/Abid109/Dopamine/wiki">Wiki</a>
   &nbsp;·&nbsp;
@@ -49,15 +55,16 @@ Every release is a normal tagged release (for example `v1.9.42`) with the APK un
 
 ### Windows, macOS and Linux (desktop app)
 
-The desktop app lives in `desktop/` and wraps the same web code in `www/`. It has its own version number and its own release tags (`desktop-v0.1.0`), separate from the phone app. Downloads are on the [Releases page](https://github.com/Abid109/Dopamine/releases) under releases named "Dopamine desktop", and on the [download page](https://abid109.github.io/Dopamine/download/).
+The desktop app lives in `desktop/` and wraps the same web code in `www/`. It has its own version number and its own release tags (`desktop-v0.1.0`), separate from the phone app. Every download below is a one-click link to the newest build, and the links never change. Everything is also on the [download page](https://abid109.github.io/Dopamine/download/).
 
-| System | File | Notes |
+| System | Download | Notes |
 | --- | --- | --- |
-| Windows | `.exe` installer | Not signed with a paid certificate, so SmartScreen warns: choose More info, then Run anyway. |
-| macOS | `.dmg` (Intel and Apple silicon) | Not notarized: right-click the app, then Open. |
-| Linux | `.AppImage`, `.deb`, `.rpm` | Make the AppImage executable and run it. |
+| Windows | [Dopamine-win-x64.exe](https://github.com/Abid109/Dopamine/releases/download/desktop-latest/Dopamine-win-x64.exe) | Not signed with a paid certificate, so SmartScreen warns: choose More info, then Run anyway. |
+| macOS, Apple silicon | [Dopamine-mac-arm64.dmg](https://github.com/Abid109/Dopamine/releases/download/desktop-latest/Dopamine-mac-arm64.dmg) | Not notarized: right-click the app, then Open. |
+| macOS, Intel | [Dopamine-mac-x64.dmg](https://github.com/Abid109/Dopamine/releases/download/desktop-latest/Dopamine-mac-x64.dmg) | Same as above. |
+| Linux | [AppImage](https://github.com/Abid109/Dopamine/releases/download/desktop-latest/Dopamine-linux-x86_64.AppImage), [.deb](https://github.com/Abid109/Dopamine/releases/download/desktop-latest/Dopamine-linux-amd64.deb), [.rpm](https://github.com/Abid109/Dopamine/releases/download/desktop-latest/Dopamine-linux-x86_64.rpm) | Make the AppImage executable and run it. |
 
-Check a download against `SHA256SUMS.txt` on the release. The desktop app has no GPS, so the Run tab is hidden. Your data is stored on the computer and kept across updates; use Backup & data to export or import a JSON backup. Framework choice: **Electron**, because it bundles the same Chromium everywhere, so the app behaves identically on all three systems.
+Check a download against `SHA256SUMS.txt` on the [desktop-latest release](https://github.com/Abid109/Dopamine/releases/tag/desktop-latest). The desktop app has no GPS, so the Run tab is hidden. Your data is stored on the computer and kept across updates; use Backup & data to export or import a JSON backup. Framework choice: **Electron**, because it bundles the same Chromium everywhere, so the app behaves identically on all three systems.
 
 ### iPhone, desktop and any browser (web app)
 

@@ -7,6 +7,7 @@ All notable changes to Dopamine are listed here.
 The desktop app has its own version and release tags, separate from the Android app.
 
 ### Added
+- **One-click desktop downloads.** Each desktop build also refreshes a release tagged `desktop-latest` with fixed file names (`Dopamine-win-x64.exe`, `Dopamine-mac-arm64.dmg`, `Dopamine-mac-x64.dmg`, `Dopamine-linux-x86_64.AppImage`, `.deb`, `.rpm`), so the links in the README and on the download page never change. Desktop releases are marked pre-release and never Latest, so the Android app and Obtainium ignore them.
 - Windows, macOS and Linux app built with Electron (`desktop/`). It loads the same `www/` code from local files only, with a desktop layout (sidebar by default), desktop notifications while the app is open, normal save dialogs and downloads for backups and PDF reports, and links that open in the default browser.
 - Hidden on desktop: the Run tab, the phone navigation styles, the in-app updater, full-screen reminders and battery optimization.
 - Security: node integration off, context isolation and sandbox on, a content security policy, only local files, camera and notifications permissions only.
