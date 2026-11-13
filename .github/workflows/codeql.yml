@@ -31,7 +31,7 @@ jobs:
           - language: javascript-typescript   # the app (index.html, tracker.js, updater.js)
           - language: java-kotlin             # android-native/java
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Start CodeQL
         uses: github/codeql-action/init@v4
