@@ -46,6 +46,8 @@
     html[data-platform="capacitor"] .web-only { display: none !important; }
     html:not([data-platform="desktop"]) .desktop-only { display: none !important; }
     html[data-platform="desktop"] .phone-only { display: none !important; }
+    /* Desktop app: no GPS, so the Run tab is hidden everywhere */
+    html[data-platform="desktop"] #nav-btn-track, html[data-platform="desktop"] [data-nav-tab="track"] { display: none !important; }
   </style>
   <script>
 /* Dopamine cloud sync: merge logic (pure functions, no network) */
@@ -1204,7 +1206,11 @@
 
     <!-- NOTES & JOURNAL TAB -->
     <div id="tab-track" class="hidden space-y-6">
-      <div class="fc-stack">
+      <div class="desktop-only fc-group"><div class="fc-block">
+        <div class="fc-title">Run &amp; walk tracking</div>
+        <p class="fc-sub">Computers usually have no GPS, so recording a run or walk is not available in the desktop app. Use the Android app to record, and the phone keeps your routes.</p>
+      </div></div>
+      <div class="fc-stack phone-only">
         <div id="trk-recover" class="fc-group hidden">
           <div class="fc-block">
             <div class="fc-title">Unfinished activity found</div>
@@ -1564,7 +1570,7 @@
           <div class="fc-group">
           <button class="fc-row fc-nav" onclick="openSettingsPage('visual')"><svg class="fc-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".6"></circle><circle cx="17.5" cy="10.5" r=".6"></circle><circle cx="8.5" cy="7.5" r=".6"></circle><circle cx="6.5" cy="12.5" r=".6"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg><span class="fc-title">Appearance &amp; style</span><span id="sh-theme-val" class="fc-val"></span><svg class="fc-chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
           <button class="fc-row fc-nav" onclick="openSettingsPage('alerts')"><svg class="fc-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg><span class="fc-title">Timers &amp; alerts</span><svg class="fc-chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
-          <button class="fc-row fc-nav" onclick="navigate('track')"><svg class="fc-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path><circle cx="18" cy="5" r="3"></circle></svg><span class="fc-title">Run &amp; walk tracking</span><svg class="fc-chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+          <button class="fc-row fc-nav phone-only" onclick="navigate('track')"><svg class="fc-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path><circle cx="18" cy="5" r="3"></circle></svg><span class="fc-title">Run &amp; walk tracking</span><svg class="fc-chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
           </div>
         </div>
         <div>
@@ -1709,15 +1715,15 @@
               <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><rect x="2" y="2" width="14" height="60" rx="5" fill="var(--accent)" fill-opacity=".85"/><rect x="21" y="12" width="21" height="6" rx="3" fill="currentColor" fill-opacity=".25"/><rect x="21" y="24" width="21" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
               <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Sidebar</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Classic side menu</span></span>
             </button>
-            <button onclick="setNavStyle('bottom')" id="navstyle-btn-bottom" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
+            <button onclick="setNavStyle('bottom')" id="navstyle-btn-bottom" class="phone-only p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
               <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><rect x="2" y="48" width="44" height="14" rx="5" fill="var(--accent)" fill-opacity=".85"/><rect x="9" y="12" width="30" height="6" rx="3" fill="currentColor" fill-opacity=".25"/><rect x="9" y="24" width="30" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
               <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Bottom bar</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Tabs at the bottom</span></span>
             </button>
-            <button onclick="setNavStyle('dock')" id="navstyle-btn-dock" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
+            <button onclick="setNavStyle('dock')" id="navstyle-btn-dock" class="phone-only p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
               <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><rect x="7" y="46" width="34" height="11" rx="5.5" fill="var(--accent)" fill-opacity=".85"/><rect x="9" y="12" width="30" height="6" rx="3" fill="currentColor" fill-opacity=".25"/><rect x="9" y="24" width="30" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
               <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Floating dock</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Rounded floating bar</span></span>
             </button>
-            <button onclick="setNavStyle('center')" id="navstyle-btn-center" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
+            <button onclick="setNavStyle('center')" id="navstyle-btn-center" class="phone-only p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
               <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><rect x="2" y="48" width="44" height="14" rx="5" fill="currentColor" fill-opacity=".25"/><circle cx="24" cy="46" r="8" fill="var(--accent)"/><rect x="9" y="12" width="30" height="6" rx="3" fill="currentColor" fill-opacity=".25"/><rect x="9" y="24" width="30" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
               <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Center button</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Log button in the middle</span></span>
             </button>
@@ -1729,7 +1735,7 @@
               <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><rect x="2" y="2" width="8" height="60" rx="4" fill="var(--accent)" fill-opacity=".85"/><rect x="16" y="12" width="26" height="6" rx="3" fill="currentColor" fill-opacity=".25"/><rect x="16" y="24" width="26" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
               <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Side rail</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">Slim icon column</span></span>
             </button>
-            <button onclick="setNavStyle('fab')" id="navstyle-btn-fab" class="p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
+            <button onclick="setNavStyle('fab')" id="navstyle-btn-fab" class="phone-only p-3 rounded-xl border text-left transition-all bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] flex items-center gap-3">
               <svg viewBox="0 0 48 64" class="w-9 h-12 shrink-0" fill="none"><rect x="2" y="2" width="44" height="60" rx="7" stroke="currentColor" stroke-opacity=".4" stroke-width="2"/><circle cx="37" cy="52" r="7" fill="var(--accent)"/><rect x="9" y="12" width="30" height="6" rx="3" fill="currentColor" fill-opacity=".25"/><rect x="9" y="24" width="30" height="14" rx="3" fill="currentColor" fill-opacity=".18"/></svg>
               <span class="min-w-0"><span class="block font-semibold text-xs text-[var(--text-primary)]">Floating menu</span><span class="block text-[10px] text-[var(--text-dim)] mt-0.5">One button opens a menu</span></span>
             </button>
@@ -1812,7 +1818,7 @@
               </div>
             </div>
 
-            <div>
+            <div class="phone-only">
               <div class="fc-label">Run &amp; walk tracking permissions</div>
               <div class="fc-group">
                 <div class="fc-row">
@@ -2196,7 +2202,7 @@
     // Default application state
     const DEFAULT_DATA = {
       profile: { name: '', age: 0, weight: 0, height: 0, calGoal: 500, exGoal: 4, level: 'Beginner', goal: 'Muscle & Strength', weeklyWorkoutGoal: 4, dailyMinutesGoal: 30, targetWeight: 0, avatarUrl: '' },
-      settings: { theme: 'dark', accent: 'amber', fontSize: 'comfortable', showChart: true, restDefault: 60, soundOn: true, clock24h: false, navStyle: 'dock', perfMode: 'auto', calorieMode: 'active', notifyOn: true },
+      settings: { theme: 'dark', accent: 'amber', fontSize: 'comfortable', showChart: true, restDefault: 60, soundOn: true, clock24h: false, navStyle: (window.Platform && window.Platform.isDesktop()) ? 'sidebar' : 'dock', perfMode: 'auto', calorieMode: 'active', notifyOn: true },
       logs: {},
       plans: {},
       notes: [],

@@ -1,0 +1,127 @@
+name: Build desktop app
+
+# Builds the Windows, macOS and Linux installers. Push a tag like desktop-v0.1.0 to publish them as a release.
+# Desktop releases use their own tags and are never marked "Latest", so the Android updater and Obtainium,
+# which read the Latest release, never see them.
+
+on:
+  push:
+    tags: ['desktop-v*']
+  pull_request:
+    paths:
+      - 'desktop/**'
+      - 'www/**'
+      - '.github/workflows/build-desktop.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
+      - name: Check the version matches the tag
+        if: startsWith(github.ref, 'refs/tags/desktop-v')
+        shell: bash
+        run: |
+          V=$(node -p "require('./desktop/package.json').version")
+          [ "desktop-v${V}" = "${GITHUB_REF_NAME}" ] || { echo "::error::desktop/package.json is ${V} but the tag is ${GITHUB_REF_NAME}"; exit 1; }
+
+      - name: Install dependencies
+        working-directory: desktop
+        run: npm ci
+
+      - name: Check the code
+        working-directory: desktop
+        run: npm run check
+
+      - name: Install rpm tools (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y rpm
+
+      - name: Build installers
+        working-directory: desktop
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            npx electron-builder --publish never --mac dmg --x64 --arm64
+          else
+            npx electron-builder --publish never
+          fi
+
+      - name: Collect installers
+        shell: bash
+        run: |
+          mkdir out
+          cd desktop/dist
+          for f in *.exe *.dmg *.AppImage *.deb *.rpm; do [ -f "$f" ] && cp "$f" ../../out/ || true; done
+          ls -la ../../out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dopamine-desktop-${{ runner.os }}
+          path: out/*
+          if-no-files-found: error
+
+  release:
+    name: Publish desktop release
+    if: startsWith(github.ref, 'refs/tags/desktop-v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+
+      - name: Checksums and release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd out
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+          cd ..
+          VERSION="${GITHUB_REF_NAME#desktop-v}"
+          {
+            echo "Dopamine desktop ${VERSION} for Windows, macOS and Linux."
+            echo
+            echo "These builds are not signed with a paid certificate, so Windows SmartScreen and macOS Gatekeeper may warn on first launch (Windows: More info, Run anyway. macOS: right-click the app, Open)."
+            echo
+            echo "Check a download against SHA256SUMS.txt."
+          } > notes.txt
+          # Never mark this as Latest: the Android app and Obtainium read the Latest release.
+          gh release create "$GITHUB_REF_NAME" out/* --title "Dopamine desktop ${VERSION}" --notes-file notes.txt --latest=false
+
+      - name: Publish the desktop update feed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#desktop-v}"
+          mkdir "$RUNNER_TEMP/feed" && cd "$RUNNER_TEMP/feed"
+          printf '{\n  "version": "%s",\n  "tag": "%s",\n  "url": "https://github.com/%s/releases/tag/%s"\n}\n' "$VERSION" "$GITHUB_REF_NAME" "$REPO" "$GITHUB_REF_NAME" > desktop.json
+          git init -q -b desktop-update-feed
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add desktop.json
+          git commit -q -m "Desktop update feed for ${VERSION}"
+          AUTH=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          git -c http.extraHeader="Authorization: Basic ${AUTH}" push -f "https://github.com/${REPO}.git" desktop-update-feed

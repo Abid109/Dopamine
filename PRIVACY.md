@@ -39,6 +39,10 @@ Only when you decide:
 
 If you use Dopamine in a browser (the website or an installed web app) the same rules apply, with these differences. Your data is stored in that browser on your device, and the browser, not Dopamine, decides when it can be cleared, so export a backup now and then. The website is hosted on GitHub Pages, so GitHub sees your IP address when you open it, like any website visit. There are no cookies set by Dopamine and no analytics. Location is used only while a run or walk is recording, only if you allow it in the browser. Notifications use the browser's own permission and only appear while the app is open.
 
+## Desktop app
+
+The Windows, macOS and Linux app follows the same rules. Your data is stored in the app's folder on your computer (kept when you update). The app loads only its own local files and may contact only the services listed above: the optional sign in and sync (Supabase) and, in screens that show a map, OpenStreetMap pictures. Once in a while it asks GitHub for a small file to see whether a newer desktop version exists (GitHub sees your IP address); it sends nothing about you. Notifications are shown by your system and only while the app is open. There is no GPS tracking on desktop.
+
 ## Deleting your data
 
 - Delete your cloud backup from the **Profile** page, then **Delete my cloud backup**.

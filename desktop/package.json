@@ -1,0 +1,76 @@
+{
+  "name": "dopamine-desktop",
+  "productName": "Dopamine",
+  "version": "0.1.0",
+  "description": "Dopamine calisthenics tracker for Windows, macOS and Linux",
+  "author": "Abid109",
+  "license": "AGPL-3.0-only",
+  "homepage": "https://github.com/Abid109/Dopamine",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "check": "node --check main.js && node --check preload.js",
+    "dist": "electron-builder --publish never"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "io.github.abid109.Dopamine",
+    "productName": "Dopamine",
+    "copyright": "Copyright (c) 2026 Abid109",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../www",
+        "to": "www",
+        "filter": [
+          "**/*",
+          "!sw.js",
+          "!manifest.webmanifest",
+          "!icons/apple-touch-icon.png"
+        ]
+      }
+    ],
+    "artifactName": "Dopamine-${version}-${os}-${arch}.${ext}",
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.healthcare-fitness"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm"
+      ],
+      "icon": "build/icons",
+      "category": "Utility;Sports;",
+      "maintainer": "Abid109",
+      "synopsis": "Calisthenics workout tracker"
+    }
+  },
+  "repository": "github:Abid109/Dopamine"
+}

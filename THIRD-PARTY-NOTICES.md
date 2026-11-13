@@ -37,6 +37,13 @@ The fonts are used unmodified and are not sold on their own.
 
 Their license texts and copyright notices are in each package's `LICENSE` file, which is installed by npm when the app is built.
 
+## Desktop app (`desktop/`)
+
+| Component | License |
+| --- | --- |
+| [Electron](https://www.electronjs.org) (includes Chromium and Node.js) | MIT. Chromium and its dependencies keep their own licenses; the full list is shipped with every desktop build in `LICENSES.chromium.html`, and Electron's own license in `LICENSE.electron.txt` |
+| [electron-builder](https://www.electron.build) (build tool, not shipped) | MIT |
+
 ## Map data
 
 Map pictures shown in the Run tab are loaded from OpenStreetMap. Map data (c) OpenStreetMap contributors, available under the [Open Database License](https://www.openstreetmap.org/copyright). The attribution is shown on the map.

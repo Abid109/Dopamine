@@ -2,6 +2,18 @@
 
 All notable changes to Dopamine are listed here.
 
+## Desktop app [0.1.0] (tag `desktop-v0.1.0`)
+
+The desktop app has its own version and release tags, separate from the Android app.
+
+### Added
+- Windows, macOS and Linux app built with Electron (`desktop/`). It loads the same `www/` code from local files only, with a desktop layout (sidebar by default), desktop notifications while the app is open, normal save dialogs and downloads for backups and PDF reports, and links that open in the default browser.
+- Hidden on desktop: the Run tab, the phone navigation styles, the in-app updater, full-screen reminders and battery optimization.
+- Security: node integration off, context isolation and sandbox on, a content security policy, only local files, camera and notifications permissions only.
+- The app checks a small feed for new desktop versions and opens the download page; it never installs by itself. Store builds skip this check.
+- CI builds on Windows, macOS and Ubuntu and publishes installers and `SHA256SUMS.txt` to a `desktop-v*` release that is never marked Latest.
+- Linux packaging files for Flathub in `desktop/linux/` (desktop file and AppStream metainfo).
+
 ## [Unreleased]
 
 ### Added

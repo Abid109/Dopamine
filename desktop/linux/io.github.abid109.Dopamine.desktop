@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Dopamine
+GenericName=Workout Tracker
+Comment=Calisthenics workout tracker, routine planner and timers
+Exec=dopamine-desktop %U
+Icon=io.github.abid109.Dopamine
+Terminal=false
+Categories=Utility;Sports;
+Keywords=workout;fitness;calisthenics;exercise;
+StartupWMClass=Dopamine
