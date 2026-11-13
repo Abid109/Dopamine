@@ -26,9 +26,9 @@ jobs:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
@@ -71,7 +71,7 @@ jobs:
           for f in *.exe *.dmg *.AppImage *.deb *.rpm; do [ -f "$f" ] && cp "$f" ../../out/ || true; done
           ls -la ../../out
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dopamine-desktop-${{ runner.os }}
           path: out/*
@@ -85,8 +85,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           path: out
           merge-multiple: true
