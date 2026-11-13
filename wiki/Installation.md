@@ -31,6 +31,7 @@ The release named **Dopamine APK** with the tag `latest` is replaced every time 
 | Location | Only to record a run or walk in [Run and Walk Tracking](Run-and-Walk-Tracking). Asked when you first press Start. |
 | Notifications | Timer alerts, reminders, the tracking notification and goal alerts. |
 | Battery optimization | Lets tracking keep running with the screen off. |
+| Install unknown apps | Only needed for in-app updates. Lets Dopamine open Android's installer for a new version. Asked the first time you tap Update. |
 | Internet | To load styling, fonts, the PDF library and map pictures. |
 
 ## Problems?

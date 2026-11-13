@@ -4,6 +4,10 @@ All notable changes to Dopamine are listed here.
 
 ## [Unreleased]
 
+### Added
+- **In-app updates.** Settings, App updates checks the project's latest release, shows what is new, and downloads and installs the new version without leaving the app. A prompt also appears when a new build is found (at most one automatic check every 6 hours; "Later" hides it for a day). The download is only accepted if it is Dopamine signed with the same key, and Android still asks you to confirm the install. Needs the "Install unknown apps" permission for Dopamine, which the app helps you open. Install this build by hand once; later updates can be done inside the app.
+- Release notes now include a one-line summary of what changed.
+
 ### Changed
 - **Normal notifications again.** Alerts (rest timer, workout session, calendar, goals) now arrive as regular notifications with sound, vibration and a pop-up banner. The older silent channels are removed on first launch and replaced by new ones.
 - Reminder notifications (full screen) also make sound and vibrate.
