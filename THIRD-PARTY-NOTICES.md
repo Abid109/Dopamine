@@ -10,6 +10,20 @@ Dopamine includes or is built with the open-source components below. Each keeps 
 | [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) | MIT | 2009 Kazuhiko Arase | `www/vendor/qrcode.js` (the notice is in the file header) |
 | [jsQR](https://github.com/cozmo/jsQR) | Apache-2.0 | The jsQR authors | `www/vendor/jsQR.js`. License text: `licenses/Apache-2.0.txt` |
 | [supabase-js](https://github.com/supabase/supabase-js) | MIT | The Supabase authors | `www/vendor/supabase.js` |
+| [jsPDF](https://github.com/parallax/jsPDF) 2.5.1 | MIT | 2010-2021 James Hall, 2015-2021 yWorks GmbH | `www/vendor/jspdf.umd.min.js`. License text: `www/vendor/JSPDF-LICENSE.txt` |
+| [jsPDF-AutoTable](https://github.com/simonbengtsson/jsPDF-AutoTable) 3.8.2 | MIT | 2024 Simon Bengtsson | `www/vendor/jspdf.plugin.autotable.min.js`. License text: `www/vendor/JSPDF-AUTOTABLE-LICENSE.txt` |
+
+## Fonts (`www/fonts/`)
+
+Bundled so the app never loads fonts from the internet. The files come from the [Fontsource](https://fontsource.org) packages and are the Latin subset.
+
+| Font | License | Copyright | License text |
+| --- | --- | --- | --- |
+| [Inter](https://rsms.me/inter/) | SIL Open Font License 1.1 | The Inter Project Authors | `www/fonts/OFL-Inter.txt` |
+| [Newsreader](https://github.com/productiontype/Newsreader) | SIL Open Font License 1.1 | The Newsreader Project Authors | `www/fonts/OFL-Newsreader.txt` |
+| [JetBrains Mono](https://www.jetbrains.com/lp/mono/) | SIL Open Font License 1.1 | The JetBrains Mono Project Authors | `www/fonts/OFL-JetBrains-Mono.txt` |
+
+The fonts are used unmodified and are not sold on their own.
 
 ## Built into the app
 

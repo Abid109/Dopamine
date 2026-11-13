@@ -7,7 +7,7 @@
 
 ## Steps
 
-1. On your phone, open the [Releases page](https://github.com/Abid109/Dopamine/releases/tag/latest).
+1. On your phone, open the [Releases page](https://github.com/Abid109/Dopamine/releases/latest).
 2. Tap **Dopamine.apk** to download it.
 3. Open the downloaded file.
 4. If Android blocks the install, tap **Settings** in the prompt and allow installs from your browser or file manager, then go back and install.
@@ -32,7 +32,7 @@ The release named **Dopamine APK** with the tag `latest` is replaced every time 
 | Notifications | Timer alerts, reminders, the tracking notification and goal alerts. |
 | Battery optimization | Lets tracking keep running with the screen off. |
 | Install unknown apps | Only needed for in-app updates. Lets Dopamine open Android's installer for a new version. Asked the first time you tap Update. |
-| Internet | To load styling, fonts, the PDF library and map pictures. |
+| Internet | Only for map pictures, update checks and the optional sign in and sync. |
 
 ## Problems?
 

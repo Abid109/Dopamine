@@ -17,7 +17,7 @@ You need to install the first build that contains this feature by hand (see belo
 
 ## Update by hand
 
-1. Open the [Releases page](https://github.com/Abid109/Dopamine/releases/tag/latest) on your phone.
+1. Open the [Releases page](https://github.com/Abid109/Dopamine/releases/latest) on your phone.
 2. Download the newest **Dopamine.apk**.
 3. Open the file and tap **Update** (or **Install**).
 
@@ -56,8 +56,10 @@ The build stops with a clear message if the secret is missing, so an APK signed 
 
 ### Version numbers
 
-The workflow sets the Android `versionCode` to the run number and `versionName` to `1.0.<run number>`, so every build is a valid upgrade.
+The workflow sets the Android `versionCode` to the run number and `versionName` to `<major>.<minor>.<run number>`, where major and minor come from `version` in `package.json` (for example `1.9.0` gives `1.9.42`). The GitHub release tag is `v<versionName>`, so every build is a valid upgrade and the tag parses as a version for tools like Obtainium. Change the major or minor number in `package.json` when you want a new release line.
 
 ### How in-app updates find a build
 
-Every build recreates the GitHub release tagged `latest` with `Dopamine.apk` and notes containing `build:<run number>` and `changes:<one line>`. The app reads `api.github.com/repos/Abid109/Dopamine/releases/tags/latest`, compares `build:` with its own `versionCode`, and downloads the APK. Keep those two note lines and the asset name ending in `.apk`, or the app will not find updates. The repository must stay public.
+Every build publishes a tagged release (for example `v1.9.42`, marked Latest) with `Dopamine.apk` and notes containing `build:<run number>`, `changes:<one line>`, the APK's SHA-256 and the signing certificate fingerprint. The app reads `api.github.com/repos/Abid109/Dopamine/releases/latest`, compares `build:` with its own `versionCode`, and downloads the APK. Keep those two note lines and the asset name ending in `.apk`, or the app will not find updates. The repository must stay public. Releases for other apps in this repository (the desktop app, tags starting `desktop-v`) must never be marked Latest, or the phone app would read them.
+
+For apps installed before tagged releases, every build also refreshes a pre-release tagged `latest`. Those older apps read it, and it can be removed once everyone has updated.

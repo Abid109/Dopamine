@@ -6,7 +6,7 @@
 - Data only leaves your phone when you share it ([Share and Receive](Share-and-Receive)), export a backup, create a PDF, or turn on cloud backup by logging in ([Sign In and Sync](Account-and-Sync)).
 - The camera is used only on the QR scanning screen and nothing is recorded.
 - **Location** is used only while you record a run or walk. Routes are saved on the phone only and are never synced, shared or uploaded.
-- The app contacts public networks only to load styling, fonts and the PDF library, to show map pictures from OpenStreetMap, and to look for app updates on GitHub. No personal data is included in those requests.
+- Fonts, styling and the PDF library are bundled inside the app. The app contacts public networks only to show map pictures from OpenStreetMap, to look for app updates on GitHub, and for the optional sign in and sync. No personal data is included in those requests.
 
 Read the full [Privacy Policy](https://github.com/Abid109/Dopamine/blob/main/PRIVACY.md). The same explanation is inside the app under **Settings**, **Privacy**.
 

@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Abid109/Dopamine/releases/download/latest/Dopamine.apk"><b>Download the APK</b></a>
+  <a href="https://github.com/Abid109/Dopamine/releases/latest/download/Dopamine.apk"><b>Download the APK</b></a>
   &nbsp;·&nbsp;
   <a href="https://github.com/Abid109/Dopamine/wiki">Wiki</a>
   &nbsp;·&nbsp;
@@ -40,13 +40,26 @@
 
 ## Install
 
-1. Open the [latest release](https://github.com/Abid109/Dopamine/releases/tag/latest) on your phone.
+1. Open the [latest release](https://github.com/Abid109/Dopamine/releases/latest) on your phone.
 2. Download **Dopamine.apk**.
-3. Open the file and allow installs from your browser or file manager if Android asks.
+3. Open the file. Android asks you to allow **Install unknown apps** for your browser or file manager: allow it for this one install.
+4. Google Play Protect may show a prompt because the app does not come from the Play Store. Choose **Install anyway**.
+
+Every release is a normal tagged release (for example `v1.9.42`) with the APK under the same file name, `Dopamine.apk`. The release notes list the file's SHA-256 and the signing certificate fingerprint so you can check it.
+
+### Install and update with Obtainium
+
+[Obtainium](https://obtainium.imranr.dev) installs apps straight from GitHub releases and tells you when a new version is out.
+
+1. Install Obtainium and tap **Add App**.
+2. Paste `https://github.com/Abid109/Dopamine` as the source URL.
+3. Tap **Add**, then install. Obtainium reads the release tags, so updates arrive as new versions are published.
+
+The package name stays `com.dopamine.fitness` and every build is signed with the same key, so Obtainium, the in-app updater and a manual install all update the same app.
 
 Full steps and troubleshooting are on the [Installation](https://github.com/Abid109/Dopamine/wiki/Installation) wiki page.
 
-> The first launch needs an internet connection to load styling and fonts. After that the app works fully for logging, planning and notes.
+> Fonts, styling and the PDF library are bundled in the app, so it works fully offline for logging, planning and notes. The internet is only used for map pictures, update checks and the optional sign in and sync.
 
 ## Your data stays with you
 
@@ -58,7 +71,7 @@ Open **Profile** and use the **Sign in** card to sign in with your email. Your p
 
 ## Updating
 
-Download the newest **Dopamine.apk** from the Releases page and install it over the old app. There is no need to uninstall, and your data stays. See [Updating the App](https://github.com/Abid109/Dopamine/wiki/App-Updates).
+Use the in-app updater (Settings, App updates), Obtainium, or download the newest **Dopamine.apk** from the Releases page and install it over the old app. There is no need to uninstall, and your data stays. See [Updating the App](https://github.com/Abid109/Dopamine/wiki/App-Updates).
 
 ## Share between phones
 
@@ -73,7 +86,7 @@ The app loads its styles from one small prebuilt file, loads heavy tools (QR cod
 
 ## Build from source
 
-The app is a single web page (`www/index.html`) wrapped as an Android app with [Capacitor](https://capacitorjs.com). The APK is built automatically by GitHub Actions on every push to `main` and published under Releases.
+The app is a single web page (`www/index.html`) wrapped as an Android app with [Capacitor](https://capacitorjs.com). The APK is built automatically by GitHub Actions on every push to `main` and published as a tagged release (`v<major>.<minor>.<build>`, for example `v1.9.42`). The major and minor numbers come from `version` in `package.json`; the build number is the workflow run number, which is also the Android `versionCode` and always goes up.
 
 ```bash
 npm install
@@ -87,7 +100,7 @@ Details are in [Building from Source](https://github.com/Abid109/Dopamine/wiki/B
 ## Project layout
 
 ```
-www/                 The app (index.html and vendor/ libraries)
+www/                 The app (index.html, fonts/ and vendor/ libraries)
 supabase/            Database setup for the optional cloud backup
 android-res/         Launcher icons applied during the Android build
 .github/workflows/   APK build and wiki sync
