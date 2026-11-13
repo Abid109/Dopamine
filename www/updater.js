@@ -16,6 +16,10 @@
   // The old release tagged "latest" is kept as a fallback so apps from before this change can still update.
   var API = 'https://api.github.com/repos/Abid109/Dopamine/releases/latest';
   var API_OLD = 'https://api.github.com/repos/Abid109/Dopamine/releases/tags/latest';
+  // Main source: a tiny JSON file the build publishes on the "update-feed" branch. It is served by
+  // raw.githubusercontent.com, which is not subject to the strict per-IP limit of api.github.com (many phones
+  // share one IP on mobile networks and quickly hit "GitHub is limiting requests"). The API is the fallback.
+  var FEED = 'https://raw.githubusercontent.com/Abid109/Dopamine/update-feed/update.json';
   var URL_PREFIX = 'https://github.com/Abid109/Dopamine/releases/';
   var KEY = 'dopamine_update_v1';
   var CHECK_EVERY = 6 * 3600 * 1000;   // automatic check at most every 6 hours
@@ -46,10 +50,28 @@
 
   // ---------- reading the release ----------
   function fetchLatest() {
-    return fetchRelease(API).catch(function (e) {
-      if (e && e.notFound) return fetchRelease(API_OLD);
-      throw e;
-    });
+    return fetchFeed()
+      .catch(function () { return fetchRelease(API); })
+      .catch(function (e) {
+        if (e && e.notFound) return fetchRelease(API_OLD);
+        throw e;
+      });
+  }
+
+  function fetchFeed() {
+    var ctl = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = ctl ? setTimeout(function () { ctl.abort(); }, 12000) : null;
+    return fetch(FEED + '?t=' + Math.floor(Date.now() / 60000), { cache: 'no-store', signal: ctl ? ctl.signal : undefined })
+      .then(function (r) {
+        if (timer) clearTimeout(timer);
+        if (!r.ok) throw new Error('feed ' + r.status);
+        return r.json();
+      })
+      .then(function (j) {
+        var build = parseInt(j && j.build, 10);
+        if (!build || String(j.url || '').indexOf(URL_PREFIX) !== 0 || !/\.apk$/i.test(j.url)) throw new Error('bad feed');
+        return { build: build, name: /^\d+\.\d+\.\d+$/.test(j.name || '') ? j.name : '', url: j.url, size: Number(j.size) || 0, date: j.date || '', changes: String(j.changes || '').slice(0, 160) };
+      });
   }
 
   function fetchRelease(api) {
@@ -59,7 +81,7 @@
       .then(function (r) {
         if (timer) clearTimeout(timer);
         if (r.status === 404) { var nf = new Error('No release was found yet.'); nf.notFound = true; throw nf; }
-        if (r.status === 403) throw new Error('GitHub is limiting requests right now. Try again in a while.');
+        if (r.status === 403) throw new Error('GitHub is limiting requests from this network right now. Try again in a while, or download the newest Dopamine.apk from the Releases page.');
         if (!r.ok) throw new Error('GitHub answered ' + r.status + '.');
         return r.json();
       })

@@ -60,6 +60,8 @@ The workflow sets the Android `versionCode` to the run number and `versionName` 
 
 ### How in-app updates find a build
 
+The app first reads `update.json` from the `update-feed` branch (`raw.githubusercontent.com`), which every build rewrites. This avoids the GitHub API's per-IP request limit. If the feed cannot be read it falls back to the release lookup described below. Do not delete the `update-feed` branch.
+
 Every build publishes a tagged release (for example `v1.9.42`, marked Latest) with `Dopamine.apk` and notes containing `build:<run number>`, `changes:<one line>`, the APK's SHA-256 and the signing certificate fingerprint. The app reads `api.github.com/repos/Abid109/Dopamine/releases/latest`, compares `build:` with its own `versionCode`, and downloads the APK. Keep those two note lines and the asset name ending in `.apk`, or the app will not find updates. The repository must stay public. Releases for other apps in this repository (the desktop app, tags starting `desktop-v`) must never be marked Latest, or the phone app would read them.
 
 For apps installed before tagged releases, every build also refreshes a pre-release tagged `latest`. Those older apps read it, and it can be removed once everyone has updated.
