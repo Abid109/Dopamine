@@ -13,6 +13,7 @@ All notable changes to Dopamine are listed here.
 - **Full-screen reminders.** Reminders set in Calendar and Planning open a full screen (also over the lock screen) with a Dismiss button. Android 14 and later may ask you to allow full-screen alerts in Settings. Native code is in `android-native/` and is added by the build workflow.
 - **Privacy details** section in Settings that explains what is stored, what leaves the phone, permissions and how to delete data.
 - Three poster themes in Settings under "Soft & serif": **Dream** (navy and cream), **Aim High** (red) and **No Risk** (blue and green). Each has a poster banner with a caption at the top of the Dashboard, serif type and cream cards, and the colours are taken from the posters.
+- **Licensing.** Dopamine is now dual-licensed: the GNU AGPL-3.0 for everyone, plus a separate commercial license from the copyright holder (`LICENSE`, `COMMERCIAL-LICENSE.md`). The name, logo, icons and artwork are not licensed. Third-party libraries are listed in `THIRD-PARTY-NOTICES.md`. Earlier versions stay available under the MIT License. Contributions are accepted under the AGPL-3.0 with the right for the maintainer to also license them commercially.
 - A full wiki: new pages for notifications and permissions and for what is new, and every page brought up to date.
 
 ### Changed
