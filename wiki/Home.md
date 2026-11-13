@@ -2,7 +2,7 @@
 
 Dopamine is a calisthenics workout tracker for Android. Log your sets, plan routines, track runs and walks with GPS, follow your streak and share progress between phones. Everything is saved privately on your own phone.
 
-**[Download the APK](https://github.com/Abid109/Dopamine/releases/download/latest/Dopamine.apk)**
+**[Download the APK](https://github.com/Abid109/Dopamine/releases/latest/download/Dopamine.apk)**
 
 ## Start here
 

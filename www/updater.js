@@ -11,7 +11,11 @@
 (function () {
   'use strict';
 
-  var API = 'https://api.github.com/repos/Abid109/Dopamine/releases/tags/latest';
+  // Android releases are tagged v<major>.<minor>.<build> and marked "Latest" on GitHub. Desktop releases use
+  // desktop-v* tags and are never marked Latest, so this call always returns the Android release.
+  // The old release tagged "latest" is kept as a fallback so apps from before this change can still update.
+  var API = 'https://api.github.com/repos/Abid109/Dopamine/releases/latest';
+  var API_OLD = 'https://api.github.com/repos/Abid109/Dopamine/releases/tags/latest';
   var URL_PREFIX = 'https://github.com/Abid109/Dopamine/releases/';
   var KEY = 'dopamine_update_v1';
   var CHECK_EVERY = 6 * 3600 * 1000;   // automatic check at most every 6 hours
@@ -37,16 +41,24 @@
   var status = '';      // line of text under the versions
   var progress = null;  // 0..100 while downloading, otherwise null
 
+  function versionLabel() { return remote ? (remote.name || ('build ' + remote.build)) : ''; }
   function available() { return !!(cur && remote && remote.build > cur.code); }
 
   // ---------- reading the release ----------
   function fetchLatest() {
+    return fetchRelease(API).catch(function (e) {
+      if (e && e.notFound) return fetchRelease(API_OLD);
+      throw e;
+    });
+  }
+
+  function fetchRelease(api) {
     var ctl = typeof AbortController === 'function' ? new AbortController() : null;
     var timer = ctl ? setTimeout(function () { ctl.abort(); }, 15000) : null;
-    return fetch(API, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store', signal: ctl ? ctl.signal : undefined })
+    return fetch(api, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store', signal: ctl ? ctl.signal : undefined })
       .then(function (r) {
         if (timer) clearTimeout(timer);
-        if (r.status === 404) throw new Error('No release was found yet.');
+        if (r.status === 404) { var nf = new Error('No release was found yet.'); nf.notFound = true; throw nf; }
         if (r.status === 403) throw new Error('GitHub is limiting requests right now. Try again in a while.');
         if (!r.ok) throw new Error('GitHub answered ' + r.status + '.');
         return r.json();
@@ -56,7 +68,8 @@
         var asset = (j.assets || []).filter(function (a) { return /\.apk$/i.test(a.name || ''); })[0];
         if (!m || !asset || String(asset.browser_download_url || '').indexOf(URL_PREFIX) !== 0) throw new Error('The release has no usable app file.');
         var ch = /changes:\s*(.+)/.exec(j.body || '');
-        return { build: parseInt(m[1], 10), url: asset.browser_download_url, size: asset.size || 0, date: j.published_at || asset.updated_at || '', changes: ch ? ch[1].trim() : '' };
+        var tag = /^v(\d+\.\d+\.\d+)$/.exec(j.tag_name || '');
+        return { build: parseInt(m[1], 10), name: tag ? tag[1] : '', url: asset.browser_download_url, size: asset.size || 0, date: j.published_at || asset.updated_at || '', changes: ch ? ch[1].trim() : '' };
       });
   }
 
@@ -75,7 +88,7 @@
   function render() {
     var nat = native();
     setText('upd-cur', cur ? (cur.name || ('build ' + cur.code)) : (nat ? '...' : 'Browser'));
-    setText('upd-latest', remote ? ('1.0.' + remote.build + (remote.date ? ' \u00b7 ' + fmtDate(remote.date) : '')) : '--');
+    setText('upd-latest', remote ? (versionLabel() + (remote.date ? ' \u00b7 ' + fmtDate(remote.date) : '')) : '--');
     var row = $('upd-changes-row'); if (row) row.classList.toggle('hidden', !(remote && remote.changes && available()));
     setText('upd-changes', remote && remote.changes ? remote.changes : '');
     var line = status;
@@ -180,7 +193,7 @@
     card.style.cssText = 'width:100%;max-width:420px;padding:22px 22px 18px';
     var h = document.createElement('div'); h.className = 'fc-title'; h.style.fontSize = '17px'; h.textContent = 'Update available';
     var p = document.createElement('p'); p.className = 'fc-sub'; p.style.cssText = 'margin:6px 0 0;font-size:13px';
-    p.textContent = 'Version 1.0.' + remote.build + (remote.date ? ' \u00b7 ' + fmtDate(remote.date) : '') + (remote.changes ? '. ' + remote.changes : '');
+    p.textContent = 'Version ' + versionLabel() + (remote.date ? ' \u00b7 ' + fmtDate(remote.date) : '') + (remote.changes ? '. ' + remote.changes : '');
     var row = document.createElement('div'); row.style.cssText = 'display:flex;gap:10px;margin-top:18px';
     function btn(label, primary) { var b = document.createElement('button'); b.className = 'fc-btn' + (primary ? ' primary' : ''); b.style.cssText = 'flex:1;padding:13px;font-size:14px'; b.textContent = label; return b; }
     var later = btn('Later', false), now = btn('Update now', true);

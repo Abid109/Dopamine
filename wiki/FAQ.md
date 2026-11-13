@@ -7,7 +7,7 @@ Using the app is free. The code is open source under the GNU AGPL-3.0, and a sep
 No. Logging in is optional and only adds cloud backup and sync. See [Sign In and Sync](Account-and-Sync).
 
 **Does it work offline?**
-Mostly. Logging, planning, notes and QR sharing work offline after the first launch. Styling and fonts load from the internet at launch, and the PDF library loads the first time you make a PDF.
+Mostly. Logging, planning, notes and QR sharing work offline after the first launch. Fonts, styling and the PDF library are bundled in the app, so only map pictures, update checks and the optional sign in and sync need the internet.
 
 **Is there an iPhone version?**
 Not at the moment. Releases are Android APKs.
@@ -28,7 +28,7 @@ Yes. Tick only what you want before sending, and the receiving phone then picks 
 Only the items you tick. Logs and plans are added without duplicates. Notes and profile are replaced only if you choose.
 
 **How do I get updates?**
-Open **Settings**, **App updates** and tap **Download and install**. The app also shows a prompt when a new version is found. You can still download the newest APK from the [Releases page](https://github.com/Abid109/Dopamine/releases/tag/latest) and install it over the old app. Your data stays either way. See [Updating the App](App-Updates).
+Open **Settings**, **App updates** and tap **Download and install**. The app also shows a prompt when a new version is found. You can still download the newest APK from the [Releases page](https://github.com/Abid109/Dopamine/releases/latest) and install it over the old app. Your data stays either way. See [Updating the App](App-Updates).
 
 **Why does Android still ask me to confirm an update?**
 Android always shows its own confirmation when an app installs another app or an update. No app can skip it. Tap **Update** and the new version replaces the old one.

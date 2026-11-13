@@ -16,6 +16,13 @@ All notable changes to Dopamine are listed here.
 - **Licensing.** Dopamine is now dual-licensed: the GNU AGPL-3.0 for everyone, plus a separate commercial license from the copyright holder (`LICENSE`, `COMMERCIAL-LICENSE.md`). The name, logo, icons and artwork are not licensed. Third-party libraries are listed in `THIRD-PARTY-NOTICES.md`. Earlier versions stay available under the MIT License. Contributions are accepted under the AGPL-3.0 with the right for the maintainer to also license them commercially.
 - A full wiki: new pages for notifications and permissions and for what is new, and every page brought up to date.
 
+### Release and packaging
+- **Version numbers are now one scheme.** `package.json` is `1.9.0`; every build is `<major>.<minor>.<run number>` (for example `1.9.42`) and the Android `versionCode` is the run number.
+- **Tagged releases.** Each build publishes a normal release tagged `v<version>` (marked Latest) with `Dopamine.apk` under the same name every time, and the SHA-256 and signing certificate fingerprint in the notes. A pre-release tagged `latest` is still refreshed so apps installed before this change can update. The in-app updater now reads the Latest release.
+- **Obtainium** install and update steps are in the README.
+- **Fonts and the PDF library are bundled.** Inter, Newsreader and JetBrains Mono (`www/fonts/`) and jsPDF with AutoTable (`www/vendor/`) are inside the app, so nothing is loaded from Google Fonts or cdnjs and the app works fully offline.
+- `PRIVACY.md` and `THIRD-PARTY-NOTICES.md` list what the app really loads and every bundled library and font with its license.
+
 ### Security
 - **Dependabot** opens pull requests for npm library and GitHub Action updates.
 - **CodeQL** scans the JavaScript and Java code on every change and every Monday.

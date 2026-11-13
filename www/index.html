@@ -14,10 +14,7 @@
   <meta property="og:description" content="Offline-first calisthenics workout tracker, routine calendar planner, calorie tracker, and timers." />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"></noscript>
+  <link rel="stylesheet" href="fonts/fonts.css">
   <script>
     /* Apply saved look instantly (before first paint) from a tiny mirror of the settings */
     try {
@@ -265,8 +262,8 @@
       isPdfEngineLoading = true;
       showToast("Loading PDF export engine...");
       try {
-        await loadScriptAsync("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
-        await loadScriptAsync("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js");
+        await loadScriptAsync("vendor/jspdf.umd.min.js");
+        await loadScriptAsync("vendor/jspdf.plugin.autotable.min.js");
         isPdfEngineLoading = false;
         return true;
       } catch (err) {
