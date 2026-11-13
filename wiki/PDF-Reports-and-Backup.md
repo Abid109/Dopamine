@@ -1,6 +1,6 @@
 # PDF Reports and Backup
 
-Both live in **Settings** under Local Data & Export.
+Both live in **Settings**, **Backup & data**.
 
 ## PDF fitness report
 

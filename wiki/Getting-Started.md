@@ -25,11 +25,24 @@ Open **Calendar Planner**, pick a date and add a routine, either from a template
 
 Use **Notes & Journal** for training cues, ideas and reflections.
 
-## 6. Back up your data
+## 6. Track a run or walk
 
-Go to **Settings** and tap **Export JSON** now and then, or share your data to another phone with [Share and Receive](Share-and-Receive).
+Open **Run** in the navigation, choose Walk or Run, pick a goal and press **Start**. Allow location when Android asks. The app keeps recording with the screen off. See [Run and Walk Tracking](Run-and-Walk-Tracking).
+
+## 7. Allow notifications
+
+Timer alerts, reminders and goal alerts need the notification permission. See [Notifications and Permissions](Notifications-and-Permissions).
+
+## 8. Back up your data
+
+Open **Settings**, **Backup & data** and tap **Export JSON** now and then, or share your data to another phone with [Share and Receive](Share-and-Receive). Signing in on the **Profile** page also keeps a cloud backup ([Sign In and Sync](Account-and-Sync)).
+
+## 9. Keep the app up to date
+
+Open **Settings**, **App updates** to install new versions without leaving the app. See [Updating the App](App-Updates).
 
 ## Moving around
 
-- Open the menu from the top-left button. You can switch to a bottom bar, floating dock, top tabs and more in **Settings**, **Navigation Style**.
+- Open the menu from the top-left button, or use the bar at the bottom. You can switch between 7 styles in **Settings**, **Appearance & style**, **Navigation style**.
+- **Settings** is a menu of cards. Tap a card to open its page, and use the back arrow or your phone's back button to return.
 - The Android back button closes menus and popups first, then takes you to the previous page. On the Dashboard, press it twice to exit.

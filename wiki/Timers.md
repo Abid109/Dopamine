@@ -7,7 +7,7 @@ Both timers are in the sidebar under **Timers & Tools**.
 - Shows a countdown, starting at your default rest time.
 - Quick presets: 15s, 30s, 60s, 90s and 120s.
 - Press **Start** to begin.
-- Change the default in **Settings** under Default Rest Timer Duration.
+- Change the default in **Settings**, **Timers & alerts**, Default rest timer.
 
 You can also open it from the logger with **Start Set Rest Timer**.
 

@@ -7,6 +7,13 @@ All notable changes to Dopamine are listed here.
 ### Added
 - **In-app updates.** Settings, App updates checks the project's latest release, shows what is new, and downloads and installs the new version without leaving the app. A prompt also appears when a new build is found (at most one automatic check every 6 hours; "Later" hides it for a day). The download is only accepted if it is Dopamine signed with the same key, and Android still asks you to confirm the install. Needs the "Install unknown apps" permission for Dopamine, which the app helps you open. Install this build by hand once; later updates can be done inside the app.
 - Release notes now include a one-line summary of what changed.
+- **Run & Walk tracking.** A new Run tab records a walk or run with the phone GPS, even with the screen off or while you use another app. It shows a live map, time, distance, pace and calories, with pause and resume, and keeps a history of routes. Uses a foreground service so Android keeps it alive. If the app is closed mid-activity, the route so far is recovered.
+- **Goals.** Set a distance goal, a time goal, or drop a flag on the map. You get a notification when you reach it.
+- **Permissions screen.** Settings, Timers & Alerts (and the Run tab) ask for notifications, location and battery optimization, and show which are allowed.
+- **Full-screen reminders.** Reminders set in Calendar and Planning open a full screen (also over the lock screen) with a Dismiss button. Android 14 and later may ask you to allow full-screen alerts in Settings. Native code is in `android-native/` and is added by the build workflow.
+- **Privacy details** section in Settings that explains what is stored, what leaves the phone, permissions and how to delete data.
+- Three poster themes in Settings under "Soft & serif": **Dream** (navy and cream), **Aim High** (red) and **No Risk** (blue and green). Each has a poster banner with a caption at the top of the Dashboard, serif type and cream cards, and the colours are taken from the posters.
+- A full wiki: new pages for notifications and permissions and for what is new, and every page brought up to date.
 
 ### Changed
 - **Normal notifications again.** Alerts (rest timer, workout session, calendar, goals) now arrive as regular notifications with sound, vibration and a pop-up banner. The older silent channels are removed on first launch and replaced by new ones.
@@ -14,15 +21,8 @@ All notable changes to Dopamine are listed here.
 - Notifications show the Dopamine icon (status bar glyph and large icon).
 - **Settings menu with floating cards.** Settings opens as a list of rounded cards with an icon, label and arrow on each row (Appearance & style, Timers & alerts, Run & walk tracking, Backup & data, Privacy). Tapping a row opens that page with a back arrow, and the phone's back gesture returns to the menu.
 - The floating dock is now the default navigation style for new installs. Your saved choice is kept.
-- Settings are grouped into tabs: Visual & Style, Timers & Alerts, Backup & Data and Privacy.
-
-### Added
-- **Run & Walk tracking.** A new Run tab records a walk or run with the phone GPS, even with the screen off or while you use another app. It shows a live map, time, distance, pace and calories, with pause and resume, and keeps a history of routes. Uses a foreground service so Android keeps it alive. If the app is closed mid-activity, the route so far is recovered.
-- **Goals.** Set a distance goal, a time goal, or drop a flag on the map. You get a notification when you reach it.
-- **Permissions screen.** Settings, Timers & Alerts (and the Run tab) ask for notifications, location and battery optimization, and show which are allowed.
-- **Full-screen reminders.** Reminders set in Calendar and Planning open a full screen (also over the lock screen) with a Dismiss button. Android 14 and later may ask you to allow full-screen alerts in Settings. Native code is in `android-native/` and is added by the build workflow.
-- **Privacy details** section in Settings that explains what is stored, what leaves the phone, permissions and how to delete data.
-- Three poster themes in Settings under "Soft & serif": **Dream** (navy and cream), **Aim High** (red) and **No Risk** (blue and green). Each has a poster banner with a caption at the top of the Dashboard, serif type and cream cards, and the colours are taken from the posters.
+- The Sync wiki workflow now fails with a clear message until the wiki has been created once in the browser, instead of passing silently.
+- Fixed: opening a Settings card no longer leaves the menu or the Timers & alerts section showing underneath.
 
 ## [1.8.0] - 2026-11-09
 

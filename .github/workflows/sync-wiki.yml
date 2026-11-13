@@ -21,8 +21,8 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           if ! git clone "https://x-access-token:${TOKEN}@github.com/${REPO}.wiki.git" wiki-repo 2>/dev/null; then
-            echo "::warning::The wiki has not been created yet. Open the Wiki tab, click 'Create the first page', save it, then re-run this workflow."
-            exit 0
+            echo "::error title=Wiki not created yet::GitHub only creates the wiki after one page is saved in the browser. Open the Wiki tab, click 'Create the first page', save it, then re-run this workflow."
+            exit 1
           fi
           rsync -a --delete --exclude '.git' wiki/ wiki-repo/
           cd wiki-repo
