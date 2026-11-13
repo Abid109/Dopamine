@@ -101,4 +101,9 @@ Ideas and fixes are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Dopamine is **dual-licensed**.
+
+- **Open source:** the code is available under the [GNU AGPL-3.0](LICENSE). If you share or run a changed version for other people, you must share its source under the same license.
+- **Commercial:** to use the code without the AGPL conditions (for example in a closed-source product), you need a separate written license. See [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md).
+
+The name Dopamine, its logo, app icons and artwork are not licensed under the AGPL, and all rights in them are reserved. Bundled libraries keep their own licenses: see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Versions released before this change remain available under the MIT License to those who received them.

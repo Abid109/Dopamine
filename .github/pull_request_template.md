@@ -10,3 +10,4 @@
 - [ ] Saved data from the previous version still loads
 - [ ] No user data is sent anywhere
 - [ ] Wiki or changelog updated if behaviour changed
+- [ ] I agree to the licensing of contributions in CONTRIBUTING.md (AGPL-3.0, plus the maintainer may also license it commercially)

@@ -1,7 +1,7 @@
 # FAQ
 
 **Is it free?**
-Yes. Dopamine is open source under the MIT licence.
+Using the app is free. The code is open source under the GNU AGPL-3.0, and a separate commercial license is available for closed-source use. See [License](License).
 
 **Do I need an account?**
 No. Logging in is optional and only adds cloud backup and sync. See [Sign In and Sync](Account-and-Sync).
@@ -51,8 +51,11 @@ No. They arrive as normal alerts with sound, vibration and the Dopamine icon. Yo
 **Can I use miles?**
 Not yet. Distances and pace are in kilometres.
 
+**Can I use the code in my own app?**
+Under the AGPL-3.0 you can, if you publish your source under the same license and use your own name and artwork. For closed-source use you need a commercial license. See [License](License).
+
 **Can I contribute?**
-Yes. See [Contributing](Contributing).
+Yes. See [Contributing](Contributing). Contributions are accepted under the AGPL-3.0, and the maintainer may also license them commercially.
 
 **Where can I read about every change?**
 [What's New](Whats-New) summarises recent changes, and the [CHANGELOG](https://github.com/Abid109/Dopamine/blob/main/CHANGELOG.md) lists all of them.

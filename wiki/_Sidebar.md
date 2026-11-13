@@ -28,6 +28,7 @@
 - [Troubleshooting](Troubleshooting)
 - [FAQ](FAQ)
 - [Privacy and Data](Privacy-and-Data)
+- [License](License)
 
 **Development**
 

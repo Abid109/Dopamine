@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Dopamine-Commercial
+// Copyright (c) 2026 Abid109. Licensed under the GNU AGPL-3.0 (see LICENSE) or, by separate written
+// agreement, a commercial license (see COMMERCIAL-LICENSE.md). All other rights reserved.
 /* Dopamine - in-app updates
  * Checks the project's GitHub "latest" release, and (Android app only) downloads the new APK and opens
  * Android's installer. Every build is signed with the same key, so the update installs over the old app

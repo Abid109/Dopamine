@@ -29,6 +29,16 @@ Open an issue with the **Feature request** form and describe the problem you wan
 - **Match the existing style:** the same colour variables, card layout and button styles.
 - Write short, clear commit messages, for example `Fix rest timer reset on tab switch`.
 
+## Licensing of contributions
+
+Dopamine is dual-licensed: AGPL-3.0 for everyone, plus a commercial license available from the maintainer (see [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md)). To keep that possible, by submitting a pull request you confirm that:
+
+- You wrote the contribution yourself, or have the right to submit it.
+- It is licensed to everyone under the [AGPL-3.0](LICENSE).
+- You also grant the maintainer a perpetual, worldwide, non-exclusive, royalty-free, irrevocable license to use, change, sublicense and distribute your contribution under any terms, including commercial and proprietary ones.
+
+You keep the copyright in your contribution. If you cannot agree to this, please open an issue instead of a pull request.
+
 ## Documentation
 
 Wiki pages live in the `wiki/` folder. Edit them there and open a pull request. They are published to the GitHub wiki automatically after merge.

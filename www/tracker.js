@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Dopamine-Commercial
+// Copyright (c) 2026 Abid109. Licensed under the GNU AGPL-3.0 (see LICENSE) or, by separate written
+// agreement, a commercial license (see COMMERCIAL-LICENSE.md). All other rights reserved.
 /* Dopamine - Run & Walk tracker
  * GPS tracking (works in the background through a foreground service on Android), live map, goals, history.
  * Everything is stored on this phone only (localStorage key "dopamine_tracker_v1"); nothing is sent anywhere

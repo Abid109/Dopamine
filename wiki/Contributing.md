@@ -8,6 +8,10 @@ Ideas and fixes are welcome.
 
 Please keep user data private, keep saved data compatible, and test on a real Android phone when you can. Everyone must follow the [Code of Conduct](https://github.com/Abid109/Dopamine/blob/main/CODE_OF_CONDUCT.md).
 
+## Licensing
+
+Dopamine is dual-licensed (AGPL-3.0, plus a commercial license from the maintainer). By opening a pull request you agree that your contribution is licensed under the AGPL-3.0 and that the maintainer may also license it commercially. You keep your copyright. See [License](License).
+
 ## Editing the wiki
 
 Wiki pages live in the repository's `wiki/` folder. Edit them there, not in the GitHub wiki editor, because the **Sync wiki** workflow overwrites the wiki with that folder every time it changes on `main`.
