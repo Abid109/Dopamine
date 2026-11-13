@@ -20,7 +20,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Use the permanent signing key
         env:
@@ -34,11 +34,11 @@ jobs:
           echo "KEYSTORE_PATH=$RUNNER_TEMP/dopamine.keystore" >> "$GITHUB_ENV"
           keytool -list -keystore "$RUNNER_TEMP/dopamine.keystore" -storepass android -alias androiddebugkey | head -3
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 17
@@ -178,7 +178,7 @@ jobs:
           fi
           echo "Signature matches the permanent Dopamine key."
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Dopamine-apk
           path: Dopamine.apk
