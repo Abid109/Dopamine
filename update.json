@@ -1,0 +1,10 @@
+{
+  "build": 37,
+  "name": "1.9.37",
+  "tag": "v1.9.37",
+  "url": "https://github.com/Abid109/Dopamine/releases/download/v1.9.37/Dopamine.apk",
+  "size": 5620494,
+  "sha256": "60c1d1224a51362cd4b5e3492f1187df0e1d23a7053e03611a114a133534e5c1",
+  "date": "2026-11-14T20:10:06.699Z",
+  "changes": "Fix/codeql alerts"
+}
