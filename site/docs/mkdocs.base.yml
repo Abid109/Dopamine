@@ -1,0 +1,59 @@
+# Base settings for the documentation site. build_docs.py adds the page menu (nav) from wiki/_Sidebar.md
+# and builds the site into the "docs" folder of the website: https://abid109.github.io/Dopamine/docs/
+site_name: Dopamine Docs
+site_description: Guides for Dopamine, the privacy-first calisthenics tracker for Android, the web and desktop.
+site_url: https://abid109.github.io/Dopamine/docs/
+# repo_url is left out on purpose: Material would then ask api.github.com for star and fork counts on every page
+# view, which sends visitors' IP addresses to GitHub. A plain link to the repository is in the footer instead.
+copyright: Dopamine is open source under the GNU AGPL-3.0, with a separate commercial license available.
+
+theme:
+  name: material
+  language: en
+  # No Google Fonts: the site uses the fonts already bundled with the app (see extra.css). Together with the
+  # missing repo_url (see above), visiting the docs loads nothing from other companies.
+  font: false
+  logo: assets/icon.png
+  favicon: assets/favicon.png
+  palette:
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Abid109/Dopamine
+      name: Dopamine on GitHub

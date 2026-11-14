@@ -39,6 +39,8 @@ self.addEventListener('fetch', function (e) {
   if (req.method !== 'GET') return;
   var url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
+  // The documentation site (/docs/) is a separate site under the same address: leave it to the browser.
+  if (url.pathname.indexOf('/docs/') !== -1) return;
   e.respondWith(caches.open(VERSION).then(function (cache) {
     return cache.match(req, { ignoreSearch: true }).then(function (hit) {
       var fresh = fetch(req).then(function (res) {

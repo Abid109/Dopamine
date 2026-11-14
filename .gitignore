@@ -3,3 +3,5 @@ android/
 *.keystore
 *.jks
 desktop/dist/
+_site/
+__pycache__/

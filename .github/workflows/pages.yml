@@ -1,6 +1,7 @@
 name: Deploy website
 
-# Publishes the web app (PWA) at the site root and the download page at /download/ on GitHub Pages.
+# Publishes the web app (PWA) at the site root, the download page at /download/ and the documentation
+# (built from the wiki/ folder with MkDocs) at /docs/ on GitHub Pages.
 # One-time setup: Settings, Pages, Source: GitHub Actions.
 
 on:
@@ -9,6 +10,7 @@ on:
     paths:
       - 'www/**'
       - 'site/**'
+      - 'wiki/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -36,6 +38,17 @@ jobs:
           mkdir _site/download
           cp site/download/index.html _site/download/index.html
           touch _site/.nojekyll
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: site/docs/requirements.txt
+      - name: Build the documentation site
+        env:
+          NO_MKDOCS_2_WARNING: '1'
+        run: |
+          pip install -r site/docs/requirements.txt
+          python site/docs/build_docs.py --wiki wiki --out _site/docs
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

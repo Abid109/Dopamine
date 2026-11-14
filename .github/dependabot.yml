@@ -48,3 +48,19 @@ updates:
         update-types: ["minor", "patch"]
     commit-message:
       prefix: "deps(desktop)"
+
+  - package-ecosystem: pip
+    directory: /site/docs
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    # Material for MkDocs reaches end of life on 5 May 2027; a move to its successor (Zensical) is a
+    # separate task, so major versions are updated by hand.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      docs-minor-and-patch:
+        update-types: ["minor", "patch"]
+    commit-message:
+      prefix: "deps(docs)"

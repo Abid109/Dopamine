@@ -1,0 +1,4 @@
+# Tools that build the documentation site (only used by the Deploy website workflow; nothing here ships in the apps).
+mkdocs==1.6.1
+mkdocs-material==9.8.1
+pymdown-extensions==13.1
