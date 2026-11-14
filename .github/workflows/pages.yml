@@ -38,7 +38,7 @@ jobs:
           mkdir _site/download
           cp site/download/index.html _site/download/index.html
           touch _site/.nojekyll
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
           cache: pip
