@@ -5,9 +5,9 @@
  * Caches every file of the app on first load so it starts and works offline. Cached files are served at once
  * and refreshed in the background, so a new version arrives on the next launch. Cross-origin requests
  * (map tiles, sign in and sync) always go to the network. Bump VERSION to drop the old cache. */
-var VERSION = 'dopamine-pwa-1';
+var VERSION = 'dopamine-pwa-2';
 var FILES = [
-  './', 'index.html', 'tailwind.css', 'platform.js', 'tracker.js', 'updater.js', 'manifest.webmanifest',
+  './', 'index.html', 'tailwind.css', 'platform.js', 'tracker.js', 'updater.js', 'mapstyles.js', 'manifest.webmanifest',
   'fonts/fonts.css',
   'fonts/inter-latin-300-normal.woff2', 'fonts/inter-latin-400-normal.woff2', 'fonts/inter-latin-500-normal.woff2',
   'fonts/inter-latin-600-normal.woff2', 'fonts/inter-latin-700-normal.woff2', 'fonts/inter-latin-800-normal.woff2',
@@ -15,7 +15,7 @@ var FILES = [
   'fonts/newsreader-latin-700-normal.woff2', 'fonts/newsreader-latin-800-normal.woff2',
   'fonts/jetbrains-mono-latin-400-normal.woff2', 'fonts/jetbrains-mono-latin-500-normal.woff2',
   'fonts/jetbrains-mono-latin-600-normal.woff2', 'fonts/jetbrains-mono-latin-700-normal.woff2',
-  'vendor/leaflet.css', 'vendor/leaflet.js', 'vendor/jsQR.js', 'vendor/qrcode.js', 'vendor/supabase.js',
+  'vendor/leaflet.css', 'vendor/leaflet.js', 'vendor/maplibre-gl.js', 'vendor/maplibre-gl.css', 'vendor/leaflet-maplibre-gl.js', 'vendor/jsQR.js', 'vendor/qrcode.js', 'vendor/supabase.js',
   'vendor/jspdf.umd.min.js', 'vendor/jspdf.plugin.autotable.min.js',
   'assets/hero-athletes.webp', 'assets/poster-aimhigh.webp', 'assets/poster-dream.webp', 'assets/poster-norisk.webp',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'

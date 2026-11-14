@@ -48,6 +48,7 @@ Estimated from distance, time and the weight in your Profile with the standard w
 
 - Distances and pace are in kilometres.
 - The map pictures come from OpenStreetMap and need internet. The route is recorded without it.
+- You can change the map look in Settings, Map style. Classic is the default. The other styles need internet and a phone with WebGL, and are not used when Smooth mode is on.
 - The tracking notification shows fixed text, not live distance.
 
 ## Privacy

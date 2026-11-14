@@ -31,6 +31,7 @@ Only when you decide:
 - **App updates:** the app asks GitHub (api.github.com) for the newest release now and then and downloads the APK from github.com only when you tap Update. GitHub sees your IP address like any website visit. Nothing from the app or your data is sent. Needs the "Install unknown apps" permission to open Android's installer; Android asks you to confirm each install.
 - **Internet:** the app needs the internet only for the features below. Fonts, styles, the QR tools and the PDF library are bundled inside the app, so nothing is loaded from Google Fonts or other content networks.
   - **Map tiles (OpenStreetMap):** the map in the Run tab loads pictures (tiles) from OpenStreetMap. Those requests reveal the map area you are viewing to that service.
+  - **Map styles (optional):** if you pick a drawn style in Settings, Map style, the map loads vector tiles, fonts and terrain pictures from OpenFreeMap (`tiles.openfreemap.org`) and Amazon Web Services open data (`s3.amazonaws.com`) instead. Those requests also reveal the map area you are viewing, not your name or account.
   - **Update check (GitHub):** see App updates above.
   - **Optional sign in and sync (Supabase):** see Sign in and sync above.
   No personal data is included in any of these requests, apart from what is stated for sign in and sync.

@@ -125,7 +125,7 @@ Settings is a menu (`#settings-home`) of floating cards (`.fc-group` with `.fc-r
 3. Distance is the sum of haversine steps. Time is kept as accumulated milliseconds plus the running segment, so it is exact even if timers are throttled in the background.
 4. The active activity is saved about every 8 seconds and when the page is hidden. On the next launch an unfinished activity is shown as paused with Resume, Save and Discard.
 5. Finishing simplifies the route (points at least 8 m apart, at most about 700 per segment) and stores it in the history.
-6. The map is Leaflet (`www/vendor/leaflet.js`, loaded when the Run tab first opens) with OpenStreetMap tiles.
+6. The map is Leaflet (`www/vendor/leaflet.js`, loaded when the Run tab first opens) with OpenStreetMap tiles by default. Optional vector styles (`www/mapstyles.js`) are drawn by MapLibre GL through a Leaflet bridge, loaded only when a style other than Classic is chosen, and fall back to Classic on any failure.
 
 ## In-app updates
 
