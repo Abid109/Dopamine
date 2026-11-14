@@ -1,0 +1,10 @@
+{
+  "build": 36,
+  "name": "1.9.36",
+  "tag": "v1.9.36",
+  "url": "https://github.com/Abid109/Dopamine/releases/download/v1.9.36/Dopamine.apk",
+  "size": 5620084,
+  "sha256": "d21a2ae2d67d8962e8695bc55b2e08497891f43791111f7db25c33034771b6aa",
+  "date": "2026-11-14T14:49:52.161Z",
+  "changes": "Add selectable map styles (Settings > Map style)"
+}
