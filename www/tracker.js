@@ -4,7 +4,8 @@
 /* Dopamine - Run & Walk tracker
  * GPS tracking (works in the background through a foreground service on Android), live map, goals, history.
  * Everything is stored on this phone only (localStorage key "dopamine_tracker_v1"); nothing is sent anywhere
- * except map tile requests to OpenStreetMap.
+ * except map tile requests (OpenStreetMap raster tiles, or OpenFreeMap vector tiles and AWS terrain tiles
+ * for the optional map styles chosen in Settings > Map style).
  * Uses globals from index.html: appState, showToast, notifyNow, notifPlugin, fsPlugin, isNativeApp.
  */
 (function () {
@@ -210,6 +211,90 @@
     });
     return loadLeaflet._p;
   }
+
+  // ---------- map style (Settings > Map style) ----------
+  // 'classic' = raster OpenStreetMap tiles (default, lightest). Every other id is a vector style from mapstyles.js,
+  // drawn by MapLibre GL through a Leaflet bridge. It falls back to classic when WebGL is missing, Smooth mode is on,
+  // the libraries fail to load, or the vector tiles cannot be fetched, so the Run tab always shows a map.
+  var baseLayer = null, baseId = '', styleToken = 0;
+  function loadScript(src) {
+    return new Promise(function (resolve) {
+      var sc = document.createElement('script'); sc.src = src;
+      sc.onload = function () { resolve(true); }; sc.onerror = function () { resolve(false); };
+      document.head.appendChild(sc);
+    });
+  }
+  function loadMapLibre() {
+    if (window.maplibregl && window.L && window.L.maplibreGL) return Promise.resolve(true);
+    if (loadMapLibre._p) return loadMapLibre._p;
+    loadMapLibre._p = (async function () {
+      var css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'vendor/maplibre-gl.css'; document.head.appendChild(css);
+      var ok = window.maplibregl || await loadScript('vendor/maplibre-gl.js');
+      ok = ok && (window.L.maplibreGL || await loadScript('vendor/leaflet-maplibre-gl.js'));
+      if (!ok || !window.maplibregl || !window.L.maplibreGL) loadMapLibre._p = null;
+      return !!(ok && window.maplibregl && window.L.maplibreGL);
+    })();
+    return loadMapLibre._p;
+  }
+  function hasWebGL() {
+    try { var c = document.createElement('canvas'); return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl'))); } catch (e) { return false; }
+  }
+  function wantedStyle() {
+    var id = 'classic';
+    try { id = (appState.settings && appState.settings.mapStyle) || 'classic'; } catch (e) { }
+    if (id === 'classic' || !window.MapStyles || !window.MapStyles.isVector(id)) return 'classic';
+    if (document.documentElement.getAttribute('data-perf') === 'on') return 'classic';
+    if (!hasWebGL()) return 'classic';
+    return id;
+  }
+  function setBase(layer, id) {
+    if (baseLayer && map) { try { map.removeLayer(baseLayer); } catch (e) { } }
+    baseLayer = layer; baseId = id;
+    if (layer && map) layer.addTo(map);
+    var el = $('trk-map'); if (el) el.setAttribute('data-mapstyle', id);
+  }
+  function classicLayer() {
+    return L_.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors', className: 'trk-tiles' });
+  }
+  async function applyMapStyle() {
+    if (!map || !L_) return;
+    var id = wantedStyle();
+    if (id === baseId && baseLayer) return;
+    var token = ++styleToken;
+    if (id === 'classic') { setBase(classicLayer(), 'classic'); return; }
+    // show the classic map right away while the vector libraries and tiles load
+    if (!baseLayer) setBase(classicLayer(), 'classic');
+    var ok = await loadMapLibre();
+    if (token !== styleToken || !map) return;
+    if (!ok) { toast('Map style could not load, using the classic map'); return; }
+    var layer;
+    try {
+      layer = L_.maplibreGL({ style: window.MapStyles.build(id), interactive: false, attributionControl: { customAttribution: window.MapStyles.attribution(id) } });
+    } catch (e) { toast('Map style could not start, using the classic map'); return; }
+    var old = baseLayer, shown = false, errs = 0, done = false;
+    function fallback(why) {
+      if (done) return; done = true;
+      if (token !== styleToken || !map) return;
+      toast(why || 'Map style unavailable, using the classic map');
+      setBase(classicLayer(), 'classic');
+    }
+    layer.addTo(map);
+    var gl = layer.getMaplibreMap && layer.getMaplibreMap();
+    if (!gl) { try { map.removeLayer(layer); } catch (e) { } return fallback(); }
+    var timer = setTimeout(function () { if (!shown) { try { map.removeLayer(layer); } catch (e) { } fallback('Map style is slow to load, using the classic map'); } }, 15000);
+    gl.on('load', function () {
+      shown = true; clearTimeout(timer);
+      if (done || token !== styleToken) return; done = true;
+      if (old && old !== layer) { try { map.removeLayer(old); } catch (e) { } }
+      baseLayer = layer; baseId = id;
+      var el = $('trk-map'); if (el) el.setAttribute('data-mapstyle', id);
+    });
+    gl.on('error', function (e) {
+      var sid = e && e.sourceId;
+      if (sid === 'omt' && !shown && (!e.tile || ++errs >= 4)) { clearTimeout(timer); try { map.removeLayer(layer); } catch (x) { } fallback(); }
+    });
+  }
+  window.trkSetMapStyle = function () { if (map) applyMapStyle(); };
   async function ensureMap() {
     var el = $('trk-map'); if (!el) return false;
     if (map) { setTimeout(function () { map.invalidateSize(); }, 60); return true; }
@@ -218,9 +303,9 @@
     L_ = window.L;
     map = L_.map(el, { zoomControl: false, attributionControl: true, tap: true });
     map.attributionControl.setPrefix(false);
-    L_.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors', className: 'trk-tiles' }).addTo(map);
+    applyMapStyle();
     map.setView(lastFix ? [lastFix.lat, lastFix.lng] : [20, 0], lastFix ? 16 : 2);
-    line = L_.polyline([], { color: accentColor(), weight: 5, opacity: 0.95, lineJoin: 'round', lineCap: 'round' }).addTo(map);
+    line = L_.polyline([], { color: accentColor(), weight: 5, opacity: 0.95, lineJoin: 'round', lineCap: 'round', className: 'trk-route' }).addTo(map);
     map.on('dragstart', function () { follow = false; var b = $('trk-center'); if (b) b.classList.remove('hidden'); });
     map.on('click', function (e) {
       if (S.goal.type !== 'target') return;
@@ -465,7 +550,7 @@
     if (!map) return;
     clearRoute();
     viewLayer = L_.featureGroup().addTo(map);
-    rec.segs.forEach(function (sg) { L_.polyline(sg, { color: accentColor(), weight: 5, opacity: 0.95, lineJoin: 'round' }).addTo(viewLayer); });
+    rec.segs.forEach(function (sg) { L_.polyline(sg, { className: 'trk-route', color: accentColor(), weight: 5, opacity: 0.95, lineJoin: 'round' }).addTo(viewLayer); });
     var f = rec.segs[0] && rec.segs[0][0], l = rec.segs.length && rec.segs[rec.segs.length - 1].slice(-1)[0];
     if (f) L_.circleMarker(f, { radius: 6, color: '#fff', weight: 2, fillColor: '#34d399', fillOpacity: 1, interactive: false }).addTo(viewLayer);
     if (l) L_.circleMarker(l, { radius: 6, color: '#fff', weight: 2, fillColor: '#f87171', fillOpacity: 1, interactive: false }).addTo(viewLayer);
@@ -544,6 +629,7 @@
     '.trk-pinhint{position:absolute;left:12px;right:12px;top:10px;z-index:500;padding:7px 12px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border-subtle);font-size:11px;color:var(--text-muted);text-align:center;display:flex;gap:8px;align-items:center;justify-content:center}' +
     '.trk-pinhint.hidden{display:none}' +
     '.trk-pinhint button{font-weight:700;color:var(--accent-text)}' +
+    '.trk-route{filter:drop-shadow(0 0 2px rgba(0,0,0,.55))}' +
     '.trk-me span{display:block;width:18px;height:18px;border-radius:50%;background:#3b82f6;border:3px solid #fff;box-shadow:0 0 0 6px rgba(59,130,246,.25)}' +
     '.trk-flag b{display:block;font-size:26px;line-height:26px;color:#ef4444;text-shadow:0 1px 3px rgba(0,0,0,.5)}' +
     '[data-theme="dark"] .trk-tiles,[data-theme="charcoal"] .trk-tiles,[data-theme="midnight"] .trk-tiles,[data-theme="cyberpunk"] .trk-tiles,[data-theme="forest"] .trk-tiles{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.88) saturate(.7)}' +

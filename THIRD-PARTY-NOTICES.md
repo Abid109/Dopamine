@@ -59,6 +59,8 @@ The site uses the Inter and JetBrains Mono fonts already bundled with the web ap
 
 ## Map data
 
+MapLibre GL JS (BSD-3-Clause) and @maplibre/maplibre-gl-leaflet (ISC) are included in `www/vendor/` for the optional map styles; their licenses are in `MAPLIBRE-LICENSE.txt` and `MAPLIBRE-LEAFLET-LICENSE.txt`. Style tiles come from OpenFreeMap (OpenMapTiles schema, data (c) OpenStreetMap contributors) and terrain shading from Mapzen terrain tiles on AWS Open Data.
+
 Map pictures shown in the Run tab are loaded from OpenStreetMap. Map data (c) OpenStreetMap contributors, available under the [Open Database License](https://www.openstreetmap.org/copyright). The attribution is shown on the map.
 
 ## The MIT License (for the MIT components above)

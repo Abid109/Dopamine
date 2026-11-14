@@ -1571,6 +1571,7 @@
           <button class="fc-row fc-nav" onclick="openSettingsPage('visual')"><svg class="fc-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".6"></circle><circle cx="17.5" cy="10.5" r=".6"></circle><circle cx="8.5" cy="7.5" r=".6"></circle><circle cx="6.5" cy="12.5" r=".6"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg><span class="fc-title">Appearance &amp; style</span><span id="sh-theme-val" class="fc-val"></span><svg class="fc-chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
           <button class="fc-row fc-nav" onclick="openSettingsPage('alerts')"><svg class="fc-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg><span class="fc-title">Timers &amp; alerts</span><svg class="fc-chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
           <button class="fc-row fc-nav phone-only" onclick="navigate('track')"><svg class="fc-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path><circle cx="18" cy="5" r="3"></circle></svg><span class="fc-title">Run &amp; walk tracking</span><svg class="fc-chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+          <button class="fc-row fc-nav phone-only" onclick="openSettingsPage('map')"><svg class="fc-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3Z"></path><path d="M9 3v15M15 6v15"></path></svg><span class="fc-title">Map style</span><span class="fc-val" id="sh-map-val"></span><svg class="fc-chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
           </div>
         </div>
         <div>
@@ -1701,6 +1702,14 @@
               </button>
             </div>
           </div>
+        </div>
+
+        <!-- Map style (Run tab) -->
+        <div data-stab="map" class="phone-only p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-4 md:col-span-2 hidden">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)]">Map style</h2>
+          <p class="text-xs text-[var(--text-dim)]">Choose how the map looks on the Run &amp; Walk tab. Classic is the lightest and works everywhere. The other styles are drawn on your phone from online map data and need an internet connection and a phone that supports WebGL.</p>
+          <div id="map-style-note" class="text-xs text-[var(--accent)] hidden"></div>
+          <div id="map-style-grid" class="grid grid-cols-2 gap-3"></div>
         </div>
 
         <!-- Navigation & Performance -->
@@ -2536,6 +2545,7 @@
       applyAppearance();
       saveState();
       renderSettingsTab();
+      if (window.trkSetMapStyle) window.trkSetMapStyle();
     }
     let _navResizeT = null;
     window.addEventListener('resize', () => { clearTimeout(_navResizeT); _navResizeT = setTimeout(navMeasure, 150); });
@@ -4771,7 +4781,7 @@
     // SETTINGS TAB RENDERING & ACTIONS
     let settingsTabKey = 'visual';
     let settingsPage = null; // null = menu, otherwise the open sub-page
-    const SETTINGS_TITLES = { visual: 'Appearance & style', alerts: 'Timers & alerts', data: 'Backup & data', privacy: 'Privacy', updates: 'App updates' };
+    const SETTINGS_TITLES = { visual: 'Appearance & style', alerts: 'Timers & alerts', data: 'Backup & data', privacy: 'Privacy', updates: 'App updates', map: 'Map style' };
     function setSettingsTab(k) { settingsTabKey = k; applySettingsTab(); }
     function openSettingsPage(k) {
       settingsPage = k; settingsTabKey = k;
@@ -4802,8 +4812,32 @@
         b.setAttribute('aria-selected', on ? 'true' : 'false');
       });
     }
+    function mapStyleName(id) { try { const l = window.MapStyles && window.MapStyles.list(); const m = l && l.find(x => x.id === id); return m ? m.name : 'Classic'; } catch (e) { return 'Classic'; } }
+    function renderMapStylePicker() {
+      const cur = (appState.settings && appState.settings.mapStyle) || 'classic';
+      const v = document.getElementById('sh-map-val'); if (v) v.textContent = mapStyleName(cur);
+      const g = document.getElementById('map-style-grid'); if (!g || !window.MapStyles) return;
+      const note = document.getElementById('map-style-note');
+      if (note) {
+        const perf = document.documentElement.getAttribute('data-perf') === 'on';
+        note.textContent = perf ? 'Smooth mode is on, so the Run tab uses the Classic map. Turn Smooth mode off in Appearance to use the other styles.' : '';
+        note.classList.toggle('hidden', !perf || cur === 'classic');
+      }
+      g.innerHTML = window.MapStyles.list().map(m => `
+        <button onclick="setMapStyle('${m.id}')" aria-pressed="${m.id === cur}" class="rounded-xl border overflow-hidden text-left transition-all ${m.id === cur ? 'border-[var(--accent)] ring-2 ring-[var(--accent)]' : 'border-[var(--border-subtle)]'}">
+          <div style="aspect-ratio:4/3;background:#222">${window.MapStyles.previewSvg(m.id)}</div>
+          <div class="p-2"><div class="text-xs font-semibold text-[var(--text-primary)]">${m.name}</div><div class="text-[10px] text-[var(--text-dim)]">${m.note || ''}</div></div>
+        </button>`).join('');
+    }
+    function setMapStyle(id) {
+      appState.settings.mapStyle = id;
+      saveState();
+      renderMapStylePicker();
+      if (window.trkSetMapStyle) window.trkSetMapStyle();
+    }
     function renderSettingsTab() {
       applySettingsTab();
+      renderMapStylePicker();
       const presets = [30, 45, 60, 90, 120];
       document.getElementById('settings-rest-readout').textContent = `${appState.settings.restDefault}s`;
       document.getElementById('settings-rest-presets').innerHTML = presets.map(s => `
@@ -6207,6 +6241,7 @@
       try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => { }); } catch (e) { }
     }
   </script>
+  <script src="mapstyles.js"></script>
   <script src="tracker.js"></script>
   <script src="updater.js"></script>
 </body>
