@@ -16,7 +16,7 @@ See [Notifications and Permissions](Notifications-and-Permissions).
 
 ## What the map and updates reveal
 
-- **Map:** the map pictures (tiles) come from OpenStreetMap. Those requests reveal the map area you are viewing to that service, not your name or account.
+- **Map:** the map pictures (tiles) come from OpenStreetMap, or from OpenFreeMap and AWS terrain data if you choose a drawn map style. Those requests reveal the map area you are viewing to that service, not your name or account.
 - **Updates:** the app asks GitHub for the newest release now and then. GitHub sees your IP address like any website visit. The APK is downloaded only when you tap Update.
 
 ## Where is my data?
