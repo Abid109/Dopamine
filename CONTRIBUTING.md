@@ -33,6 +33,11 @@ Open an issue with the **Feature request** form and describe the problem you wan
 
 Report vulnerabilities privately (see [SECURITY.md](SECURITY.md)). Pull requests are scanned with CodeQL, and Dependabot opens pull requests for library and GitHub Action updates.
 
+When you build HTML in JavaScript:
+
+- Put text that a person typed, imported, received or synced (names, notes, titles, dates, IDs, profile data) through `shEsc()` before it goes into a template for `innerHTML`, or set it with `textContent`.
+- Never put such a value inside a JavaScript string in an `onclick="..."`. Use `data-` attributes and read them with `this.dataset`, like `onclick="deleteExistingNote(this.dataset.id)" data-id="${shEsc(n.id)}"`. HTML escaping alone does not protect a value that sits inside a JavaScript string.
+
 ## Licensing of contributions
 
 Dopamine is dual-licensed: AGPL-3.0 for everyone, plus a commercial license available from the maintainer (see [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md)). To keep that possible, by submitting a pull request you confirm that:

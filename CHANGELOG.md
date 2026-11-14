@@ -42,6 +42,7 @@ The desktop app has its own version and release tags, separate from the Android 
 - `PRIVACY.md` and `THIRD-PARTY-NOTICES.md` list what the app really loads and every bundled library and font with its license.
 
 ### Security
+- **Fixed script injection in the app's own screens.** Exercise names, categories, plan titles and items, note text, dates, IDs, the search box and the profile picture are now escaped before they are shown, so a crafted name or a malicious import, share file or synced backup can no longer run code. Buttons that carry an ID or date now read it from a `data-` attribute instead of building JavaScript text. This closes CodeQL alerts #2 to #6.
 - **Dependabot** opens pull requests for npm library and GitHub Action updates.
 - **CodeQL** scans the JavaScript and Java code on every change and every Monday.
 - `SECURITY.md` lists the automated checks and the repository settings to turn on.

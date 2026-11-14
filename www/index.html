@@ -3820,7 +3820,7 @@
       const el = document.getElementById(id);
       if (!el) return;
       if (url) {
-        el.innerHTML = `<img src="${url}" alt="Athlete Avatar" class="w-full h-full object-cover rounded-full pointer-events-none" />`;
+        el.innerHTML = `<img src="${shEsc(url)}" alt="Athlete Avatar" class="w-full h-full object-cover rounded-full pointer-events-none" />`;
       } else {
         el.textContent = initial || '?';
       }
@@ -3918,19 +3918,19 @@
           <div class="py-3 flex items-center justify-between gap-3 group hover:bg-[var(--bg-card-hover)] px-2 rounded-lg transition-colors">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-center justify-center text-xs font-bold text-[var(--accent-text)]">
-                ${l.sets}x
+                ${shEsc(l.sets)}x
               </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <h4 class="font-semibold text-xs text-[var(--text-primary)]">${l.name}</h4>
-                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-input)] text-[var(--text-muted)]">${l.category}</span>
+                  <h4 class="font-semibold text-xs text-[var(--text-primary)]">${shEsc(l.name)}</h4>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-input)] text-[var(--text-muted)]">${shEsc(l.category)}</span>
                 </div>
-                <div class="text-[11px] text-[var(--text-muted)] mt-0.5">${l.sets} sets × ${repsLabel(l)} • ${l.mins} mins</div>
+                <div class="text-[11px] text-[var(--text-muted)] mt-0.5">${shEsc(l.sets)} sets × ${shEsc(repsLabel(l))} • ${shEsc(l.mins)} mins</div>
               </div>
             </div>
             <div class="flex items-center gap-3">
-              <span class="font-mono text-xs font-bold text-amber-400">+${l.cal} kcal</span>
-              <button onclick="deleteWorkoutLog('${today}', '${l.id}')" class="p-1 rounded text-[var(--text-dim)] hover:text-red-400">
+              <span class="font-mono text-xs font-bold text-amber-400">+${shEsc(l.cal)} kcal</span>
+              <button onclick="deleteWorkoutLog(this.dataset.d, this.dataset.i)" data-d="${shEsc(today)}" data-i="${shEsc(l.id)}" class="p-1 rounded text-[var(--text-dim)] hover:text-red-400">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
               </button>
             </div>
@@ -4115,7 +4115,7 @@
             <div class="w-10 h-10 rounded-xl bg-[var(--bg-input)] flex items-center justify-center text-[var(--text-muted)] mx-auto"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M17.596 12.768a2 2 0 1 0 2.829-2.829l-1.768-1.767a2 2 0 0 0 2.828-2.829l-2.828-2.828a2 2 0 0 0-2.829 2.828l-1.767-1.768a2 2 0 1 0-2.829 2.829z"></path><path d="m2.5 21.5 1.4-1.4"></path><path d="m20.1 3.9 1.4-1.4"></path><path d="M5.343 21.485a2 2 0 1 0 2.829-2.828l1.767 1.768a2 2 0 1 0 2.829-2.829l-6.364-6.364a2 2 0 1 0-2.829 2.829l1.768 1.767a2 2 0 0 0-2.828 2.829z"></path><path d="m9.6 14.4 4.8-4.8"></path></svg></div>
             <h4 class="text-sm font-bold text-[var(--text-primary)]">Workout not found in library?</h4>
             <p class="text-xs text-[var(--text-muted)]">Looking for an unlisted movement? You can name and log any custom exercise!</p>
-            <button onclick="enableCustomExerciseMode('${q}')" class="px-4 py-2 rounded-xl bg-[var(--accent)] text-black font-bold text-xs hover:brightness-110 inline-flex items-center gap-1.5">
+            <button onclick="enableCustomExerciseMode(this.dataset.q)" data-q="${shEsc(q)}" class="px-4 py-2 rounded-xl bg-[var(--accent)] text-black font-bold text-xs hover:brightness-110 inline-flex items-center gap-1.5">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg> Use "${q || 'Custom Workout'}" as Name
             </button>
           </div>
@@ -4153,7 +4153,7 @@
       document.getElementById('selected-ex-badge').textContent = `${currentSelectedEx.category} • ${currentSelectedEx.difficulty}`;
       document.getElementById('selected-ex-title').textContent = currentSelectedEx.name;
       document.getElementById('selected-ex-desc').textContent = currentSelectedEx.description;
-      document.getElementById('selected-ex-prog').innerHTML = `<span class="font-semibold text-[var(--text-primary)]">Progression: </span>${currentSelectedEx.progression || 'Standard'}`;
+      document.getElementById('selected-ex-prog').innerHTML = `<span class="font-semibold text-[var(--text-primary)]">Progression: </span>${shEsc(currentSelectedEx.progression || 'Standard')}`;
 
       document.getElementById('stepper-sets').value = currentSelectedEx.defaultSets;
       document.getElementById('stepper-reps').value = currentSelectedEx.defaultReps;
@@ -4292,20 +4292,20 @@
 
       const container = document.getElementById('log-history-list');
       if (dayLogs.length === 0) {
-        container.innerHTML = `<div class="py-6 text-center text-xs text-[var(--text-muted)]">No exercises recorded on ${dateKey}. Use the form above to log sets!</div>`;
+        container.innerHTML = `<div class="py-6 text-center text-xs text-[var(--text-muted)]">No exercises recorded on ${shEsc(dateKey)}. Use the form above to log sets!</div>`;
       } else {
         container.innerHTML = dayLogs.map(l => `
           <div class="py-3 flex items-center justify-between gap-3 group hover:bg-[var(--bg-card-hover)] px-2 rounded-lg transition-colors">
             <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-center justify-center text-xs font-bold text-[var(--accent-text)]">${l.sets}x</div>
+              <div class="w-8 h-8 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-center justify-center text-xs font-bold text-[var(--accent-text)]">${shEsc(l.sets)}x</div>
               <div>
-                <h4 class="font-semibold text-xs text-[var(--text-primary)]">${l.name}</h4>
-                <span class="text-[11px] text-[var(--text-muted)]">${l.sets} sets × ${repsLabel(l)} • ${l.mins} mins • ${l.category}</span>
+                <h4 class="font-semibold text-xs text-[var(--text-primary)]">${shEsc(l.name)}</h4>
+                <span class="text-[11px] text-[var(--text-muted)]">${shEsc(l.sets)} sets × ${shEsc(repsLabel(l))} • ${shEsc(l.mins)} mins • ${shEsc(l.category)}</span>
               </div>
             </div>
             <div class="flex items-center gap-3">
-              <span class="font-mono text-xs font-bold text-amber-400">+${l.cal} kcal</span>
-              <button onclick="deleteWorkoutLog('${dateKey}', '${l.id}')" class="p-1 rounded text-[var(--text-dim)] hover:text-red-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+              <span class="font-mono text-xs font-bold text-amber-400">+${shEsc(l.cal)} kcal</span>
+              <button onclick="deleteWorkoutLog(this.dataset.d, this.dataset.i)" data-d="${shEsc(dateKey)}" data-i="${shEsc(l.id)}" class="p-1 rounded text-[var(--text-dim)] hover:text-red-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
             </div>
           </div>
         `).join('');
@@ -4405,13 +4405,13 @@
         plansContainer.innerHTML = dayPlans.map(p => `
           <div class="p-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] space-y-1.5">
             <div class="flex items-center justify-between">
-              <button onclick="togglePlanCheck('${calSelectedDateKey}', '${p.id}')" class="flex items-center gap-2 text-left">
+              <button onclick="togglePlanCheck(this.dataset.d, this.dataset.i)" data-d="${shEsc(calSelectedDateKey)}" data-i="${shEsc(p.id)}" class="flex items-center gap-2 text-left">
                 <i data-lucide="${p.completed ? 'check-circle-2' : 'circle'}" class="w-4 h-4 ${p.completed ? 'text-emerald-400' : 'text-[var(--text-muted)]'}"></i>
-                <span class="text-xs font-bold ${p.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">${p.name}${p.time ? ' <span class="font-mono font-normal text-[10px] text-[var(--text-muted)]">· ' + p.time + '</span>' : ''}</span>
+                <span class="text-xs font-bold ${p.completed ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}">${shEsc(p.name)}${p.time ? ' <span class="font-mono font-normal text-[10px] text-[var(--text-muted)]">· ' + shEsc(p.time) + '</span>' : ''}</span>
               </button>
-              <button onclick="deleteRoutinePlan('${calSelectedDateKey}', '${p.id}')" class="text-[var(--text-dim)] hover:text-red-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+              <button onclick="deleteRoutinePlan(this.dataset.d, this.dataset.i)" data-d="${shEsc(calSelectedDateKey)}" data-i="${shEsc(p.id)}" class="text-[var(--text-dim)] hover:text-red-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
             </div>
-            <p class="text-[11px] text-[var(--text-muted)] pl-6 whitespace-pre-line">${p.items}</p>
+            <p class="text-[11px] text-[var(--text-muted)] pl-6 whitespace-pre-line">${shEsc(p.items)}</p>
           </div>
         `).join('');
       }
@@ -4433,12 +4433,12 @@
         logsContainer.innerHTML = dayLogs.map(l => `
           <div class="p-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-subtle)] flex items-center justify-between gap-2">
             <div>
-              <span class="text-xs font-semibold text-[var(--text-primary)] block">${l.name}</span>
-              <span class="text-[10px] text-[var(--text-muted)]">${l.sets} sets × ${repsLabel(l)} • ${l.mins}m</span>
+              <span class="text-xs font-semibold text-[var(--text-primary)] block">${shEsc(l.name)}</span>
+              <span class="text-[10px] text-[var(--text-muted)]">${shEsc(l.sets)} sets × ${shEsc(repsLabel(l))} • ${shEsc(l.mins)}m</span>
             </div>
             <div class="flex items-center gap-2">
-              <span class="font-mono text-xs font-semibold text-amber-400">${l.cal} kcal</span>
-              <button onclick="deleteWorkoutLog('${calSelectedDateKey}', '${l.id}')" class="p-1 rounded text-[var(--text-dim)] hover:text-red-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+              <span class="font-mono text-xs font-semibold text-amber-400">${shEsc(l.cal)} kcal</span>
+              <button onclick="deleteWorkoutLog(this.dataset.d, this.dataset.i)" data-d="${shEsc(calSelectedDateKey)}" data-i="${shEsc(l.id)}" class="p-1 rounded text-[var(--text-dim)] hover:text-red-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
             </div>
           </div>
         `).join('');
@@ -4525,17 +4525,17 @@
         <div class="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] transition-all flex flex-col justify-between group">
           <div>
             <div class="flex items-center justify-between gap-2 mb-2">
-              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border bg-amber-500/10 text-amber-400 border-amber-500/20">${n.tag}</span>
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border bg-amber-500/10 text-amber-400 border-amber-500/20">${shEsc(n.tag)}</span>
               <span class="text-[10px] text-[var(--text-dim)] font-mono">${new Date(n.updated || n.created).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
             </div>
-            <h3 class="font-bold text-sm text-[var(--text-primary)] line-clamp-1">${n.title}</h3>
-            <p class="text-xs text-[var(--text-muted)] mt-2 line-clamp-4 leading-relaxed whitespace-pre-line">${n.body}</p>
+            <h3 class="font-bold text-sm text-[var(--text-primary)] line-clamp-1">${shEsc(n.title)}</h3>
+            <p class="text-xs text-[var(--text-muted)] mt-2 line-clamp-4 leading-relaxed whitespace-pre-line">${shEsc(n.body)}</p>
           </div>
           <div class="flex items-center justify-between mt-4 pt-3 border-t border-[var(--border-subtle)]">
             <span class="text-[10px] text-[var(--text-dim)]">${n.body.split(/\s+/).filter(Boolean).length} words</span>
             <div class="flex items-center gap-1">
-              <button onclick="editExistingNote('${n.id}')" class="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M13 21h8"></path><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path></svg></button>
-              <button onclick="deleteExistingNote('${n.id}')" class="p-1 rounded text-[var(--text-dim)] hover:text-red-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+              <button onclick="editExistingNote(this.dataset.id)" data-id="${shEsc(n.id)}" class="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M13 21h8"></path><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path></svg></button>
+              <button onclick="deleteExistingNote(this.dataset.id)" data-id="${shEsc(n.id)}" class="p-1 rounded text-[var(--text-dim)] hover:text-red-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
             </div>
           </div>
         </div>
@@ -5527,12 +5527,12 @@
 
       const logsHtml = allLogs.length === 0 ? '<tr><td colspan="6" class="text-center py-4 text-slate-400">No workout exercises recorded yet.</td></tr>' : allLogs.map(l => `
         <tr class="border-b border-slate-200">
-          <td class="font-semibold py-2 px-2">${l.date}</td>
-          <td class="font-bold py-2 px-2 text-slate-800">${l.name}</td>
-          <td class="py-2 px-2 text-slate-600">${l.category}</td>
-          <td class="py-2 px-2 text-slate-700">${l.sets} sets × ${repsLabel(l)}</td>
-          <td class="py-2 px-2 text-center text-slate-600">${l.mins}m</td>
-          <td class="py-2 px-2 text-right font-mono font-bold text-amber-600">+${l.cal} kcal</td>
+          <td class="font-semibold py-2 px-2">${shEsc(l.date)}</td>
+          <td class="font-bold py-2 px-2 text-slate-800">${shEsc(l.name)}</td>
+          <td class="py-2 px-2 text-slate-600">${shEsc(l.category)}</td>
+          <td class="py-2 px-2 text-slate-700">${shEsc(l.sets)} sets × ${shEsc(repsLabel(l))}</td>
+          <td class="py-2 px-2 text-center text-slate-600">${shEsc(l.mins)}m</td>
+          <td class="py-2 px-2 text-right font-mono font-bold text-amber-600">+${shEsc(l.cal)} kcal</td>
         </tr>
       `).join('');
 
@@ -5544,9 +5544,9 @@
         else if (item.notes) itemsStr = item.notes;
         return `
           <tr class="border-b border-slate-200">
-            <td class="py-1.5 px-2 font-mono font-semibold">${item.date}</td>
-            <td class="py-1.5 px-2 font-bold text-slate-800">${item.name}</td>
-            <td class="py-1.5 px-2 text-slate-600">${itemsStr}</td>
+            <td class="py-1.5 px-2 font-mono font-semibold">${shEsc(item.date)}</td>
+            <td class="py-1.5 px-2 font-bold text-slate-800">${shEsc(item.name)}</td>
+            <td class="py-1.5 px-2 text-slate-600">${shEsc(itemsStr)}</td>
             <td class="py-1.5 px-2 text-center font-bold ${item.completed ? 'text-emerald-600' : 'text-amber-600'}">${item.completed ? 'COMPLETED' : 'PLANNED'}</td>
           </tr>
         `;
@@ -5557,9 +5557,9 @@
         return `
           <tr class="border-b border-slate-200">
             <td class="py-1.5 px-2 font-mono text-slate-500">${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
-            <td class="py-1.5 px-2 font-semibold text-amber-700">${n.tag}</td>
-            <td class="py-1.5 px-2 font-bold text-slate-800">${n.title}</td>
-            <td class="py-1.5 px-2 text-slate-600 text-[11px] leading-relaxed">${n.body.length > 180 ? n.body.slice(0, 180) + '...' : n.body}</td>
+            <td class="py-1.5 px-2 font-semibold text-amber-700">${shEsc(n.tag)}</td>
+            <td class="py-1.5 px-2 font-bold text-slate-800">${shEsc(n.title)}</td>
+            <td class="py-1.5 px-2 text-slate-600 text-[11px] leading-relaxed">${shEsc(n.body.length > 180 ? n.body.slice(0, 180) + '...' : n.body)}</td>
           </tr>
         `;
       }).join('');
@@ -5570,7 +5570,7 @@
           <!-- Report Header -->
           <div class="p-4 rounded-xl bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-4 border-amber-500">
             <div class="flex items-center gap-3">
-              ${p.avatarUrl ? `<img src="${p.avatarUrl}" alt="Athlete Avatar" class="w-12 h-12 rounded-full object-cover border-2 border-amber-400 shrink-0" />` : `<div class="w-12 h-12 rounded-full bg-slate-800 border-2 border-amber-400 flex items-center justify-center font-bold text-lg text-amber-400 shrink-0">${athleteName.charAt(0).toUpperCase()}</div>`}
+              ${p.avatarUrl ? `<img src="${shEsc(p.avatarUrl)}" alt="Athlete Avatar" class="w-12 h-12 rounded-full object-cover border-2 border-amber-400 shrink-0" />` : `<div class="w-12 h-12 rounded-full bg-slate-800 border-2 border-amber-400 flex items-center justify-center font-bold text-lg text-amber-400 shrink-0">${shEsc(athleteName.charAt(0).toUpperCase())}</div>`}
               <div>
                 <h1 class="text-xl font-extrabold tracking-tight">DOPAMINE FIT</h1>
                 <p class="text-xs text-slate-300">Calisthenics Athlete Performance & Workout History Report</p>
@@ -5578,7 +5578,7 @@
             </div>
             <div class="text-left sm:text-right text-xs">
               <span class="font-bold text-amber-400 block font-mono">REPORT DATE: ${todayKey}</span>
-              <span class="text-slate-300">Athlete: <strong class="text-white">${athleteName}</strong> (${p.level || 'Beginner'})</span>
+              <span class="text-slate-300">Athlete: <strong class="text-white">${shEsc(athleteName)}</strong> (${shEsc(p.level || 'Beginner')})</span>
             </div>
           </div>
 
@@ -5586,10 +5586,10 @@
           <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Athlete Biometrics & Discipline Targets</h3>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div><span class="text-slate-500 block text-[10px]">ATHLETE</span><strong class="text-slate-800">${athleteName}</strong> (${p.level || 'Beginner'})</div>
+              <div><span class="text-slate-500 block text-[10px]">ATHLETE</span><strong class="text-slate-800">${shEsc(athleteName)}</strong> (${shEsc(p.level || 'Beginner')})</div>
               <div><span class="text-slate-500 block text-[10px]">BODYWEIGHT & HEIGHT</span><strong class="text-slate-800">${p.weight > 0 ? p.weight + ' kg' : '--'}</strong> • <strong class="text-slate-800">${p.height > 0 ? p.height + ' cm' : '--'}</strong></div>
               <div><span class="text-slate-500 block text-[10px]">BMI RATING</span><strong class="text-slate-800">${bmiStr}</strong></div>
-              <div><span class="text-slate-500 block text-[10px]">PRIMARY GOAL</span><strong class="text-slate-800">${p.goal || 'General Fitness'}</strong></div>
+              <div><span class="text-slate-500 block text-[10px]">PRIMARY GOAL</span><strong class="text-slate-800">${shEsc(p.goal || 'General Fitness')}</strong></div>
               <div><span class="text-slate-500 block text-[10px]">DAILY CALORIE TARGET</span><strong class="text-amber-600">${p.calGoal || 500} kcal/day</strong></div>
               <div><span class="text-slate-500 block text-[10px]">DAILY MOVEMENTS</span><strong class="text-slate-800">${p.exGoal || 4} exercises</strong></div>
               <div><span class="text-slate-500 block text-[10px]">WEEKLY FREQUENCY</span><strong class="text-slate-800">${p.weeklyWorkoutGoal || 4} days/week</strong></div>
