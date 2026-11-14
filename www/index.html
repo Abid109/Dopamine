@@ -4812,7 +4812,7 @@
         b.setAttribute('aria-selected', on ? 'true' : 'false');
       });
     }
-    function mapStyleName(id) { try { const l = window.MapStyles && window.MapStyles.list(); const m = l && l.find(x => x.id === id); return m ? m.name : 'Classic'; } catch (e) { return 'Classic'; } }
+    function mapStyleName(id) { try { const l = window.MapStyles && window.MapStyles.list; const m = l && l.find(x => x.id === id); return m ? m.name : 'Classic'; } catch (e) { return 'Classic'; } }
     function renderMapStylePicker() {
       const cur = (appState.settings && appState.settings.mapStyle) || 'classic';
       const v = document.getElementById('sh-map-val'); if (v) v.textContent = mapStyleName(cur);
@@ -4823,7 +4823,7 @@
         note.textContent = perf ? 'Smooth mode is on, so the Run tab uses the Classic map. Turn Smooth mode off in Appearance to use the other styles.' : '';
         note.classList.toggle('hidden', !perf || cur === 'classic');
       }
-      g.innerHTML = window.MapStyles.list().map(m => `
+      g.innerHTML = window.MapStyles.list.map(m => `
         <button onclick="setMapStyle('${m.id}')" aria-pressed="${m.id === cur}" class="rounded-xl border overflow-hidden text-left transition-all ${m.id === cur ? 'border-[var(--accent)] ring-2 ring-[var(--accent)]' : 'border-[var(--border-subtle)]'}">
           <div style="aspect-ratio:4/3;background:#222">${window.MapStyles.previewSvg(m.id)}</div>
           <div class="p-2"><div class="text-xs font-semibold text-[var(--text-primary)]">${m.name}</div><div class="text-[10px] text-[var(--text-dim)]">${m.note || ''}</div></div>
