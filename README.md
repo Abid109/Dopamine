@@ -18,6 +18,8 @@
   &nbsp;·&nbsp;
   <a href="https://github.com/Abid109/Dopamine/releases/download/desktop-latest/Dopamine-linux-x86_64.AppImage"><b>Linux</b></a>
   &nbsp;·&nbsp;
+  <a href="https://abid109.github.io/Dopamine/docs/">Docs</a>
+  &nbsp;·&nbsp;
   <a href="https://github.com/Abid109/Dopamine/wiki">Wiki</a>
   &nbsp;·&nbsp;
   <a href="https://github.com/Abid109/Dopamine/issues">Report a bug</a>
@@ -129,11 +131,11 @@ Details are in [Building from Source](https://github.com/Abid109/Dopamine/wiki/B
 ```
 www/                 The app (index.html, fonts/ and vendor/ libraries), shared by all platforms
 desktop/             Desktop app (Electron) for Windows, macOS and Linux
-site/                Download page published with the web app on GitHub Pages
+site/                Download page and the documentation site builder (site/docs), published on GitHub Pages
 supabase/            Database setup for the optional cloud backup
 android-res/         Launcher icons applied during the Android build
-.github/workflows/   APK build and wiki sync
-wiki/                Source of the GitHub wiki pages
+.github/workflows/   Builds, website deployment and wiki sync
+wiki/                Source of the GitHub wiki pages and the documentation website
 docs/assets/         Images used in the docs
 ```
 

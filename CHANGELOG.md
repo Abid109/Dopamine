@@ -18,6 +18,7 @@ The desktop app has its own version and release tags, separate from the Android 
 ## [Unreleased]
 
 ### Added
+- **Documentation website.** The wiki pages are also published as a website at `https://abid109.github.io/Dopamine/docs/` (MkDocs with the Material theme), with a side menu, search, light and dark modes and the app's own fonts and colours. It is built from the same `wiki/` folder as the GitHub wiki, loads nothing from other websites, and a broken link between pages stops the build. See `site/docs/`.
 - **In-app updates.** Settings, App updates checks the project's latest release, shows what is new, and downloads and installs the new version without leaving the app. A prompt also appears when a new build is found (at most one automatic check every 6 hours; "Later" hides it for a day). The download is only accepted if it is Dopamine signed with the same key, and Android still asks you to confirm the install. Needs the "Install unknown apps" permission for Dopamine, which the app helps you open. Install this build by hand once; later updates can be done inside the app.
 - Release notes now include a one-line summary of what changed.
 - **Run & Walk tracking.** A new Run tab records a walk or run with the phone GPS, even with the screen off or while you use another app. It shows a live map, time, distance, pace and calories, with pause and resume, and keeps a history of routes. Uses a foreground service so Android keeps it alive. If the app is closed mid-activity, the route so far is recovered.

@@ -1,0 +1,49 @@
+/* Dopamine documentation theme: the app's own fonts (already on the website at /fonts/) and colours. */
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url('../../fonts/inter-latin-400-normal.woff2') format('woff2');}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;src:url('../../fonts/inter-latin-500-normal.woff2') format('woff2');}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url('../../fonts/inter-latin-600-normal.woff2') format('woff2');}
+@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:swap;src:url('../../fonts/inter-latin-700-normal.woff2') format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url('../../fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:600;font-display:swap;src:url('../../fonts/jetbrains-mono-latin-600-normal.woff2') format('woff2');}
+
+:root {
+  --md-text-font: "Inter";
+  --md-code-font: "JetBrains Mono";
+}
+
+/* Dark (default): the app's dark surfaces with its amber accent */
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #0a0a0d;
+  --md-default-bg-color--light: #121217;
+  --md-default-fg-color: #f5f5f8;
+  --md-default-fg-color--light: #c9c9d6;
+  --md-default-fg-color--lighter: #9191a2;
+  --md-default-fg-color--lightest: #252530;
+  --md-primary-fg-color: #121217;
+  --md-primary-fg-color--light: #1a1b20;
+  --md-primary-fg-color--dark: #0a0a0d;
+  --md-primary-bg-color: #f5f5f8;
+  --md-primary-bg-color--light: #c9c9d6;
+  --md-accent-fg-color: #fbbf24;
+  --md-typeset-color: #e8e8ee;
+  --md-typeset-a-color: #fbbf24;
+  --md-code-bg-color: #16161c;
+  --md-code-fg-color: #e8e8ee;
+  --md-footer-bg-color: #0a0a0d;
+  --md-footer-bg-color--dark: #050507;
+}
+
+/* Light */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #1b1b22;
+  --md-primary-fg-color--light: #2a2a33;
+  --md-primary-fg-color--dark: #101014;
+  --md-primary-bg-color: #f5f5f8;
+  --md-accent-fg-color: #b45309;
+  --md-typeset-a-color: #b45309;
+}
+
+.md-typeset h1, .md-typeset h2, .md-typeset h3 { font-weight: 700; letter-spacing: -0.01em; }
+.md-typeset h1 { font-size: 2em; margin-bottom: .6em; color: var(--md-default-fg-color); }
+.md-typeset table:not([class]) { font-size: .8rem; }
+.md-nav--primary > .md-nav__list > .md-nav__item--section > .md-nav__link { font-weight: 700; }

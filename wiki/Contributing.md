@@ -23,3 +23,15 @@ Wiki pages live in the repository's `wiki/` folder. Edit them there, not in the 
 **One-time setup for a new repository:** GitHub does not create the wiki until a page has been saved in the browser. Open the **Wiki** tab, click **Create the first page**, save it, then open **Actions**, **Sync wiki**, **Run workflow**. From then on every merge that touches `wiki/` updates the wiki. Until that first page exists the workflow fails with a message that says so.
 
 Use plain links between pages, like `[Timers](Timers)`, and add new pages to `_Sidebar.md`.
+
+## The documentation website
+
+The same pages are also published as a website at [abid109.github.io/Dopamine/docs](https://abid109.github.io/Dopamine/docs/), built with MkDocs by the **Deploy website** workflow every time `wiki/` changes on `main`. The menu comes from `_Sidebar.md`, and a broken link between pages stops the build. To preview it on your computer:
+
+```
+pip install -r site/docs/requirements.txt
+python site/docs/build_docs.py --out _site/docs
+python -m http.server --directory _site
+```
+
+Then open `http://localhost:8000/docs/`. The builder and theme live in `site/docs/`.

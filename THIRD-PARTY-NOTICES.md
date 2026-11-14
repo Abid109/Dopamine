@@ -44,6 +44,19 @@ Their license texts and copyright notices are in each package's `LICENSE` file, 
 | [Electron](https://www.electronjs.org) (includes Chromium and Node.js) | MIT. Chromium and its dependencies keep their own licenses; the full list is shipped with every desktop build in `LICENSES.chromium.html`, and Electron's own license in `LICENSE.electron.txt` |
 | [electron-builder](https://www.electron.build) (build tool, not shipped) | MIT |
 
+## Documentation website (`site/docs/`)
+
+The documentation site at `/docs/` is built from the `wiki/` folder with the tools below (see `site/docs/requirements.txt`). They are not part of the apps. The published site contains the Material theme's own CSS, JavaScript and the few icons it uses.
+
+| Component | License |
+| --- | --- |
+| [MkDocs](https://www.mkdocs.org) (build tool) | BSD-2-Clause |
+| [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) (theme; its CSS and JavaScript are copied into the site) | MIT |
+| Icons bundled with Material: [Material Design Icons](https://pictogrammers.com/library/mdi/) and [Font Awesome Free](https://fontawesome.com/license/free) | Apache-2.0 (Material Design Icons); CC BY 4.0 for the icons and MIT for the code (Font Awesome Free) |
+| [Python-Markdown](https://python-markdown.github.io) and [PyMdown Extensions](https://facelessuser.github.io/pymdown-extensions/) (build tools) | BSD-3-Clause and MIT |
+
+The site uses the Inter and JetBrains Mono fonts already bundled with the web app (SIL Open Font License 1.1) and loads nothing from other websites.
+
 ## Map data
 
 Map pictures shown in the Run tab are loaded from OpenStreetMap. Map data (c) OpenStreetMap contributors, available under the [Open Database License](https://www.openstreetmap.org/copyright). The attribution is shown on the map.
